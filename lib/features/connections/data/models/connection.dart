@@ -1,0 +1,170 @@
+import 'package:clean_architecture/features/connections/data/models/company.dart';
+import 'package:clean_architecture/features/connections/data/models/person.dart';
+import 'package:clean_architecture/features/connections/domain/entities/connection.dart';
+
+class ConnectionModel {
+  final String connectionId;
+  final String clientId;
+  final int connectionRateId;
+  final String connectionRateName;
+  final String? connectionMeterNumber;
+  final int connectionSector;
+  final int connectionAccount;
+  final String connectionCadastralKey;
+  final String? connectionContractNumber;
+  final bool? connectionSewerage;
+  final bool? connectionStatus;
+  final String connectionAddress;
+  final String? connectionInstallationDate;
+  final int? connectionPeopleNumber;
+  final int? connectionZone;
+  final String? connectionCoordinates;
+  final String? connectionReference;
+  final Map<String, dynamic>? connectionMetadata;
+  final double? connectionAltitude;
+  final double? connectionPrecision;
+  final DateTime? connectionGeolocationDate;
+  final String? connectionGeometricZone;
+  final String? propertyCadastralKey;
+  final int? zoneId;
+  final String? zoneCode;
+  final String? zoneName;
+  final PersonModel? person;
+  final CompanyModel? company;
+
+  const ConnectionModel({
+    required this.connectionId,
+    required this.clientId,
+    required this.connectionRateId,
+    required this.connectionRateName,
+    this.connectionMeterNumber,
+    required this.connectionSector,
+    required this.connectionAccount,
+    required this.connectionCadastralKey,
+    this.connectionContractNumber,
+    this.connectionSewerage,
+    this.connectionStatus,
+    required this.connectionAddress,
+    required this.connectionInstallationDate,
+    this.connectionPeopleNumber,
+    this.connectionZone,
+    this.connectionCoordinates,
+    this.connectionReference,
+    this.connectionMetadata,
+    this.connectionAltitude,
+    this.connectionPrecision,
+    this.connectionGeolocationDate,
+    this.connectionGeometricZone,
+    this.propertyCadastralKey,
+    this.zoneId,
+    this.zoneCode,
+    this.zoneName,
+    this.person,
+    this.company,
+  });
+
+  factory ConnectionModel.fromJson(Map<String, dynamic> json) {
+    return ConnectionModel(
+      connectionId: json['connectionId'] as String,
+      clientId: json['clientId'] as String,
+      connectionRateId: json['connectionRateId'] as int,
+      connectionRateName: json['connectionRateName'] as String,
+      connectionMeterNumber: json['connectionMeterNumber'] as String?,
+      connectionSector: json['connectionSector'] as int,
+      connectionAccount: json['connectionAccount'] as int,
+      connectionCadastralKey: json['connectionCadastralKey'] as String,
+      connectionContractNumber: json['connectionContractNumber'] as String?,
+      connectionSewerage: json['connectionSewerage'] as bool?,
+      connectionStatus: json['connectionStatus'] as bool?,
+      connectionAddress: json['connectionAddress'] as String,
+      connectionInstallationDate: json['connectionInstallationDate'] as String?,
+      connectionPeopleNumber: json['connectionPeopleNumber'] as int?,
+      connectionZone: json['connectionZone'] as int?,
+      connectionCoordinates: json['connectionCoordinates'] as String?,
+      connectionReference: json['connectionReference'] as String?,
+      connectionMetadata: json['connectionMetadata'] as Map<String, dynamic>?,
+      connectionAltitude: (json['connectionAltitude'] as num?)?.toDouble(),
+      connectionPrecision: (json['connectionPrecision'] as num?)?.toDouble(),
+      connectionGeolocationDate: json['connectionGeolocationDate'] != null
+          ? DateTime.parse(json['connectionGeolocationDate'] as String)
+          : null,
+      connectionGeometricZone: json['connectionGeometricZone'] as String?,
+      propertyCadastralKey: json['propertyCadastralKey'] as String?,
+      zoneId: json['zoneId'] as int?,
+      zoneCode: json['zoneCode'] as String?,
+      zoneName: json['zoneName'] as String?,
+      person: json['person'] != null
+          ? PersonModel.fromJson(json['person'] as Map<String, dynamic>)
+          : null,
+      company: json['company'] != null
+          ? CompanyModel.fromJson(json['company'] as Map<String, dynamic>)
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'connectionId': connectionId,
+      'clientId': clientId,
+      'connectionRateId': connectionRateId,
+      'connectionRateName': connectionRateName,
+      'connectionMeterNumber': connectionMeterNumber,
+      'connectionSector': connectionSector,
+      'connectionAccount': connectionAccount,
+      'connectionCadastralKey': connectionCadastralKey,
+      'connectionContractNumber': connectionContractNumber,
+      'connectionSewerage': connectionSewerage,
+      'connectionStatus': connectionStatus,
+      'connectionAddress': connectionAddress,
+      'connectionInstallationDate': connectionInstallationDate,
+      'connectionPeopleNumber': connectionPeopleNumber,
+      'connectionZone': connectionZone,
+      'connectionCoordinates': connectionCoordinates,
+      'connectionReference': connectionReference,
+      'connectionMetadata': connectionMetadata,
+      'connectionAltitude': connectionAltitude,
+      'connectionPrecision': connectionPrecision,
+      'connectionGeolocationDate': connectionGeolocationDate?.toIso8601String(),
+      'connectionGeometricZone': connectionGeometricZone,
+      'propertyCadastralKey': propertyCadastralKey,
+      'zoneId': zoneId,
+      'zoneCode': zoneCode,
+      'zoneName': zoneName,
+      'person': person?.toJson(),
+      'company': company?.toJson(),
+    };
+  }
+
+  ConnectionEntity toEntity() {
+    return ConnectionEntity(
+      connectionId: connectionId,
+      clientId: clientId,
+      connectionRateId: connectionRateId,
+      connectionRateName: connectionRateName,
+      connectionMeterNumber: connectionMeterNumber,
+      connectionSector: connectionSector,
+      connectionAccount: connectionAccount,
+      connectionCadastralKey: connectionCadastralKey,
+      connectionContractNumber: connectionContractNumber,
+      connectionSewerage: connectionSewerage,
+      connectionStatus: connectionStatus,
+      connectionAddress: connectionAddress,
+      connectionInstallationDate: connectionInstallationDate,
+      connectionPeopleNumber: connectionPeopleNumber,
+      connectionZone: connectionZone,
+      connectionCoordinates: connectionCoordinates,
+      connectionReference: connectionReference,
+      connectionMetadata: connectionMetadata,
+      connectionAltitude: connectionAltitude,
+      connectionPrecision: connectionPrecision,
+      connectionGeolocationDate: connectionGeolocationDate,
+      connectionGeometricZone: connectionGeometricZone,
+      propertyCadastralKey: propertyCadastralKey,
+      zoneId: zoneId,
+      zoneCode: zoneCode,
+      zoneName: zoneName,
+      person: person?.toEntity(),
+      company: company?.toEntity(),
+    );
+  }
+}

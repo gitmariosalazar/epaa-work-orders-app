@@ -1,0 +1,89 @@
+name: clean_architecture
+description: A comprehensive guide to building scalable and maintainable Flutter applications using Architecture patterns and design Principles.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Web Only
+  flutter_web_plugins:
+    sdk: flutter
+  # Equality
+  equatable: ^2.0.7
+  # Dependency Injector
+  get_it: ^9.1.0
+  injectable: ^2.6.0
+  # Network
+  internet_connection_checker_plus: ^2.9.1
+  http_parser: ^4.1.2
+  dio: ^5.8.0+1
+  alice_dio: ^1.0.6
+  # Router
+  auto_route: ^10.2.2
+  # Local
+  shared_preferences: ^2.5.3
+  # State Management
+  flutter_bloc: ^9.1.1
+  flutter_hooks: ^0.21.2
+  # UI
+  flutter_sliding_toast: ^1.5.2
+  # Util
+  image_picker: ^1.2.1
+  path_provider: ^2.1.5
+  encrypt: ^5.0.3
+
+  # Environment specific
+  flutter_dotenv: ^6.0.0
+  file_picker: ^10.3.8
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  # Test
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+  bloc_test: ^10.0.0
+  patrol: ^4.0.1
+  patrol_finders: ^3.0.0
+  build_runner: ^2.10.4
+  auto_route_generator: ^10.2.6
+  injectable_generator: ^2.9.1
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: 'launcher_icon'
+  ios: true
+  image_path: 'assets/images/work_order.png'
+  adaptive_icon_background: 'assets/images/work_order.png'
+  adaptive_icon_foreground: 'assets/images/work_order.png'
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/images/
+    - assets/fonts/Roboto-Regular.ttf
+    - .env
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+
+    - family: AppIcon
+      fonts:
+        - asset: assets/icons/AppIcon.ttf
+
+patrol:
+  app_name: cleanArchitecture
+  flavor: development
+  android:
+    package_name: com.example.cleanArchitecture
+  ios:
+    bundle_id: com.example.cleanArchitecture
