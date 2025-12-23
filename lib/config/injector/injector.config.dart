@@ -41,6 +41,14 @@ import 'package:clean_architecture/features/auth/presentation/cubits/login/login
     as _i912;
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit_use_cases.dart'
     as _i123;
+import 'package:clean_architecture/features/connections/data/datasources/remote/connection_remote_datasource.dart'
+    as _i1016;
+import 'package:clean_architecture/features/connections/data/repositories/connection_repository_impl.dart'
+    as _i17;
+import 'package:clean_architecture/features/connections/domain/repositories/connection_repository.dart'
+    as _i459;
+import 'package:clean_architecture/features/connections/domain/usecases/connection_use_case.dart'
+    as _i788;
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart'
     as _i278;
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit_use_cases.dart'
@@ -192,6 +200,21 @@ extension GetItInjectableX on _i174.GetIt {
         apiService: gh<_i885.ApiService>(),
       ),
     );
+    gh.lazySingleton<_i105.WorkerPaginatedRemoteDatasource>(
+      () => _i105.WorkerPaginatedRemoteDatasourceImpl(
+        apiService: gh<_i885.ApiService>(),
+      ),
+    );
+    gh.lazySingleton<_i1016.ConnectionPaginatedRemoteDatasource>(
+      () => _i1016.ConnectionPaginatedRemoteDatasourceImpl(
+        apiService: gh<_i885.ApiService>(),
+      ),
+    );
+    gh.lazySingleton<_i311.ProductMaterialPaginatedRemoteDatasource>(
+      () => _i311.ProductMaterialPaginatedRemoteDatasourceImpl(
+        apiService: gh<_i885.ApiService>(),
+      ),
+    );
     gh.lazySingleton<_i311.ProductMaterialRemoteDatasource>(
       () => _i311.ProductMaterialRemoteDatasourceImpl(
         apiService: gh<_i885.ApiService>(),
@@ -235,19 +258,56 @@ extension GetItInjectableX on _i174.GetIt {
         apiService: gh<_i885.ApiService>(),
       ),
     );
+    gh.lazySingleton<_i1016.ConnectionRemoteDatasource>(
+      () => _i1016.ConnectionRemoteDatasourceImpl(
+        apiService: gh<_i885.ApiService>(),
+      ),
+    );
+    gh.lazySingleton<_i459.ConnectionRepository>(
+      () => _i17.ConnectionRepositoryImpl(
+        internet: gh<_i662.InternetService>(),
+        remoteDataSource: gh<_i1016.ConnectionRemoteDatasource>(),
+      ),
+    );
     gh.lazySingleton<_i163.WorkerRepository>(
       () => _i932.WorkerRepositoryImpl(
         internetService: gh<_i662.InternetService>(),
         remoteDatasource: gh<_i105.WorkerRemoteDatasource>(),
       ),
     );
+    gh.lazySingleton<_i459.ConnectionPaginatedRepository>(
+      () => _i17.ConnectionPaginatedRepositoryImpl(
+        internet: gh<_i662.InternetService>(),
+        remoteDataSource: gh<_i1016.ConnectionPaginatedRemoteDatasource>(),
+      ),
+    );
+    gh.lazySingleton<_i788.GetAllConnectionsPaginatedUseCase>(
+      () => _i788.GetAllConnectionsPaginatedUseCase(
+        gh<_i459.ConnectionPaginatedRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i187.ProductMaterialPaginatedRepository>(
+      () => _i262.ProductMaterialPaginatedRepositoryImpl(
+        internet: gh<_i662.InternetService>(),
+        remoteDataSource: gh<_i311.ProductMaterialPaginatedRemoteDatasource>(),
+      ),
+    );
     gh.lazySingleton<_i451.GetAllWorkersUseCase>(
       () => _i451.GetAllWorkersUseCase(gh<_i163.WorkerRepository>()),
+    );
+    gh.lazySingleton<_i163.WorkerPaginatedRepository>(
+      () => _i932.WorkerPaginatedRepositoryImpl(
+        internetService: gh<_i662.InternetService>(),
+        remoteDatasource: gh<_i105.WorkerPaginatedRemoteDatasource>(),
+      ),
     );
     gh.lazySingleton<_i386.AddWorkOrderAttachmentRepository>(
       () => _i475.AddWorkOrderAttachmentRepositoryImpl(
         remoteDataSource: gh<_i286.AddWorkOrderAttachmentRemoteDataSource>(),
       ),
+    );
+    gh.lazySingleton<_i788.GetAllConnectionsUseCase>(
+      () => _i788.GetAllConnectionsUseCase(gh<_i459.ConnectionRepository>()),
     );
     gh.lazySingleton<_i464.WorkOrderRepository>(
       () => _i448.WorkOrderRepositoryImpl(
@@ -258,6 +318,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i1041.AddWorkOrderAssignmentRepository>(
       () => _i359.AddWorkOrderAssignmentRepositoryImpl(
         remoteDataSource: gh<_i393.AddWorkOrderAssignmentRemoteDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i794.GetAllProductMaterialsPaginatedUseCase>(
+      () => _i794.GetAllProductMaterialsPaginatedUseCase(
+        gh<_i187.ProductMaterialPaginatedRepository>(),
       ),
     );
     gh.lazySingleton<_i1003.AuthRepository>(
@@ -282,6 +347,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i661.SaveUserDataUseCase>(
       () => _i661.SaveUserDataUseCase(
         authRepository: gh<_i1003.AuthRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i451.GetAllWorkersPaginatedUseCase>(
+      () => _i451.GetAllWorkersPaginatedUseCase(
+        gh<_i163.WorkerPaginatedRepository>(),
       ),
     );
     gh.lazySingleton<_i329.AddWorkOrderAssignmentUseCase>(

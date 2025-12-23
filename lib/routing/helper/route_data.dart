@@ -36,3 +36,7 @@ const String PRODUCTS_MATERIALS_PATH = "products-materials";
 // Profile
 const String PROFILE_ROUTE = "ProfileRoute";
 const String PROFILE_PATH = "profile";
+
+// Details Work Order
+const String WORK_ORDER_DETAIL_ROUTE = "WorkOrderDetailRoute";
+const String WORK_ORDER_DETAIL_PATH = "work-order-detail";

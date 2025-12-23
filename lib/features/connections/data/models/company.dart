@@ -48,26 +48,32 @@ class CompanyModel {
 
   factory CompanyModel.fromJson(Map<String, dynamic> json) {
     return CompanyModel(
-      ruc: json['ruc'] as String,
-      address: json['address'] as String?,
-      country: json['country'] as String?,
-      clientId: json['clientId'] as String,
-      parishId: json['parishId'] as String?,
-      companyId: json['companyId'] as int,
-      businessName: json['businessName'] as String?,
-      commercialName: json['commercialName'] as String?,
+      ruc: json['ruc'] as String? ?? '',
+      address: json['address'] as String? ?? '',
+      country: json['country'] as String? ?? '',
+      clientId: json['clientId'] as String? ?? '',
+      parishId: json['parishId'] as String? ?? '',
+      companyId: json['companyId'] as int? ?? 0,
+      businessName: json['businessName'] as String? ?? '',
+      commercialName: json['commercialName'] as String? ?? '',
       emails: (json['emails'] as List<dynamic>)
           .map(
             (e) => e == null
                 ? null
-                : EmailModel(e['correoid'] as int, e['email'] as String),
+                : EmailModel(
+                    e['correoid'] as int? ?? 0,
+                    e['email'] as String? ?? '',
+                  ),
           )
           .toList(),
       phones: (json['phones'] as List<dynamic>)
           .map(
             (e) => e == null
                 ? null
-                : PhoneModel(e['telefonoid'] as int, e['numero'] as String),
+                : PhoneModel(
+                    e['telefonoid'] as int? ?? 0,
+                    e['numero'] as String? ?? '',
+                  ),
           )
           .toList(),
     );

@@ -8,8 +8,10 @@ class PhoneModel {
   static List<PhoneModel> fromJsonList(List<dynamic> jsonList) {
     return jsonList
         .map(
-          (json) =>
-              PhoneModel(json['telefonoid'] as int, json['numero'] as String),
+          (json) => PhoneModel(
+            json['telefonoid'] as int? ?? 0,
+            json['numero'] as String? ?? '',
+          ),
         )
         .toList();
   }
@@ -19,7 +21,10 @@ class PhoneModel {
   }
 
   factory PhoneModel.fromJson(Map<String, dynamic> json) {
-    return PhoneModel(json['telefonoid'] as int, json['numero'] as String);
+    return PhoneModel(
+      json['telefonoid'] as int? ?? 0,
+      json['numero'] as String? ?? '',
+    );
   }
 
   PhoneEntity toEntity() {
@@ -35,8 +40,10 @@ class EmailModel {
   static List<EmailModel> fromJsonList(List<dynamic> jsonList) {
     return jsonList
         .map(
-          (json) =>
-              EmailModel(json['correoid'] as int, json['email'] as String),
+          (json) => EmailModel(
+            json['correoid'] as int? ?? 0,
+            json['email'] as String? ?? '',
+          ),
         )
         .toList();
   }
@@ -46,7 +53,10 @@ class EmailModel {
   }
 
   factory EmailModel.fromJson(Map<String, dynamic> json) {
-    return EmailModel(json['correoid'] as int, json['email'] as String);
+    return EmailModel(
+      json['correoid'] as int? ?? 0,
+      json['email'] as String? ?? '',
+    );
   }
 
   EmailEntity toEntity() {

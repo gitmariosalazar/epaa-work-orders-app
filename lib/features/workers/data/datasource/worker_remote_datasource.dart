@@ -24,3 +24,42 @@ class WorkerRemoteDatasourceImpl implements WorkerRemoteDatasource {
     );
   }
 }
+
+abstract interface class WorkerPaginatedRemoteDatasource {
+  FutureData<List<WorkerModel>> getAllWorkersPaginated({
+    required int limit,
+    required int offset,
+    required String? query,
+  });
+}
+
+@LazySingleton(as: WorkerPaginatedRemoteDatasource)
+class WorkerPaginatedRemoteDatasourceImpl
+    implements WorkerPaginatedRemoteDatasource {
+  final ApiService _apiService;
+  const WorkerPaginatedRemoteDatasourceImpl({required ApiService apiService})
+    : _apiService = apiService;
+
+  @override
+  FutureData<List<WorkerModel>> getAllWorkersPaginated({
+    required int limit,
+    required int offset,
+    required String? query,
+  }) {
+    final queryParameters = <String, dynamic>{};
+    queryParameters['limit'] = limit;
+    queryParameters['offset'] = offset;
+    if (query != null && query.isNotEmpty) {
+      queryParameters['query'] = query;
+    }
+    return DataHandler.safeApiCall<List<WorkerModel>, WorkerModel>(
+      request: () => _apiService.get(
+        ApiEndpoints.getAllWorkersPaginated,
+        queryParameters: queryParameters,
+      ),
+      fromJson: (json) => WorkerModel.fromJson(json),
+      isStandardResponse: true,
+      responseDataKey: 'data',
+    );
+  }
+}

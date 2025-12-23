@@ -1,10 +1,16 @@
 // features/work-orders/presentation/widgets/step_basic_data.dart
 
+import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
+import 'package:clean_architecture/features/connections/domain/entities/connection.dart';
+import 'package:clean_architecture/features/connections/domain/usecases/connection_use_case.dart';
+import 'package:clean_architecture/features/work-orders/presentation/widgets/connection-step/connection_search_dialog.dart';
 import 'package:clean_architecture/shared_ui/components/common/custom_text_field.dart';
 import 'package:clean_architecture/shared_ui/components/common/form_card.dart';
 import 'package:flutter/material.dart';
-import 'package:clean_architecture/core/constants/app_colors.dart';
+import 'package:get_it/get_it.dart';
+
+final getIt = GetIt.instance;
 
 class StepBasicData extends StatefulWidget {
   final Map<String, dynamic> formData;
@@ -21,88 +27,14 @@ class StepBasicData extends StatefulWidget {
 }
 
 class _StepBasicDataState extends State<StepBasicData> {
-  final _formKey = GlobalKey<FormState>(); // ← Para validación
+  final _formKey = GlobalKey<FormState>();
 
   final _descriptionController = TextEditingController();
   final _clientIdController = TextEditingController();
   final _cadastralKeyController = TextEditingController();
   final _locationController = TextEditingController();
-  final _searchController = TextEditingController();
 
   Map<String, dynamic>? _selectedConnection;
-
-  final List<Map<String, dynamic>> _connections = const [
-    {
-      "connectionId": "1-1",
-      "clientId": "1000387843",
-      "connectionMeterNumber": "2204007519",
-      "connectionCadastralKey": "1-1",
-      "connectionAddress": "ALEJANDRO ANDRADE-ATUNTAQUI Y PICHINCHA",
-    },
-    {
-      "connectionId": "1-10",
-      "clientId": "1001390085",
-      "connectionMeterNumber": "2204007703",
-      "connectionCadastralKey": "1-10",
-      "connectionAddress": "ALEJANDRO ANDRADE-ATUNTAQUI Y SN",
-    },
-    {
-      "connectionId": "1-100",
-      "clientId": "1004086680",
-      "connectionMeterNumber": "2109021069",
-      "connectionCadastralKey": "1-100",
-      "connectionAddress": "AVD.JULIO M.AGUINAGA Y ABDON CALDERON",
-    },
-    {
-      "connectionId": "1-101",
-      "clientId": "1000472694",
-      "connectionMeterNumber": "83001256",
-      "connectionCadastralKey": "1-101",
-      "connectionAddress": "AVD.JULIO M.AGUINAGA-ATUNTAQUI",
-    },
-    {
-      "connectionId": "1-102",
-      "clientId": "1000211126",
-      "connectionMeterNumber": "A19G308860",
-      "connectionCadastralKey": "1-102",
-      "connectionAddress": "AVD.JULIO M.AGUINAGA-ATUNTAQUI Y SN",
-    },
-    {
-      "connectionId": "1-103",
-      "clientId": "1704593787",
-      "connectionMeterNumber": "2204008167",
-      "connectionCadastralKey": "1-103",
-      "connectionAddress": "AVD.JULIO M.AGUINAGA-ATUNTAQUI Y ABDON CALDERÓN",
-    },
-    {
-      "connectionId": "1-104",
-      "clientId": "1091719548001",
-      "connectionMeterNumber": "2215057440",
-      "connectionCadastralKey": "1-104",
-      "connectionAddress": "AVD.JULIO M.AGUINAGA-ATUNTAQUI Y SN",
-    },
-    {
-      "connectionId": "1-105",
-      "clientId": "1001810843",
-      "connectionMeterNumber": "2204008037",
-      "connectionCadastralKey": "1-105",
-      "connectionAddress": "AVD.JULIO M.AGUINAGA-ATUNTAQUI Y SN",
-    },
-    {
-      "connectionId": "1-106",
-      "clientId": "1000221281",
-      "connectionMeterNumber": "701005899",
-      "connectionCadastralKey": "1-106",
-      "connectionAddress": "AVD.JULIO M.AGUINAGA-ATUNTAQUI",
-    },
-    {
-      "connectionId": "1-107",
-      "clientId": "1000228427",
-      "connectionMeterNumber": "2115018587",
-      "connectionCadastralKey": "1-107",
-      "connectionAddress": "AVD.JULIO M.AGUINAGA-ATUNTAQUI Y SN",
-    },
-  ];
 
   @override
   void initState() {
@@ -115,9 +47,9 @@ class _StepBasicDataState extends State<StepBasicData> {
     final conn = widget.formData['selectedConnection'] as Map<String, dynamic>?;
     if (conn != null) {
       _selectedConnection = conn;
-      _clientIdController.text = conn['clientId'];
-      _cadastralKeyController.text = conn['connectionCadastralKey'];
-      _locationController.text = conn['connectionAddress'];
+      _clientIdController.text = conn['clientId'] ?? '';
+      _cadastralKeyController.text = conn['connectionCadastralKey'] ?? '';
+      _locationController.text = conn['connectionAddress'] ?? '';
     } else {
       _clientIdController.text = widget.formData['clientId'] ?? '';
       _cadastralKeyController.text = widget.formData['cadastralKey'] ?? '';
@@ -125,21 +57,34 @@ class _StepBasicDataState extends State<StepBasicData> {
     }
   }
 
-  void _selectConnection(Map<String, dynamic> connection) {
-    setState(() {
-      _selectedConnection = connection;
-    });
-    widget.updateData('selectedConnection', connection);
-    widget.updateData('clientId', connection['clientId']);
-    widget.updateData('cadastralKey', connection['connectionCadastralKey']);
-    widget.updateData('location', connection['connectionAddress']);
+  void _selectConnection(ConnectionEntity connection) {
+    final connMap = {
+      "connectionId": connection.connectionId,
+      "clientId": connection.clientId,
+      "connectionMeterNumber": connection.connectionMeterNumber,
+      "connectionCadastralKey": connection.connectionCadastralKey,
+      "connectionAddress": connection.connectionAddress,
+    };
 
-    _clientIdController.text = connection['clientId'];
-    _cadastralKeyController.text = connection['connectionCadastralKey'];
-    _locationController.text = connection['connectionAddress'];
+    if (!mounted) return;
+
+    setState(() {
+      _selectedConnection = connMap;
+    });
+
+    widget.updateData('selectedConnection', connMap);
+    widget.updateData('clientId', connection.clientId);
+    widget.updateData('cadastralKey', connection.connectionCadastralKey);
+    widget.updateData('location', connection.connectionAddress);
+
+    _clientIdController.text = connection.clientId ?? '';
+    _cadastralKeyController.text = connection.connectionCadastralKey ?? '';
+    _locationController.text = connection.connectionAddress ?? '';
   }
 
   void _clearSelection() {
+    if (!mounted) return;
+
     setState(() {
       _selectedConnection = null;
     });
@@ -149,120 +94,16 @@ class _StepBasicDataState extends State<StepBasicData> {
     _locationController.clear();
   }
 
-  void _openSearchDialog() {
-    showDialog(
+  void _openSearchDialog() async {
+    final selected = await showDialog<ConnectionEntity>(
       context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: AppColors.textOnPrimary,
-          contentPadding: dialogContext.screenPadding,
-          title: const Text(
-            "Buscar Conexión o Cliente",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-          ),
-          content: SizedBox(
-            width: double.maxFinite,
-            height: 450,
-            child: StatefulBuilder(
-              builder: (context, setStateDialog) {
-                final query = _searchController.text.toLowerCase();
-
-                final filtered = _connections.where((c) {
-                  return c['connectionCadastralKey'].toLowerCase().contains(
-                        query,
-                      ) ||
-                      c['connectionMeterNumber'].toLowerCase().contains(
-                        query,
-                      ) ||
-                      c['connectionAddress'].toLowerCase().contains(query) ||
-                      c['clientId'].toLowerCase().contains(query);
-                }).toList();
-
-                return Column(
-                  children: [
-                    TextField(
-                      controller: _searchController,
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        hintText: "Clave, medidor, dirección o cliente",
-                        hintStyle: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 11,
-                        ),
-                        prefixIcon: const Icon(Icons.search),
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _searchController.clear();
-                            setStateDialog(() {});
-                          },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      onChanged: (_) => setStateDialog(() {}),
-                      style: const TextStyle(fontSize: 11),
-                    ),
-                    const SizedBox(height: 12),
-                    Expanded(
-                      child: filtered.isEmpty
-                          ? const Center(
-                              child: Text("No se encontraron resultados"),
-                            )
-                          : ListView.builder(
-                              itemCount: filtered.length,
-                              padding: EdgeInsets.only(
-                                top: 0,
-                                bottom: context.largeSpacing,
-                              ),
-                              itemBuilder: (_, i) {
-                                final conn = filtered[i];
-                                return Card(
-                                  child: ListTile(
-                                    title: Text(
-                                      "Clave: ${conn['connectionCadastralKey']}",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 11,
-                                      ),
-                                    ),
-                                    subtitle: Text(
-                                      "${conn['clientId']} - ${conn['connectionAddress']}",
-                                      style: const TextStyle(fontSize: 10),
-                                    ),
-                                    onTap: () {
-                                      _selectConnection(conn);
-                                      Navigator.of(dialogContext).pop();
-                                    },
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-          actionsPadding: const EdgeInsets.only(bottom: 0, top: 8),
-          actionsAlignment: MainAxisAlignment.center,
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text("Cancelar"),
-            ),
-          ],
-        );
-      },
+      barrierDismissible: false,
+      builder: (_) => const ConnectionSearchDialog(),
     );
+
+    if (selected != null && mounted) {
+      _selectConnection(selected);
+    }
   }
 
   @override
@@ -272,7 +113,6 @@ class _StepBasicDataState extends State<StepBasicData> {
     return SingleChildScrollView(
       padding: context.screenPadding,
       child: Form(
-        // ← Envuelve todo en Form
         key: _formKey,
         child: Column(
           children: [
@@ -359,14 +199,15 @@ class _StepBasicDataState extends State<StepBasicData> {
                           Expanded(
                             child: _summaryRow(
                               "Clave",
-                              _selectedConnection!['connectionCadastralKey'],
+                              _selectedConnection!['connectionCadastralKey'] ??
+                                  '',
                             ),
                           ),
                           const SizedBox(width: 32),
                           Expanded(
                             child: _summaryRow(
                               "Cliente",
-                              _selectedConnection!['clientId'],
+                              _selectedConnection!['clientId'] ?? '',
                             ),
                           ),
                         ],
@@ -374,12 +215,12 @@ class _StepBasicDataState extends State<StepBasicData> {
                       const SizedBox(height: 12),
                       _summaryRow(
                         "Dirección",
-                        _selectedConnection!['connectionAddress'],
+                        _selectedConnection!['connectionAddress'] ?? '',
                       ),
                       const SizedBox(height: 8),
                       _summaryRow(
                         "Medidor",
-                        _selectedConnection!['connectionMeterNumber'],
+                        _selectedConnection!['connectionMeterNumber'] ?? '',
                       ),
                     ],
                   ),
@@ -641,7 +482,6 @@ class _StepBasicDataState extends State<StepBasicData> {
     _clientIdController.dispose();
     _cadastralKeyController.dispose();
     _locationController.dispose();
-    _searchController.dispose();
     super.dispose();
   }
 }

@@ -7,7 +7,7 @@ import 'package:clean_architecture/features/work-orders/presentation/cubits/work
 import 'package:clean_architecture/features/work-orders/presentation/cubits/work-orders/work_orders_state.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/empty_work_orders.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/loading_work_orders.dart';
-import 'package:clean_architecture/features/work-orders/presentation/widgets/work_order_card.dart';
+import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/work_order_card.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -261,12 +261,14 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
           ),
           IconButton(
             onPressed: () async {
-              // Navegamos a crear orden
+              final cubit = context
+                  .read<WorkOrdersCubit>(); // ← Referencia segura
+
               await context.router.push(const CreateWorkOrderRoute());
 
-              // *** AQUÍ ESTÁ LA SOLUCIÓN ***
-              // Siempre recargamos los datos al volver, sin depender del resultado
-              context.read<WorkOrdersCubit>().loadWorkOrders();
+              if (mounted) {
+                cubit.loadWorkOrders(); // ← Recarga siempre al volver
+              }
             },
             icon: const Icon(Icons.add_task),
             color: theme.primaryColorDark,

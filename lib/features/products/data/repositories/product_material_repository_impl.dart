@@ -44,3 +44,47 @@ class ProductMaterialRepositoryImpl implements ProductMaterialRepository {
     );
   }
 }
+
+@LazySingleton(as: ProductMaterialPaginatedRepository)
+class ProductMaterialPaginatedRepositoryImpl
+    implements ProductMaterialPaginatedRepository {
+  final InternetService _internet;
+  final ProductMaterialPaginatedRemoteDatasource _remoteDataSource;
+  ProductMaterialPaginatedRepositoryImpl({
+    required InternetService internet,
+    required ProductMaterialPaginatedRemoteDatasource remoteDataSource,
+  }) : _internet = internet,
+       _remoteDataSource = remoteDataSource;
+  @override
+  FutureData<List<ProductMaterialEntity>> getAllProductMaterialsPaginated({
+    required int limit,
+    required int offset,
+    required String? query,
+  }) async {
+    final result =
+        await DataHandler.fetchWithFallback<List<ProductMaterialModel>>(
+          _internet.isConnected,
+          remoteCallback: () =>
+              _remoteDataSource.getAllProductMaterialsPaginated(
+                limit: limit,
+                offset: offset,
+                query: query,
+              ),
+        );
+    return result.when(
+      success: (models) {
+        final entities = models.map((model) => model.toEntity()).toList();
+        return SuccessState<List<ProductMaterialEntity>>(data: entities);
+      },
+      failure: (message, errorType) {
+        return FailureState<List<ProductMaterialEntity>>(
+          message: message,
+          errorType: errorType,
+        );
+      },
+      loading: () {
+        return LoadingState<List<ProductMaterialEntity>>();
+      },
+    );
+  }
+}

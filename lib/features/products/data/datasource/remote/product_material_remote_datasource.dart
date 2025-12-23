@@ -29,3 +29,45 @@ class ProductMaterialRemoteDatasourceImpl
     );
   }
 }
+
+abstract interface class ProductMaterialPaginatedRemoteDatasource {
+  FutureData<List<ProductMaterialModel>> getAllProductMaterialsPaginated({
+    required int limit,
+    required int offset,
+    required String? query,
+  });
+}
+
+@LazySingleton(as: ProductMaterialPaginatedRemoteDatasource)
+class ProductMaterialPaginatedRemoteDatasourceImpl
+    implements ProductMaterialPaginatedRemoteDatasource {
+  final ApiService _apiService;
+  const ProductMaterialPaginatedRemoteDatasourceImpl({
+    required ApiService apiService,
+  }) : _apiService = apiService;
+  @override
+  FutureData<List<ProductMaterialModel>> getAllProductMaterialsPaginated({
+    required int limit,
+    required int offset,
+    required String? query,
+  }) {
+    final queryParameters = <String, dynamic>{};
+    queryParameters['limit'] = limit;
+    queryParameters['offset'] = offset;
+    if (query != null && query.isNotEmpty) {
+      queryParameters['query'] = query;
+    }
+    return DataHandler.safeApiCall<
+      List<ProductMaterialModel>,
+      ProductMaterialModel
+    >(
+      request: () => _apiService.get(
+        ApiEndpoints.getAllProductsMaterialsPaginated,
+        queryParameters: queryParameters,
+      ),
+      fromJson: (json) => ProductMaterialModel.fromJson(json),
+      isStandardResponse: true,
+      responseDataKey: 'data',
+    );
+  }
+}

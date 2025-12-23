@@ -13,10 +13,10 @@ import 'package:clean_architecture/features/work-orders/domain/usecases/add_mate
 import 'package:clean_architecture/features/work-orders/domain/usecases/add_work_order_assignment_use_case.dart';
 import 'package:clean_architecture/features/work-orders/domain/usecases/add_work_order_attachment_use_case.dart';
 import 'package:clean_architecture/features/work-orders/domain/usecases/create_work_order_use_case.dart';
-import 'package:clean_architecture/features/work-orders/presentation/widgets/step_assign_workers.dart';
-import 'package:clean_architecture/features/work-orders/presentation/widgets/step_attachments.dart';
-import 'package:clean_architecture/features/work-orders/presentation/widgets/step_basic_data.dart';
-import 'package:clean_architecture/features/work-orders/presentation/widgets/step_select_materials.dart';
+import 'package:clean_architecture/features/work-orders/presentation/widgets/workers-step/step_assign_workers.dart';
+import 'package:clean_architecture/features/work-orders/presentation/widgets/attachments-step/step_attachments.dart';
+import 'package:clean_architecture/features/work-orders/presentation/widgets/connection-step/step_basic_data.dart';
+import 'package:clean_architecture/features/work-orders/presentation/widgets/products-step/step_select_materials.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';

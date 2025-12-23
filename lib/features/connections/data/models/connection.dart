@@ -65,18 +65,19 @@ class ConnectionModel {
 
   factory ConnectionModel.fromJson(Map<String, dynamic> json) {
     return ConnectionModel(
-      connectionId: json['connectionId'] as String,
-      clientId: json['clientId'] as String,
-      connectionRateId: json['connectionRateId'] as int,
-      connectionRateName: json['connectionRateName'] as String,
+      connectionId:
+          json['connectionId'] as String? ?? '', // ← Seguro: si null, usa ''
+      clientId: json['clientId'] as String? ?? '',
+      connectionRateId: json['connectionRateId'] as int? ?? 0,
+      connectionRateName: json['connectionRateName'] as String? ?? '',
       connectionMeterNumber: json['connectionMeterNumber'] as String?,
-      connectionSector: json['connectionSector'] as int,
-      connectionAccount: json['connectionAccount'] as int,
-      connectionCadastralKey: json['connectionCadastralKey'] as String,
+      connectionSector: json['connectionSector'] as int? ?? 0,
+      connectionAccount: json['connectionAccount'] as int? ?? 0,
+      connectionCadastralKey: json['connectionCadastralKey'] as String? ?? '',
       connectionContractNumber: json['connectionContractNumber'] as String?,
       connectionSewerage: json['connectionSewerage'] as bool?,
       connectionStatus: json['connectionStatus'] as bool?,
-      connectionAddress: json['connectionAddress'] as String,
+      connectionAddress: json['connectionAddress'] as String? ?? '',
       connectionInstallationDate: json['connectionInstallationDate'] as String?,
       connectionPeopleNumber: json['connectionPeopleNumber'] as int?,
       connectionZone: json['connectionZone'] as int?,
@@ -86,7 +87,9 @@ class ConnectionModel {
       connectionAltitude: (json['connectionAltitude'] as num?)?.toDouble(),
       connectionPrecision: (json['connectionPrecision'] as num?)?.toDouble(),
       connectionGeolocationDate: json['connectionGeolocationDate'] != null
-          ? DateTime.parse(json['connectionGeolocationDate'] as String)
+          ? DateTime.tryParse(
+              json['connectionGeolocationDate'] as String,
+            ) // ← tryParse para evitar crash si formato malo
           : null,
       connectionGeometricZone: json['connectionGeometricZone'] as String?,
       propertyCadastralKey: json['propertyCadastralKey'] as String?,
@@ -101,7 +104,6 @@ class ConnectionModel {
           : null,
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       'connectionId': connectionId,

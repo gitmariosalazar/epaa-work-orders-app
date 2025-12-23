@@ -57,29 +57,35 @@ class PersonModel {
 
   factory PersonModel.fromJson(Map<String, dynamic> json) {
     return PersonModel(
-      personId: json['personId'] as String,
-      firstName: json['firstName'] as String?,
-      lastName: json['lastName'] as String?,
-      address: json['address'] as String?,
-      country: json['country'] as String?,
-      genderId: json['genderId'] as int?,
-      parishId: json['parishId'] as String?,
-      birthDate: json['birthDate'] as String?,
-      isDeceased: json['isDeceased'] as bool?,
-      professionId: json['professionId'] as int,
-      civilStatus: json['civilStatus'] as int,
+      personId: json['personId'] as String? ?? '',
+      firstName: json['firstName'] as String? ?? '',
+      lastName: json['lastName'] as String? ?? '',
+      address: json['address'] as String? ?? '',
+      country: json['country'] as String? ?? '',
+      genderId: json['genderId'] as int? ?? 0,
+      parishId: json['parishId'] as String? ?? '',
+      birthDate: json['birthDate'] as String? ?? '',
+      isDeceased: json['isDeceased'] as bool? ?? false,
+      professionId: json['professionId'] as int? ?? 0,
+      civilStatus: json['civilStatus'] as int? ?? 0,
       emails: (json['emails'] as List<dynamic>)
           .map(
             (e) => e == null
                 ? null
-                : EmailModel(e['correoid'] as int, e['email'] as String),
+                : EmailModel(
+                    e['correoid'] as int? ?? 0,
+                    e['email'] as String? ?? '',
+                  ),
           )
           .toList(),
       phones: (json['phones'] as List<dynamic>)
           .map(
             (e) => e == null
                 ? null
-                : PhoneModel(e['telefonoid'] as int, e['numero'] as String),
+                : PhoneModel(
+                    e['telefonoid'] as int? ?? 0,
+                    e['numero'] as String? ?? '',
+                  ),
           )
           .toList(),
     );

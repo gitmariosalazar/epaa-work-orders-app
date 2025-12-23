@@ -15,3 +15,29 @@ class GetAllConnectionsUseCase
   FutureData<List<ConnectionEntity>> call({int? limit, int? offset}) =>
       _repository.getAllConnections(limit: limit, offset: offset);
 }
+
+@lazySingleton
+class GetAllConnectionsPaginatedUseCase
+    implements UseCase<List<ConnectionEntity>, ConnectionPaginatedParams> {
+  final ConnectionPaginatedRepository _repository;
+  GetAllConnectionsPaginatedUseCase(this._repository);
+  @override
+  FutureData<List<ConnectionEntity>> call(ConnectionPaginatedParams params) =>
+      _repository.getAllConnectionsPaginated(
+        limit: params.limit,
+        offset: params.offset,
+        query: params.query,
+      );
+}
+
+class ConnectionPaginatedParams {
+  final int limit;
+  final int offset;
+  final String? query;
+
+  ConnectionPaginatedParams({
+    required this.limit,
+    required this.offset,
+    this.query,
+  });
+}

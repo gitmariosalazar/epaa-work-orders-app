@@ -27,7 +27,8 @@ class AppConfigProd extends AppConfig {
     : super(
         appTitle: "Clean Architecture App",
         apiBaseUrl:
-            dotenv.maybeGet("BASE_PRODUCTION") ?? "http://192.168.0.111:4005/",
+            dotenv.maybeGet("BASE_PRODUCTION") ??
+            "https://dev.sigepaa-aa.com:8443/",
         flavor: Flavor.production,
       );
 }
@@ -38,7 +39,8 @@ class AppConfigStg extends AppConfig {
     : super(
         appTitle: "Clean Architecture App Staging",
         apiBaseUrl:
-            dotenv.maybeGet("BASE_STAGING") ?? "http://192.168.0.111:4005/",
+            dotenv.maybeGet("BASE_STAGING") ??
+            "https://dev.sigepaa-aa.com:8443/",
         flavor: Flavor.staging,
       );
 }
@@ -49,7 +51,8 @@ class AppConfigDev extends AppConfig {
     : super(
         appTitle: "Clean Architecture App Development",
         apiBaseUrl:
-            dotenv.maybeGet("BASE_DEVELOPMENT") ?? "http://192.168.0.111:4005/",
+            dotenv.maybeGet("BASE_DEVELOPMENT") ??
+            "https://dev.sigepaa-aa.com:8443/",
         flavor: Flavor.development,
       );
 }

@@ -3,7 +3,7 @@ import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
 
 enum ActionButtonStyle { elevated, outlined, text }
 
-enum ActionButtonSize { small, medium, large }
+enum ActionButtonSize { verySmall, small, medium, large }
 
 class ActionButton extends StatelessWidget {
   final IconData icon;
@@ -46,6 +46,7 @@ class ActionButton extends StatelessWidget {
   double _getIconSize(BuildContext context) {
     if (iconSizeOverride != null) return iconSizeOverride!;
     return switch (size) {
+      ActionButtonSize.verySmall => context.iconExtraSmall,
       ActionButtonSize.small => context.iconSmall,
       ActionButtonSize.medium => context.iconMedium,
       ActionButtonSize.large => context.iconLarge,
@@ -54,6 +55,7 @@ class ActionButton extends StatelessWidget {
 
   double _getVerticalPadding(BuildContext context) {
     return switch (size) {
+      ActionButtonSize.verySmall => context.extraSmallSpacing,
       ActionButtonSize.small => context.smallSpacing,
       ActionButtonSize.medium => context.mediumSpacing,
       ActionButtonSize.large => context.largeSpacing,
@@ -62,6 +64,7 @@ class ActionButton extends StatelessWidget {
 
   double _getHorizontalPadding(BuildContext context) {
     return switch (size) {
+      ActionButtonSize.verySmall => context.extraSmallSpacing,
       ActionButtonSize.small => context.mediumSpacing * 1.5,
       ActionButtonSize.medium => context.largeSpacing,
       ActionButtonSize.large => context.extraSmallSpacing,
@@ -70,6 +73,7 @@ class ActionButton extends StatelessWidget {
 
   double _getFontSize(BuildContext context) {
     return switch (size) {
+      ActionButtonSize.verySmall => 10.0,
       ActionButtonSize.small => 12.0,
       ActionButtonSize.medium => 14.0,
       ActionButtonSize.large => 16.0,
@@ -122,7 +126,7 @@ class ActionButton extends StatelessWidget {
           ),
           minimumSize: WidgetStateProperty.all(
             Size(
-              size == ActionButtonSize.small ? 80 : 100,
+              size == ActionButtonSize.verySmall ? 60 : 80,
               context.buttonHeight,
             ),
           ),
@@ -131,8 +135,8 @@ class ActionButton extends StatelessWidget {
     // === Widget del ícono (con loading) ===
     final Widget iconWidget = isLoading
         ? SizedBox(
-            width: _getIconSize(context) * 0.8,
-            height: _getIconSize(context) * 0.8,
+            width: _getIconSize(context) * 0.6,
+            height: _getIconSize(context) * 0.6,
             child: CircularProgressIndicator(
               strokeWidth: 2.5,
               valueColor: AlwaysStoppedAnimation(

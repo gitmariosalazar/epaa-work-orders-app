@@ -7,3 +7,11 @@ abstract interface class ConnectionRepository {
     int? offset,
   });
 }
+
+abstract interface class ConnectionPaginatedRepository {
+  FutureData<List<ConnectionEntity>> getAllConnectionsPaginated({
+    required int limit,
+    required int offset,
+    required String? query,
+  });
+}

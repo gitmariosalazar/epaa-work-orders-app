@@ -46,3 +46,45 @@ class WorkerRepositoryImpl implements WorkerRepository {
     );
   }
 }
+
+@LazySingleton(as: WorkerPaginatedRepository)
+class WorkerPaginatedRepositoryImpl implements WorkerPaginatedRepository {
+  final InternetService _internetService;
+  final WorkerPaginatedRemoteDatasource _remoteDatasource;
+
+  WorkerPaginatedRepositoryImpl({
+    required InternetService internetService,
+    required WorkerPaginatedRemoteDatasource remoteDatasource,
+  }) : _internetService = internetService,
+       _remoteDatasource = remoteDatasource;
+  @override
+  FutureData<List<WorkerEntity>> getAllWorkersPaginated({
+    required int limit,
+    required int offset,
+    required String? query,
+  }) async {
+    final result = await DataHandler.fetchWithFallback<List<WorkerModel>>(
+      _internetService.isConnected,
+      remoteCallback: () => _remoteDatasource.getAllWorkersPaginated(
+        limit: limit,
+        offset: offset,
+        query: query,
+      ),
+    );
+    return result.when(
+      success: (models) {
+        final entities = models.map((model) => model.toEntity()).toList();
+        return SuccessState<List<WorkerEntity>>(data: entities);
+      },
+      failure: (message, errorType) {
+        return FailureState<List<WorkerEntity>>(
+          message: message,
+          errorType: errorType,
+        );
+      },
+      loading: () {
+        return LoadingState<List<WorkerEntity>>();
+      },
+    );
+  }
+}

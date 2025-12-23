@@ -15,3 +15,29 @@ class GetAllWorkersUseCase implements UseCaseNoParameter<List<WorkerEntity>> {
   @override
   FutureData<List<WorkerEntity>> call() => _repository.getAllWorkers();
 }
+
+@LazySingleton()
+class GetAllWorkersPaginatedUseCase
+    implements UseCase<List<WorkerEntity>, WorkerPaginatedParams> {
+  final WorkerPaginatedRepository _repository;
+  GetAllWorkersPaginatedUseCase(this._repository);
+  @override
+  FutureData<List<WorkerEntity>> call(WorkerPaginatedParams params) =>
+      _repository.getAllWorkersPaginated(
+        limit: params.limit,
+        offset: params.offset,
+        query: params.query,
+      );
+}
+
+class WorkerPaginatedParams {
+  final int limit;
+  final int offset;
+  final String? query;
+
+  WorkerPaginatedParams({
+    required this.limit,
+    required this.offset,
+    this.query,
+  });
+}

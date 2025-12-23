@@ -47,3 +47,45 @@ class ConnectionRepositoryImpl implements ConnectionRepository {
     );
   }
 }
+
+@LazySingleton(as: ConnectionPaginatedRepository)
+class ConnectionPaginatedRepositoryImpl
+    implements ConnectionPaginatedRepository {
+  final InternetService _internet;
+  final ConnectionPaginatedRemoteDatasource _remoteDataSource;
+  ConnectionPaginatedRepositoryImpl({
+    required InternetService internet,
+    required ConnectionPaginatedRemoteDatasource remoteDataSource,
+  }) : _internet = internet,
+       _remoteDataSource = remoteDataSource;
+  @override
+  FutureData<List<ConnectionEntity>> getAllConnectionsPaginated({
+    required int limit,
+    required int offset,
+    required String? query,
+  }) async {
+    final result = await DataHandler.fetchWithFallback<List<ConnectionModel>>(
+      _internet.isConnected,
+      remoteCallback: () => _remoteDataSource.getAllConnectionsPaginated(
+        limit: limit,
+        offset: offset,
+        query: query,
+      ),
+    );
+    return result.when(
+      success: (models) {
+        final entities = models.map((model) => model.toEntity()).toList();
+        return SuccessState<List<ConnectionEntity>>(data: entities);
+      },
+      failure: (message, errorType) {
+        return FailureState<List<ConnectionEntity>>(
+          message: message,
+          errorType: errorType,
+        );
+      },
+      loading: () {
+        return LoadingState<List<ConnectionEntity>>();
+      },
+    );
+  }
+}

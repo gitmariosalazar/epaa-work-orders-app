@@ -1,9 +1,16 @@
 // features/work-orders/presentation/widgets/work_order_card.dart
 
+import 'package:auto_route/auto_route.dart';
 import 'package:clean_architecture/core/constants/app_icons.dart';
 import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_entity.dart';
+import 'package:clean_architecture/features/work-orders/presentation/cubits/work-orders/work_orders_cubit.dart';
+import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/change_status_dialog.dart';
+import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/work_order_detail_page.dart';
+import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:flutter/material.dart';
+import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/work_order_card.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WorkOrderCard extends StatelessWidget {
   final WorkOrderEntity order;
@@ -259,6 +266,89 @@ class WorkOrderCard extends StatelessWidget {
                     minimumSize: const Size(0, 0),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
+                ),
+                const SizedBox(width: 4),
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  offset: const Offset(
+                    0,
+                    40,
+                  ), // Para que aparezca debajo del botón
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'details',
+                      child: Row(
+                        children: [
+                          Icon(Icons.visibility, size: 18),
+                          SizedBox(width: 8),
+                          Text("Ver detalles", style: TextStyle(fontSize: 13)),
+                        ],
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'status',
+                      child: Row(
+                        children: [
+                          Icon(Icons.swap_horiz, size: 18),
+                          SizedBox(width: 8),
+                          Text(
+                            "Cambiar estado",
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, size: 18),
+                          SizedBox(width: 8),
+                          Text("Editar orden", style: TextStyle(fontSize: 13)),
+                        ],
+                      ),
+                    ),
+                    // Puedes agregar más opciones aquí, por ejemplo:
+                    // const PopupMenuItem(
+                    //   value: 'cancel',
+                    //   child: Row(
+                    //     children: [
+                    //       Icon(Icons.cancel, size: 18, color: Colors.red),
+                    //       SizedBox(width: 8),
+                    //       Text("Cancelar orden", style: TextStyle(fontSize: 13, color: Colors.red)),
+                    //     ],
+                    //   ),
+                    // ),
+                  ],
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'details':
+                        context.router.push(
+                          WorkOrderDetailRoute(
+                            order: order,
+                          ), // ← Así sí funciona
+                        );
+                        break;
+                     case 'status':
+                        showDialog(
+                          context: context,
+                          builder: (_) => ChangeStatusDialog(order: order),
+                        );
+                        break;
+                      case 'edit':
+                        // Navegar a editar orden
+                        if (onEdit != null) {
+                          onEdit!();
+                        }
+                        break;
+                      // case 'cancel':
+                      //   _confirmCancelOrder(order);
+                      //   break;
+                    }
+                  },
                 ),
               ],
             ),

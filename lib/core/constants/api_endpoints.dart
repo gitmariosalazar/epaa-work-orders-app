@@ -28,7 +28,13 @@ class ApiEndpoints {
 
   // Workers
   static const getAllWorkers = "$workers/find-all-workers";
+
+  // Paginated Workers
+  static const getAllWorkersPaginated = "$workers/find-all-workers-paginated";
+
   static const getAllProductsMaterials = "$products/get-all-inventories";
+  static const getAllProductsMaterialsPaginated =
+      "$products/find-all-inventories-paginated";
 
   // Work Order Assignments
   static const addWorkOrderAssignment =
@@ -44,4 +50,7 @@ class ApiEndpoints {
 
   // Connections
   static const getAllConnections = "${connections}get-all-connections";
+
+  static const getAllConnectionsPaginated =
+      "${connections}get-all-connections-with-property";
 }

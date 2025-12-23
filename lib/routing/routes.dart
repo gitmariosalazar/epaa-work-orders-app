@@ -35,6 +35,10 @@ class AppRouter extends RootStackRouter {
           page: ProductsMaterialsHomeRoute.page,
         ),
         AutoRoute(path: PROFILE_PATH, page: ProfileRoute.page),
+        AutoRoute(
+          path: WORK_ORDER_DETAIL_PATH,
+          page: WorkOrderDetailRoute.page,
+        ),
       ],
     ),
   ];

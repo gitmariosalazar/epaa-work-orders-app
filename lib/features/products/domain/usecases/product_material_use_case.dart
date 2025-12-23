@@ -17,3 +17,34 @@ class GetAllProductMaterialsUseCase
   FutureData<List<ProductMaterialEntity>> call() =>
       _repository.getAllProductMaterials();
 }
+
+@lazySingleton
+class GetAllProductMaterialsPaginatedUseCase
+    implements
+        UseCase<List<ProductMaterialEntity>, ProductMaterialPaginatedParams> {
+  final ProductMaterialPaginatedRepository _repository;
+
+  GetAllProductMaterialsPaginatedUseCase(this._repository);
+  @override
+  FutureData<List<ProductMaterialEntity>> call(
+    ProductMaterialPaginatedParams params,
+  ) {
+    return _repository.getAllProductMaterialsPaginated(
+      limit: params.limit,
+      offset: params.offset,
+      query: params.query,
+    );
+  }
+}
+
+class ProductMaterialPaginatedParams {
+  final int limit;
+  final int offset;
+  final String? query;
+
+  ProductMaterialPaginatedParams({
+    required this.limit,
+    required this.offset,
+    this.query,
+  });
+}

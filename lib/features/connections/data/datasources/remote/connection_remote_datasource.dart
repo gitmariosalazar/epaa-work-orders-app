@@ -41,3 +41,42 @@ class ConnectionRemoteDatasourceImpl implements ConnectionRemoteDatasource {
     );
   }
 }
+
+// Paginated version could be added here in the future
+
+abstract interface class ConnectionPaginatedRemoteDatasource {
+  FutureData<List<ConnectionModel>> getAllConnectionsPaginated({
+    required int limit,
+    required int offset,
+    required String? query,
+  });
+}
+
+@LazySingleton(as: ConnectionPaginatedRemoteDatasource)
+class ConnectionPaginatedRemoteDatasourceImpl
+    implements ConnectionPaginatedRemoteDatasource {
+  final ApiService _apiService;
+  const ConnectionPaginatedRemoteDatasourceImpl({
+    required ApiService apiService,
+  }) : _apiService = apiService;
+  @override
+  FutureData<List<ConnectionModel>> getAllConnectionsPaginated({
+    required int limit,
+    required int offset,
+    required String? query,
+  }) {
+    final queryParameters = <String, dynamic>{'limit': limit, 'offset': offset};
+    if (query != null && query.isNotEmpty) {
+      queryParameters['query'] = query;
+    }
+    return DataHandler.safeApiCall<List<ConnectionModel>, ConnectionModel>(
+      request: () => _apiService.get(
+        ApiEndpoints.getAllConnectionsPaginated,
+        queryParameters: queryParameters,
+      ),
+      fromJson: (json) => ConnectionModel.fromJson(json),
+      isStandardResponse: true,
+      responseDataKey: 'data',
+    );
+  }
+}

@@ -5,3 +5,11 @@ abstract class WorkerRepository {
   // Define los métodos del repositorio de trabajadores aquí
   FutureData<List<WorkerEntity>> getAllWorkers();
 }
+
+abstract class WorkerPaginatedRepository {
+  FutureData<List<WorkerEntity>> getAllWorkersPaginated({
+    required int limit,
+    required int offset,
+    required String? query,
+  });
+}
