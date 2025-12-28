@@ -47,18 +47,21 @@ android {
         create("production") {
             dimension = "default"
             resValue("string", "app_name", "Órdenes de Trabajo")
+            resValue("string", "google_maps_api_key", project.findProperty("GOOGLE_MAPS_API_KEY_PRODUCTION") as? String ?: "")
         }
         create("staging") {
             dimension = "default"
             applicationIdSuffix = ".stg"
             versionNameSuffix = ".stg"
             resValue("string", "app_name", "Órdenes de Trabajo STG")
+            resValue("string", "google_maps_api_key", project.findProperty("GOOGLE_MAPS_API_KEY_STAGING") as? String ?: "")
         }
         create("development") {
             dimension = "default"
             applicationIdSuffix = ".dev"
             versionNameSuffix = ".dev"
             resValue("string", "app_name", "Órdenes de Trabajo DEV")
+            resValue("string", "google_maps_api_key", project.findProperty("GOOGLE_MAPS_API_KEY_DEVELOPMENT") as? String ?: "")
         }
     }
 
@@ -70,4 +73,6 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
     androidTestUtil("androidx.test:orchestrator:1.5.1")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.android.gms:play-services-maps:19.2.0")
 }

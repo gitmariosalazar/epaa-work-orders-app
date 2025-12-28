@@ -13,11 +13,13 @@ sealed class AppConfig {
   final String appTitle;
   final String apiBaseUrl;
   final String flavor;
+  final String apiKeyGoogleMaps;
 
   const AppConfig({
     required this.appTitle,
     required this.apiBaseUrl,
     required this.flavor,
+    required this.apiKeyGoogleMaps,
   });
 }
 
@@ -30,6 +32,7 @@ class AppConfigProd extends AppConfig {
             dotenv.maybeGet("BASE_PRODUCTION") ??
             "https://dev.sigepaa-aa.com:8443/",
         flavor: Flavor.production,
+        apiKeyGoogleMaps: dotenv.maybeGet("GOOGLE_MAPS_API_KEY") ?? "",
       );
 }
 
@@ -42,6 +45,7 @@ class AppConfigStg extends AppConfig {
             dotenv.maybeGet("BASE_STAGING") ??
             "https://dev.sigepaa-aa.com:8443/",
         flavor: Flavor.staging,
+        apiKeyGoogleMaps: dotenv.maybeGet("GOOGLE_MAPS_API_KEY") ?? "",
       );
 }
 
@@ -54,6 +58,7 @@ class AppConfigDev extends AppConfig {
             dotenv.maybeGet("BASE_DEVELOPMENT") ??
             "https://dev.sigepaa-aa.com:8443/",
         flavor: Flavor.development,
+        apiKeyGoogleMaps: dotenv.maybeGet("GOOGLE_MAPS_API_KEY") ?? "",
       );
 }
 

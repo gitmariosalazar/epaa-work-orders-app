@@ -321,10 +321,33 @@ class _StepAssignWorkersState extends State<StepAssignWorkers> {
   }
 
   void _openAddWorkerDialog() async {
+    // ← Convertimos la lista actual a WorkerWithRole para pasarla al diálogo
+    final List<WorkerWithRole> currentAssigned =
+        (widget.formData['assignedWorkers'] ?? [])
+            .map<WorkerWithRole>(
+              (w) => WorkerWithRole(
+                worker: WorkerEntity(
+                  workerId: w['workerId'],
+                  firstNames: w['fullName'].split(' ').first,
+                  lastNames: w['fullName'].split(' ').skip(1).join(' '),
+                  identification: w['identification'],
+                  phoneNumber: w['phone'],
+                  cellPhone: w['phone'] ?? '',
+                  email: '',
+                  address: '',
+                ),
+                isTechnician: w['isTechnician'] ?? false,
+                isSupervisor: w['isSupervisor'] ?? false,
+              ),
+            )
+            .toList();
+
     final result = await showDialog<WorkerWithRole>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const WorkerSearchDialog(),
+      builder: (_) => WorkerSearchDialog(
+        alreadyAssignedWorkers: currentAssigned, // ← PASAMOS LA LISTA AQUÍ
+      ),
     );
 
     if (result != null && mounted) {

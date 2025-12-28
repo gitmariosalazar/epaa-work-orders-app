@@ -156,11 +156,9 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
-      content: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.8,
-          maxWidth: double.maxFinite,
-        ),
+      content: SizedBox(
+        width: double.maxFinite,
+        height: MediaQuery.of(context).size.height * 0.7, // Altura fija
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

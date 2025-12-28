@@ -1,6 +1,5 @@
 import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit_use_cases.dart';
-import 'package:clean_architecture/features/profile/presentation/pages/profile_page.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:clean_architecture/shared_ui/cubits/base/base_cubit.dart';
 import 'package:injectable/injectable.dart';

@@ -40,3 +40,27 @@ const String PROFILE_PATH = "profile";
 // Details Work Order
 const String WORK_ORDER_DETAIL_ROUTE = "WorkOrderDetailRoute";
 const String WORK_ORDER_DETAIL_PATH = "work-order-detail";
+
+// Work Order Map
+const String WORK_ORDER_MAP_ROUTE = "WorkOrderMapRoute";
+const String WORK_ORDER_MAP_PATH = "work-order-map";
+
+// Mapa de Ordenes de Trabajo
+const String WORK_ORDERS_MAP_ROUTE = "WorkOrdersMapRoute";
+const String WORK_ORDERS_MAP_PATH = "work-orders-map";
+
+// Dashboard Priorities
+const String DASHBOARD_PRIORITIES_ROUTE = "DashboardPrioritiesRoute";
+const String DASHBOARD_PRIORITIES_PATH = "dashboard-priorities";
+
+// Dashboard Statuses
+const String DASHBOARD_STATUSES_ROUTE = "DashboardStatusesRoute";
+const String DASHBOARD_STATUSES_PATH = "dashboard-statuses";
+
+// Dashboard Work Types
+const String DASHBOARD_WORK_TYPES_ROUTE = "DashboardWorkTypesRoute";
+const String DASHBOARD_WORK_TYPES_PATH = "dashboard-work-types";
+
+// Dashboard Workers
+const String DASHBOARD_WORKERS_ROUTE = "DashboardWorkersRoute";
+const String DASHBOARD_WORKERS_PATH = "dashboard-workers";

@@ -1,7 +1,6 @@
 // lib/features/work-orders/presentation/widgets/worker_search_dialog.dart
 
 import 'package:clean_architecture/core/constants/app_colors.dart';
-import 'package:clean_architecture/core/data_states/data_state.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/workers-step/step_assign_workers.dart';
 import 'package:clean_architecture/features/workers/domain/entities/worker_entity.dart';
 import 'package:clean_architecture/features/workers/domain/usecases/get_all_workers_use_case.dart';
@@ -11,7 +10,10 @@ import 'package:get_it/get_it.dart';
 final getIt = GetIt.instance;
 
 class WorkerSearchDialog extends StatefulWidget {
-  const WorkerSearchDialog({super.key});
+  final List<WorkerWithRole>?
+  alreadyAssignedWorkers; // ← Parámetro para saber si ya hay supervisor
+
+  const WorkerSearchDialog({super.key, this.alreadyAssignedWorkers});
 
   @override
   State<WorkerSearchDialog> createState() => _WorkerSearchDialogState();
@@ -34,10 +36,14 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
   bool isTechnician = false;
   bool isSupervisor = false;
 
+  // ← Detecta si ya hay un supervisor asignado
+  bool get _hasSupervisorAssigned {
+    return widget.alreadyAssignedWorkers?.any((w) => w.isSupervisor) ?? false;
+  }
+
   @override
   void initState() {
     super.initState();
-    // ← Carga inicial después de que el widget esté montado
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadWorkers(isRefresh: true);
@@ -146,11 +152,9 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
         textAlign: TextAlign.center,
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
       ),
-      content: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.7,
-          maxWidth: double.maxFinite,
-        ),
+      content: SizedBox(
+        width: double.maxFinite,
+        height: MediaQuery.of(context).size.height * 0.7, // Altura fija
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -263,28 +267,39 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: isSupervisor,
-                        onChanged: (v) {
-                          if (!mounted) return;
-                          setState(() {
-                            isSupervisor = v ?? false;
-                            if (isSupervisor) isTechnician = false;
-                          });
-                        },
-                        activeColor: Colors.orange,
-                      ),
-                      const Text(
-                        "Asignar como Supervisor",
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
+                  // ← Solo muestra el checkbox de Supervisor si no hay uno asignado
+                  if (!_hasSupervisorAssigned)
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: isSupervisor,
+                          onChanged: (v) {
+                            if (!mounted) return;
+                            setState(() {
+                              isSupervisor = v ?? false;
+                              if (isSupervisor) isTechnician = false;
+                            });
+                          },
+                          activeColor: Colors.orange,
                         ),
+                        const Text(
+                          "Asignar como Supervisor",
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  // Mensaje si ya hay supervisor
+                  if (_hasSupervisorAssigned)
+                    const Padding(
+                      padding: EdgeInsets.only(left: 40),
+                      child: Text(
+                        "Ya existe un supervisor asignado",
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
                       ),
-                    ],
-                  ),
+                    ),
                 ],
               ),
 

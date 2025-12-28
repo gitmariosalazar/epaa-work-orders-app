@@ -469,7 +469,14 @@ class _CreateWorkOrderPageState extends State<CreateWorkOrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nueva Orden de Trabajo'),
+        title: const Text(
+          'Nueva Orden de Trabajo',
+          style: TextStyle(
+            fontSize: 16,
+            color: AppColors.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.close),

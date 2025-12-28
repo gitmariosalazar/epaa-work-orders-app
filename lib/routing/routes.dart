@@ -39,6 +39,24 @@ class AppRouter extends RootStackRouter {
           path: WORK_ORDER_DETAIL_PATH,
           page: WorkOrderDetailRoute.page,
         ),
+        AutoRoute(path: WORK_ORDER_MAP_PATH, page: WorkOrderMapRoute.page),
+        AutoRoute(path: WORK_ORDERS_MAP_PATH, page: WorkOrdersMapRoute.page),
+        AutoRoute(
+          path: DASHBOARD_PRIORITIES_PATH,
+          page: DashboardPrioritiesRoute.page,
+        ),
+        AutoRoute(
+          path: DASHBOARD_STATUSES_PATH,
+          page: DashboardWorkStatusRoute.page,
+        ),
+        AutoRoute(
+          path: DASHBOARD_WORK_TYPES_PATH,
+          page: DashboardWorkTypesRoute.page,
+        ),
+        AutoRoute(
+          path: DASHBOARD_WORKERS_PATH,
+          page: WorkOrdersDashboardRoute.page,
+        ),
       ],
     ),
   ];

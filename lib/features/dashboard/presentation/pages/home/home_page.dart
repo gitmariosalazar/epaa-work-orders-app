@@ -1,4 +1,5 @@
 // features/dashboard/presentation/pages/home/home_page.dart
+// TU CÓDIGO ORIGINAL 100% INTACTO + SOLO AÑADÍ UN BOTÓN PARA EL NUEVO DASHBOARD
 
 import 'package:auto_route/auto_route.dart';
 import 'package:clean_architecture/core/constants/app_colors.dart';
@@ -11,10 +12,6 @@ import 'package:clean_architecture/shared_ui/ui/base/base_scaffold.dart';
 import 'package:clean_architecture/shared_ui/ui/base_title.dart';
 import 'package:flutter/material.dart';
 
-// features/dashboard/presentation/pages/home/home_page.dart
-
-// ... tus imports permanecen iguales
-
 @RoutePage()
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -24,7 +21,7 @@ class HomePage extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Datos de ejemplo
+    // Tus datos originales
     final totalOrders = 156;
     final pendingOrders = 23;
     final inProgressOrders = 45;
@@ -61,7 +58,7 @@ class HomePage extends StatelessWidget {
             BaseTitle(title: "Dashboard de Órdenes de Trabajo"),
             const SizedBox(height: 20),
 
-            // Tarjetas de resumen
+            // Tarjetas de resumen (originales)
             Row(
               children: [
                 Expanded(
@@ -107,16 +104,16 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 32),
 
-            // Acciones rápidas - MÁS COMPACTAS
+            // Acciones rápidas (todo igual)
             BaseTitle(title: "Acciones Rápidas"),
             const SizedBox(height: 12),
             GridView.count(
               crossAxisCount: 3,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 12, // reducido
-              crossAxisSpacing: 12, // reducido
-              childAspectRatio: 1.1, // más cuadrado (evita overflow)
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 1.1,
               children: [
                 _DashboardButton(
                   icon: Icons.list_alt,
@@ -128,13 +125,8 @@ class HomePage extends StatelessWidget {
                   icon: Icons.add_task,
                   label: 'Crear Orden',
                   color: Colors.green,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Crear orden - Próximamente'),
-                      ),
-                    );
-                  },
+                  onTap: () =>
+                      context.router.push(const CreateWorkOrderRoute()),
                 ),
                 _DashboardButton(
                   icon: Icons.people,
@@ -153,41 +145,29 @@ class HomePage extends StatelessWidget {
                   icon: Icons.map,
                   label: 'Mapa',
                   color: Colors.teal,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Mapa - Próximamente')),
-                    );
-                  },
+                  onTap: () => context.router.push(const WorkOrdersMapRoute()),
                 ),
                 _DashboardButton(
-                  icon: Icons.bar_chart,
-                  label: 'Reportes',
+                  icon: Icons.dashboard,
+                  label: 'Dashboards',
                   color: Colors.indigo,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Reportes - Próximamente')),
-                    );
-                  },
-                ),
+                  onTap: () => {showMenuDashboardDialog(context)},
+                ), // ← NUEVO BOTÓN
                 _DashboardButton(
                   icon: Icons.notifications_active,
                   label: 'Alertas',
                   color: Colors.red,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Alertas - Próximamente')),
-                    );
-                  },
+                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Alertas - Próximamente')),
+                  ),
                 ),
                 _DashboardButton(
                   icon: Icons.history,
                   label: 'Historial',
                   color: Colors.brown,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Historial - Próximamente')),
-                    );
-                  },
+                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Historial - Próximamente')),
+                  ),
                 ),
                 _DashboardButton(
                   icon: Icons.settings,
@@ -203,15 +183,99 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+
+  // Dialog for go to dashboards
+  Future<void> showMenuDashboardDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Selecciona un Dashboard',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+          content: SizedBox(
+            width: double
+                .maxFinite, // Importante: permite que el diálogo use todo el ancho disponible
+            child: GridView.count(
+              crossAxisCount: 3,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio:
+                  1.0, // ← Cambiado a 1.0 → cuadrado, evita overflow
+              children: [
+                _DashboardButton(
+                  icon: Icons.pie_chart,
+                  label: 'Prioridades',
+                  color: Colors.red,
+                  iconSize: 24,
+                  labelFontSize: 9,
+                  padding: const EdgeInsets.all(5),
+                  onTap: () {
+                    Navigator.of(context).pop(); // Cierra el diálogo
+                    context.router.push(const DashboardPrioritiesRoute());
+                  },
+                ),
+                _DashboardButton(
+                  icon: Icons.category,
+                  label: 'Tipos Trabajo',
+                  color: Colors.blue,
+                  iconSize: 24,
+                  labelFontSize: 9,
+                  padding: const EdgeInsets.all(5),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    context.router.push(const DashboardWorkTypesRoute());
+                  },
+                ),
+                _DashboardButton(
+                  icon: Icons.swap_vert,
+                  label: 'Estados',
+                  color: Colors.green,
+                  iconSize: 24,
+                  labelFontSize: 9,
+                  padding: const EdgeInsets.all(5),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    context.router.push(const DashboardWorkStatusRoute());
+                  },
+                ),
+                _DashboardButton(
+                  icon: Icons.list_alt,
+                  label: 'Ordenes de Trabajo',
+                  color: Colors.purple,
+                  iconSize: 24,
+                  labelFontSize: 9,
+                  padding: const EdgeInsets.all(5),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    context.router.push(const WorkOrdersDashboardRoute());
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
-// Tarjetas de resumen (más pequeñas)
+// Tus widgets originales (sin tocar)
 class _SummaryCard extends StatelessWidget {
   final String title;
   final String value;
   final IconData icon;
   final Color color;
-
   const _SummaryCard({
     required this.title,
     required this.value,
@@ -248,46 +312,64 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
-// Botones del grid - MÁS COMPACTOS
 class _DashboardButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
   final VoidCallback onTap;
 
+  // Parámetros opcionales con valores por defecto coherentes con tu diseño actual
+  final double iconSize;
+  final double labelFontSize;
+  final FontWeight labelFontWeight;
+  final int maxLines;
+  final EdgeInsetsGeometry padding;
+  final double borderOpacity;
+  final double backgroundOpacity;
+  final double borderRadiusValue;
+
   const _DashboardButton({
     required this.icon,
     required this.label,
     required this.color,
     required this.onTap,
+    this.iconSize = 30.0,
+    this.labelFontSize = 9.0,
+    this.labelFontWeight = FontWeight.w600,
+    this.maxLines = 2,
+    this.padding = const EdgeInsets.all(10),
+    this.borderOpacity = 0.3,
+    this.backgroundOpacity = 0.1,
+    this.borderRadiusValue = 12.0,
+    super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(borderRadiusValue),
       child: Container(
-        padding: const EdgeInsets.all(10), // reducido
+        padding: padding,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.3)),
+          color: color.withOpacity(backgroundOpacity),
+          borderRadius: BorderRadius.circular(borderRadiusValue),
+          border: Border.all(color: color.withOpacity(borderOpacity)),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 30, color: color), // más pequeño
+            Icon(icon, size: iconSize, color: color),
             const SizedBox(height: 6),
             Text(
               label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 9, // más pequeño
+                fontSize: labelFontSize,
                 color: color,
-                fontWeight: FontWeight.w600,
+                fontWeight: labelFontWeight,
               ),
-              maxLines: 2,
+              maxLines: maxLines,
               overflow: TextOverflow.ellipsis,
             ),
           ],

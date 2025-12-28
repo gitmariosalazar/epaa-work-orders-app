@@ -28,112 +28,135 @@ class DashboardDrawer extends StatelessWidget {
                 buildWhen: (previous, current) =>
                     previous.activeIndex != current.activeIndex,
                 builder: (context, state) {
-                  return Column(
-                    children: [
-                      BaseText.headline("Dashboard"),
-                      UIHelpers.spaceV16,
+                  final int activeIndex = state.activeIndex;
 
-                      // 1. INICIO - índice 0
-                      ListTile(
-                        onTap: () => context.read<DashboardCubit>().setIndex(0),
-                        visualDensity: const VisualDensity(),
-                        horizontalTitleGap: 8,
-                        leading: Icon(
-                          AppIcons.home,
-                          size: 20,
-                          color: state.activeIndex == 0
-                              ? AppColors.primary
-                              : AppColors.fade.withAlpha(153),
-                        ),
-                        title: BaseText(
-                          "Inicio",
-                          color: state.activeIndex == 0
-                              ? AppColors.primary
-                              : AppColors.fade.withAlpha(153),
-                        ),
-                      ),
+                  return ListTileTheme(
+                    // Desactivamos el indicador de selección automático (la línea amarilla)
+                    selectedTileColor: Colors.transparent,
+                    shape: const RoundedRectangleBorder(),
+                    // Colores base para los ítems no seleccionados
+                    iconColor: AppColors.fade.withAlpha(153),
+                    textColor: AppColors.fade.withAlpha(153),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BaseText.headline("Dashboard"),
+                        UIHelpers.spaceV16,
 
-                      // 2. ÓRDENES DE TRABAJO - índice 1
-                      ListTile(
-                        onTap: () => context.read<DashboardCubit>().setIndex(1),
-                        visualDensity: const VisualDensity(),
-                        horizontalTitleGap: 8,
-                        leading: Icon(
-                          Icons.assignment, // o tu icono personalizado
-                          size: 20,
-                          color: state.activeIndex == 1
-                              ? AppColors.primary
-                              : AppColors.fade.withAlpha(153),
+                        // 1. INICIO - índice 0
+                        ListTile(
+                          onTap: () =>
+                              context.read<DashboardCubit>().setIndex(0),
+                          visualDensity:
+                              VisualDensity.compact, // ← Corrección aquí
+                          horizontalTitleGap: 8,
+                          leading: Icon(
+                            AppIcons.home,
+                            size: 20,
+                            color: activeIndex == 0
+                                ? AppColors.primary
+                                : AppColors.fade.withAlpha(153),
+                          ),
+                          title: BaseText(
+                            "Inicio",
+                            color: activeIndex == 0
+                                ? AppColors.primary
+                                : AppColors.fade.withAlpha(153),
+                          ),
                         ),
-                        title: BaseText(
-                          "Órdenes de Trabajo",
-                          color: state.activeIndex == 1
-                              ? AppColors.primary
-                              : AppColors.fade.withAlpha(153),
-                          textType: context.isMobile
-                              ? TextType.bodySmall
-                              : TextType.bodyMedium,
-                        ),
-                      ),
 
-                      // 4. TRABAJADORES - índice 2
-                      ListTile(
-                        onTap: () => context.read<DashboardCubit>().setIndex(2),
-                        visualDensity: const VisualDensity(),
-                        horizontalTitleGap: 8,
-                        leading: Icon(
-                          AppIcons.workers,
-                          size: 20,
-                          color: state.activeIndex == 2
-                              ? AppColors.primary
-                              : AppColors.fade.withAlpha(153),
+                        // 2. ÓRDENES DE TRABAJO - índice 1
+                        ListTile(
+                          onTap: () =>
+                              context.read<DashboardCubit>().setIndex(1),
+                          visualDensity:
+                              VisualDensity.compact, // ← Corrección aquí
+                          horizontalTitleGap: 8,
+                          leading: Icon(
+                            Icons.assignment,
+                            size: 20,
+                            color: activeIndex == 1
+                                ? AppColors.primary
+                                : AppColors.fade.withAlpha(153),
+                          ),
+                          title: BaseText(
+                            "Órdenes de Trabajo",
+                            color: activeIndex == 1
+                                ? AppColors.primary
+                                : AppColors.fade.withAlpha(153),
+                            textType: context.isMobile
+                                ? TextType.bodySmall
+                                : TextType.bodyMedium,
+                          ),
                         ),
-                        title: BaseText(
-                          "Trabajadores",
-                          color: state.activeIndex == 2
-                              ? AppColors.primary
-                              : AppColors.fade.withAlpha(153),
+
+                        // 3. TRABAJADORES - índice 2
+                        ListTile(
+                          onTap: () =>
+                              context.read<DashboardCubit>().setIndex(2),
+                          visualDensity:
+                              VisualDensity.compact, // ← Corrección aquí
+                          horizontalTitleGap: 8,
+                          leading: Icon(
+                            AppIcons.workers,
+                            size: 20,
+                            color: activeIndex == 2
+                                ? AppColors.primary
+                                : AppColors.fade.withAlpha(153),
+                          ),
+                          title: BaseText(
+                            "Trabajadores",
+                            color: activeIndex == 2
+                                ? AppColors.primary
+                                : AppColors.fade.withAlpha(153),
+                          ),
                         ),
-                      ),
-                      // 5. PRODUCTOS Y MATERIALES - índice 3
-                      ListTile(
-                        onTap: () => context.read<DashboardCubit>().setIndex(3),
-                        visualDensity: const VisualDensity(),
-                        horizontalTitleGap: 8,
-                        leading: Icon(
-                          AppIcons.products_materials,
-                          size: 20,
-                          color: state.activeIndex == 3
-                              ? AppColors.primary
-                              : AppColors.fade.withAlpha(153),
+
+                        // 4. PRODUCTOS Y MATERIALES - índice 3
+                        ListTile(
+                          onTap: () =>
+                              context.read<DashboardCubit>().setIndex(3),
+                          visualDensity:
+                              VisualDensity.compact, // ← Corrección aquí
+                          horizontalTitleGap: 8,
+                          leading: Icon(
+                            AppIcons.products_materials,
+                            size: 20,
+                            color: activeIndex == 3
+                                ? AppColors.primary
+                                : AppColors.fade.withAlpha(153),
+                          ),
+                          title: BaseText(
+                            "Productos",
+                            color: activeIndex == 3
+                                ? AppColors.primary
+                                : AppColors.fade.withAlpha(153),
+                          ),
                         ),
-                        title: BaseText(
-                          "Productos",
-                          color: state.activeIndex == 3
-                              ? AppColors.primary
-                              : AppColors.fade.withAlpha(153),
+
+                        // 5. PERFIL - índice 4
+                        ListTile(
+                          onTap: () =>
+                              context.read<DashboardCubit>().setIndex(4),
+                          visualDensity:
+                              VisualDensity.compact, // ← Corrección aquí
+                          horizontalTitleGap: 8,
+                          leading: Icon(
+                            AppIcons.profile,
+                            size: 20,
+                            color: activeIndex == 4
+                                ? AppColors.primary
+                                : AppColors.fade.withAlpha(153),
+                          ),
+                          title: BaseText(
+                            "Perfil",
+                            color: activeIndex == 4
+                                ? AppColors.primary
+                                : AppColors.fade.withAlpha(153),
+                          ),
                         ),
-                      ),
-                      // 6. PERFIL - índice 4
-                      ListTile(
-                        onTap: () => context.read<DashboardCubit>().setIndex(4),
-                        visualDensity: const VisualDensity(),
-                        horizontalTitleGap: 8,
-                        leading: Icon(
-                          AppIcons.profile,
-                          size: 20,
-                          color: state.activeIndex == 4
-                              ? AppColors.primary
-                              : AppColors.fade.withAlpha(153),
-                        ),
-                        title: BaseText(
-                          "Perfil",
-                          color: state.activeIndex == 4
-                              ? AppColors.primary
-                              : AppColors.fade.withAlpha(153),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   );
                 },
               ),

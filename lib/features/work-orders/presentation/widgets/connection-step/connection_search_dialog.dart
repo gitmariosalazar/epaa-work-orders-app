@@ -1,7 +1,6 @@
 // lib/features/work-orders/presentation/widgets/connection_search_dialog.dart
 
 import 'package:clean_architecture/core/constants/app_colors.dart';
-import 'package:clean_architecture/core/data_states/data_state.dart';
 import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
 import 'package:clean_architecture/features/connections/domain/entities/connection.dart';
 import 'package:clean_architecture/features/connections/domain/usecases/connection_use_case.dart';
@@ -115,13 +114,10 @@ class _ConnectionSearchDialogState extends State<ConnectionSearchDialog> {
         "Buscar Conexión o Cliente",
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
       ),
-      content: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.7,
-          maxWidth: double.maxFinite,
-        ),
+      content: SizedBox(
+        width: double.maxFinite,
+        height: MediaQuery.of(context).size.height * 0.7, // Altura fija
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _searchController,
@@ -131,7 +127,7 @@ class _ConnectionSearchDialogState extends State<ConnectionSearchDialog> {
                 hintStyle: TextStyle(color: Colors.grey[600], fontSize: 11),
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: Row(
-                  mainAxisSize: MainAxisSize.min, // ← Cambio clave: max → min
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.clear),
@@ -155,7 +151,8 @@ class _ConnectionSearchDialogState extends State<ConnectionSearchDialog> {
               style: const TextStyle(fontSize: 11),
             ),
             const SizedBox(height: 12),
-            Expanded(
+            // Aquí va el ListView con Flexible en lugar de Expanded
+            Flexible(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _errorMessage != null
@@ -194,13 +191,6 @@ class _ConnectionSearchDialogState extends State<ConnectionSearchDialog> {
                           child: ListTile(
                             title: Row(
                               children: [
-                                const Text(
-                                  '',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 11,
-                                  ),
-                                ),
                                 Expanded(
                                   child: Text(
                                     conn.person != null
@@ -262,29 +252,15 @@ class _ConnectionSearchDialogState extends State<ConnectionSearchDialog> {
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 8,
                                   ),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          conn.connectionAddress ?? '',
-                                          style: const TextStyle(
-                                            fontSize: 9,
-                                            fontStyle: FontStyle.normal,
-                                          ),
-                                          softWrap: true,
-                                          overflow: TextOverflow.visible,
-                                        ),
-                                      ),
-                                    ],
+                                  child: Text(
+                                    conn.connectionAddress ?? '',
+                                    style: const TextStyle(fontSize: 9),
+                                    softWrap: true,
                                   ),
                                 ),
                               ],
                             ),
-                            onTap: () {
-                              Navigator.pop(context, conn);
-                            },
+                            onTap: () => Navigator.pop(context, conn),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 12,
                               vertical: 8,

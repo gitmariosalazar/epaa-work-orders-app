@@ -4,13 +4,10 @@ import 'package:auto_route/auto_route.dart';
 import 'package:clean_architecture/core/constants/app_icons.dart';
 import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_entity.dart';
-import 'package:clean_architecture/features/work-orders/presentation/cubits/work-orders/work_orders_cubit.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/change_status_dialog.dart';
-import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/work_order_detail_page.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
+import 'package:clean_architecture/shared_ui/components/button/widget_button.dart';
 import 'package:flutter/material.dart';
-import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/work_order_card.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WorkOrderCard extends StatelessWidget {
   final WorkOrderEntity order;
@@ -227,47 +224,81 @@ class WorkOrderCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
             // Clave + Botones
             Row(
               children: [
-                Icon(AppIcons.connection, size: 14, color: Colors.grey),
+                Icon(AppIcons.connection, size: 14, color: Colors.lightBlue),
                 const SizedBox(width: 4),
-                Text(
-                  'Clave: ${order.cadastralKey}',
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                Row(
+                  children: [
+                    Text(
+                      'C.C:',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      order.cadastralKey,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
                 const Spacer(),
-                OutlinedButton.icon(
+
+                // Botones de acción
+                // Location, Editar, Eliminar, Más opciones
+                IconButton(
+                  onPressed: () => {
+                    context.router.push(WorkOrderMapRoute(order: order)),
+                  },
+                  icon: const Icon(
+                    Icons.location_on,
+                    size: 14,
+                    color: Colors.green,
+                  ),
+                  padding: const EdgeInsets.all(6),
+                  constraints: const BoxConstraints(
+                    minWidth: 28,
+                    minHeight: 28,
+                  ),
+                  style: IconButton.styleFrom(
+                    shape: const CircleBorder(),
+                    side: const BorderSide(color: Colors.green),
+                  ),
+                ),
+                IconButton(
                   onPressed: onEdit,
                   icon: const Icon(Icons.edit, size: 14),
-                  label: const Text('Editar', style: TextStyle(fontSize: 11)),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    minimumSize: const Size(0, 0),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  padding: const EdgeInsets.all(6),
+                  constraints: const BoxConstraints(
+                    minWidth: 28,
+                    minHeight: 28,
+                  ),
+                  style: IconButton.styleFrom(
+                    shape: const CircleBorder(),
+                    side: const BorderSide(color: Colors.grey),
                   ),
                 ),
-                const SizedBox(width: 8),
-                ElevatedButton.icon(
+                IconButton(
                   onPressed: onDelete,
-                  icon: const Icon(Icons.delete, size: 14),
-                  label: const Text('Eliminar', style: TextStyle(fontSize: 11)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    minimumSize: const Size(0, 0),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  icon: const Icon(Icons.delete, size: 14, color: Colors.red),
+                  padding: const EdgeInsets.all(6),
+                  constraints: const BoxConstraints(
+                    minWidth: 28,
+                    minHeight: 28,
+                  ),
+                  style: IconButton.styleFrom(
+                    shape: const CircleBorder(),
+                    side: const BorderSide(color: Colors.red),
                   ),
                 ),
-                const SizedBox(width: 4),
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_vert),
                   shape: RoundedRectangleBorder(
@@ -282,7 +313,7 @@ class WorkOrderCard extends StatelessWidget {
                       value: 'details',
                       child: Row(
                         children: [
-                          Icon(Icons.visibility, size: 18),
+                          Icon(Icons.visibility, size: 14),
                           SizedBox(width: 8),
                           Text("Ver detalles", style: TextStyle(fontSize: 13)),
                         ],
@@ -332,7 +363,7 @@ class WorkOrderCard extends StatelessWidget {
                           ), // ← Así sí funciona
                         );
                         break;
-                     case 'status':
+                      case 'status':
                         showDialog(
                           context: context,
                           builder: (_) => ChangeStatusDialog(order: order),

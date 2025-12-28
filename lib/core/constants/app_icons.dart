@@ -68,5 +68,9 @@ abstract final class AppIcons {
   static const calendar_today = Icons.calendar_today;
   static const chat_bubble = Icons.chat_bubble;
   static const connection = Icons.cable;
-  static const appLogo = Icons.approval; // cambiar por logo personalizado
+  static const appLogo = Icons.approval;
+  static const map = Icons.map;
+  static const history = Icons.history;
+  static const alerts = Icons.warning_amber_rounded;
+  static const details = Icons.list;
 }
