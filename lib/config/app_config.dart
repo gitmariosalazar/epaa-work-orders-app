@@ -23,14 +23,20 @@ sealed class AppConfig {
   });
 }
 
+String _normalizeBaseUrl(String? url, String fallback) {
+  final resolved = (url != null && url.trim().isNotEmpty) ? url.trim() : fallback;
+  return resolved.endsWith('/') ? resolved : '$resolved/';
+}
+
 @LazySingleton(as: AppConfig, env: [Flavor.production])
 class AppConfigProd extends AppConfig {
   AppConfigProd()
     : super(
         appTitle: "Clean Architecture App",
-        apiBaseUrl:
-            dotenv.maybeGet("BASE_PRODUCTION") ??
-            "https://dev.sigepaa-aa.com:8443/",
+        apiBaseUrl: _normalizeBaseUrl(
+          dotenv.maybeGet("BASE_PRODUCTION"),
+          "https://dev.sigepaa-aa.com:8443/",
+        ),
         flavor: Flavor.production,
         apiKeyGoogleMaps: dotenv.maybeGet("GOOGLE_MAPS_API_KEY") ?? "",
       );
@@ -41,9 +47,10 @@ class AppConfigStg extends AppConfig {
   AppConfigStg()
     : super(
         appTitle: "Clean Architecture App Staging",
-        apiBaseUrl:
-            dotenv.maybeGet("BASE_STAGING") ??
-            "https://dev.sigepaa-aa.com:8443/",
+        apiBaseUrl: _normalizeBaseUrl(
+          dotenv.maybeGet("BASE_STAGING"),
+          "https://dev.sigepaa-aa.com:8443/",
+        ),
         flavor: Flavor.staging,
         apiKeyGoogleMaps: dotenv.maybeGet("GOOGLE_MAPS_API_KEY") ?? "",
       );
@@ -54,9 +61,10 @@ class AppConfigDev extends AppConfig {
   AppConfigDev()
     : super(
         appTitle: "Clean Architecture App Development",
-        apiBaseUrl:
-            dotenv.maybeGet("BASE_DEVELOPMENT") ??
-            "https://dev.sigepaa-aa.com:8443/",
+        apiBaseUrl: _normalizeBaseUrl(
+          dotenv.maybeGet("BASE_DEVELOPMENT"),
+          "https://dev.sigepaa-aa.com:8443/",
+        ),
         flavor: Flavor.development,
         apiKeyGoogleMaps: dotenv.maybeGet("GOOGLE_MAPS_API_KEY") ?? "",
       );

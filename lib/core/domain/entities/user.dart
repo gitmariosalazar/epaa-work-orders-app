@@ -1,46 +1,45 @@
 import 'package:equatable/equatable.dart';
 
 class User extends Equatable {
-  final int id;
+  final String userId;
   final String firstName;
   final String lastName;
   final String username;
   final String email;
+  final List<String> roles;
+  final List<String> permissions;
   final bool isActive;
 
   const User({
-    required this.id,
+    required this.userId,
     required this.firstName,
     required this.lastName,
     required this.username,
     required this.email,
+    required this.roles,
+    required this.permissions,
     required this.isActive,
   });
 
   const User.empty()
-      : id = 0,
-        firstName = "",
-        lastName = "",
-        username = "",
-        email = "",
-        isActive = false;
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'first_name': firstName,
-        'last_name': lastName,
-        'username': username,
-        'email': email,
-        'is_active': isActive,
-      };
+    : userId = "",
+      firstName = "",
+      lastName = "",
+      username = "",
+      email = "",
+      roles = const [],
+      permissions = const [],
+      isActive = false;
 
   @override
   List<Object?> get props => [
-        id,
-        firstName,
-        lastName,
-        username,
-        email,
-        isActive,
-      ];
+    userId,
+    firstName,
+    lastName,
+    username,
+    email,
+    roles,
+    permissions,
+    isActive,
+  ];
 }

@@ -1,17 +1,20 @@
-// lib/features/work-orders/presentation/widgets/worker_search_dialog.dart
+// lib/features/work-orders/presentation/widgets/workers-step/worker_search_dialog.dart
 
 import 'package:clean_architecture/core/constants/app_colors.dart';
+import 'package:clean_architecture/features/users/presentation/widgets/user_picker_dialog.dart';
+import 'package:clean_architecture/features/users/users.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/workers-step/step_assign_workers.dart';
 import 'package:clean_architecture/features/workers/domain/entities/worker_entity.dart';
-import 'package:clean_architecture/features/workers/domain/usecases/get_all_workers_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-final getIt = GetIt.instance;
-
+/// Diálogo para agregar personal a la OT. n
+/// La fuente de datos es el módulo **users** (`users-gateway/find-all`),
+/// igual que "Asignar Técnico Responsable" y que WorkOrderWorkersCard.tsx.
+/// Devuelve un [WorkerWithRole] para mantener compatibilidad con los llamadores.
 class WorkerSearchDialog extends StatefulWidget {
-  final List<WorkerWithRole>?
-  alreadyAssignedWorkers; // ← Parámetro para saber si ya hay supervisor
+  /// Personal ya asignado: se excluye de la lista y define si ya hay supervisor.
+  final List<WorkerWithRole>? alreadyAssignedWorkers;
 
   const WorkerSearchDialog({super.key, this.alreadyAssignedWorkers});
 
@@ -20,127 +23,103 @@ class WorkerSearchDialog extends StatefulWidget {
 }
 
 class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
-  final TextEditingController _searchController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
+  final _searchController = TextEditingController();
 
-  List<WorkerEntity> _workers = [];
+  List<UserEntity> _users = [];
   bool _isLoading = true;
-  bool _isLoadingMore = false;
-  bool _hasMore = true;
   String? _errorMessage;
-  String _currentQuery = '';
-  int _offset = 0;
-  final int _limit = 50;
+  String _query = '';
 
-  WorkerEntity? selectedWorker;
-  bool isTechnician = false;
-  bool isSupervisor = false;
+  UserEntity? _selected;
+  bool _isTechnician = false;
+  bool _isSupervisor = false;
 
-  // ← Detecta si ya hay un supervisor asignado
-  bool get _hasSupervisorAssigned {
-    return widget.alreadyAssignedWorkers?.any((w) => w.isSupervisor) ?? false;
-  }
+  bool get _hasSupervisorAssigned =>
+      widget.alreadyAssignedWorkers?.any((w) => w.isSupervisor) ?? false;
+
+  Set<String> get _assignedIds =>
+      widget.alreadyAssignedWorkers?.map((w) => w.worker.workerId).toSet() ??
+      const {};
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _loadWorkers(isRefresh: true);
-      }
-    });
+    _loadUsers();
   }
 
-  Future<void> _loadWorkers({bool isRefresh = false}) async {
-    if (isRefresh) {
-      _offset = 0;
-      _hasMore = true;
-    }
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
-    if (!_hasMore && !isRefresh) return;
-
-    if (!mounted) return;
-
+  Future<void> _loadUsers() async {
     setState(() {
-      if (isRefresh) {
-        _isLoading = true;
-        _errorMessage = null;
-      } else {
-        _isLoadingMore = true;
-      }
+      _isLoading = true;
+      _errorMessage = null;
     });
 
-    final useCase = getIt<GetAllWorkersPaginatedUseCase>();
-    final result = await useCase(
-      WorkerPaginatedParams(
-        query: _currentQuery.isEmpty ? null : _currentQuery,
-        limit: _limit,
-        offset: _offset,
-      ),
+    final result = await GetIt.I<GetUsersUseCase>()(
+      const PaginationParams(limit: 500),
     );
-
     if (!mounted) return;
 
+    final excluded = _assignedIds;
     result.when(
-      success: (workers) {
-        if (!mounted) return;
-
-        setState(() {
-          if (isRefresh) {
-            _workers = workers;
-          } else {
-            _workers.addAll(workers);
-          }
-
-          _hasMore = workers.length == _limit;
-          _offset += workers.length;
-          _isLoading = false;
-          _isLoadingMore = false;
-        });
-      },
-      failure: (message, _) {
-        if (!mounted) return;
-
-        setState(() {
-          _errorMessage = message ?? "Error al cargar trabajadores";
-          _isLoading = false;
-          _isLoadingMore = false;
-        });
-      },
+      success: (users) => setState(() {
+        _users =
+            users
+                .where((u) => u.userId.isNotEmpty && u.isActive)
+                .where((u) => !excluded.contains(u.userId))
+                .where(isServiceTechnician)
+                .toList()
+              ..sort((a, b) => a.fullName.compareTo(b.fullName));
+        _isLoading = false;
+      }),
+      failure: (msg, _) => setState(() {
+        _errorMessage = msg ?? 'Error al cargar usuarios';
+        _isLoading = false;
+      }),
       loading: () {},
     );
   }
 
-  void _onSearchChanged(String query) {
-    _currentQuery = query.trim();
-    _loadWorkers(isRefresh: true);
+  List<UserEntity> get _filtered {
+    if (_query.isEmpty) return _users;
+    final q = _query.toLowerCase();
+    return _users
+        .where(
+          (u) =>
+              u.fullName.toLowerCase().contains(q) ||
+              u.username.toLowerCase().contains(q) ||
+              (u.idCard ?? '').contains(q) ||
+              (u.positionName ?? '').toLowerCase().contains(q),
+        )
+        .toList();
   }
 
-  void _onSearchPressed() {
-    _currentQuery = _searchController.text.trim();
-    _loadWorkers(isRefresh: true);
-  }
-
-  void _onWorkerSelected(WorkerEntity worker) {
-    if (!mounted) return;
-
-    setState(() {
-      selectedWorker = worker;
-      isTechnician = false;
-      isSupervisor = false;
-    });
-  }
+  /// Adaptador UserEntity → WorkerEntity (contrato existente de los llamadores).
+  WorkerEntity _toWorker(UserEntity u) => WorkerEntity(
+    workerId: u.userId,
+    identification: u.idCard ?? '',
+    firstNames: u.firstName ?? u.fullName,
+    lastNames: u.lastName ?? '',
+    phoneNumber: u.internalPhone ?? '',
+    cellPhone: u.internalPhone ?? '',
+    email: u.email.isNotEmpty ? u.email : (u.internalEmail ?? ''),
+    address: '',
+  );
 
   void _addWorker() {
-    if (selectedWorker == null) return;
-
-    final result = WorkerWithRole(
-      worker: selectedWorker!,
-      isTechnician: isTechnician,
-      isSupervisor: isSupervisor,
+    if (_selected == null) return;
+    Navigator.pop(
+      context,
+      WorkerWithRole(
+        worker: _toWorker(_selected!),
+        isTechnician: _isTechnician,
+        isSupervisor: _isSupervisor,
+      ),
     );
-
-    Navigator.pop(context, result);
   }
 
   @override
@@ -148,228 +127,38 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: const Text(
-        "Agregar Trabajador",
+        'Agregar Trabajador',
         textAlign: TextAlign.center,
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
       ),
       content: SizedBox(
         width: double.maxFinite,
-        height: MediaQuery.of(context).size.height * 0.7, // Altura fija
+        height: MediaQuery.of(context).size.height * 0.6,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _searchController,
-              autofocus: true,
+              onChanged: (v) => setState(() => _query = v.trim()),
               style: const TextStyle(fontSize: 12),
               decoration: InputDecoration(
-                hintText: "Buscar por nombre o cédula",
+                hintText: 'Buscar por nombre, usuario o cédula...',
                 hintStyle: const TextStyle(fontSize: 12),
-                prefixIcon: const Icon(Icons.search, size: 20),
-                suffixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _searchController.clear();
-                        _onSearchPressed();
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.search),
-                      onPressed: _onSearchPressed,
-                      color: AppColors.primary,
-                    ),
-                  ],
-                ),
+                prefixIcon: const Icon(Icons.search, size: 18),
+                isDense: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                filled: true,
-                fillColor: Colors.grey.shade100,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 10,
                 ),
               ),
-              onSubmitted: (_) => _onSearchPressed(),
             ),
-
             const SizedBox(height: 6),
-
-            if (selectedWorker != null)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.blue.shade300, width: 1),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.check_circle,
-                          color: Colors.blue,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            '${selectedWorker!.firstNames!} ${selectedWorker!.lastNames!}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 11,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Cédula: ${selectedWorker!.identification} ${selectedWorker!.phoneNumber.isNotEmpty ? '| ${selectedWorker!.phoneNumber}' : ''}",
-                      style: const TextStyle(fontSize: 10),
-                    ),
-                  ],
-                ),
-              ),
-
-            const SizedBox(height: 12),
-
-            if (selectedWorker != null)
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: isTechnician,
-                        onChanged: (v) {
-                          if (!mounted) return;
-                          setState(() {
-                            isTechnician = v ?? false;
-                            if (isTechnician) isSupervisor = false;
-                          });
-                        },
-                        activeColor: Colors.teal,
-                      ),
-                      const Text(
-                        "Asignar como Técnico",
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  // ← Solo muestra el checkbox de Supervisor si no hay uno asignado
-                  if (!_hasSupervisorAssigned)
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: isSupervisor,
-                          onChanged: (v) {
-                            if (!mounted) return;
-                            setState(() {
-                              isSupervisor = v ?? false;
-                              if (isSupervisor) isTechnician = false;
-                            });
-                          },
-                          activeColor: Colors.orange,
-                        ),
-                        const Text(
-                          "Asignar como Supervisor",
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  // Mensaje si ya hay supervisor
-                  if (_hasSupervisorAssigned)
-                    const Padding(
-                      padding: EdgeInsets.only(left: 40),
-                      child: Text(
-                        "Ya existe un supervisor asignado",
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
-                      ),
-                    ),
-                ],
-              ),
-
+            if (_selected != null) _buildSelectedCard(),
+            if (_selected != null) _buildRoleSelector(),
             const SizedBox(height: 6),
-
-            Expanded(
-              child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _errorMessage != null
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(_errorMessage!),
-                          TextButton(
-                            onPressed: () => _loadWorkers(isRefresh: true),
-                            child: const Text("Reintentar"),
-                          ),
-                        ],
-                      ),
-                    )
-                  : _workers.isEmpty
-                  ? const Center(child: Text("No se encontraron resultados"))
-                  : ListView.builder(
-                      controller: _scrollController,
-                      itemCount: _workers.length + (_isLoadingMore ? 1 : 0),
-                      itemBuilder: (_, i) {
-                        if (i == _workers.length) {
-                          if (_hasMore) {
-                            _loadWorkers();
-                          }
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(8),
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
-                        }
-
-                        final w = _workers[i];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 3),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
-                            ),
-                            leading: CircleAvatar(
-                              radius: 16,
-                              child: Text(
-                                w.firstNames![0],
-                                style: const TextStyle(fontSize: 11),
-                              ),
-                            ),
-                            title: Text(
-                              w.firstNames! + ' ' + w.lastNames!,
-                              style: const TextStyle(fontSize: 11),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: Text(
-                              "C.I.: ${w.identification}",
-                              style: const TextStyle(fontSize: 11),
-                            ),
-                            onTap: () => _onWorkerSelected(w),
-                          ),
-                        );
-                      },
-                    ),
-            ),
+            Expanded(child: _buildList()),
           ],
         ),
       ),
@@ -378,7 +167,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("Cancelar", style: TextStyle(fontSize: 11)),
+          child: const Text('Cancelar', style: TextStyle(fontSize: 11)),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -387,9 +176,9 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          onPressed: selectedWorker == null ? null : _addWorker,
+          onPressed: _selected == null ? null : _addWorker,
           child: const Text(
-            "Agregar",
+            'Agregar',
             style: TextStyle(fontSize: 11, color: Colors.white),
           ),
         ),
@@ -397,10 +186,155 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
     );
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _scrollController.dispose();
-    super.dispose();
+  Widget _buildSelectedCard() {
+    final u = _selected!;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.blue.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.blue, size: 18),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  u.fullName,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            [
+              if ((u.positionName ?? '').isNotEmpty) u.positionName!,
+              if ((u.idCard ?? '').isNotEmpty) 'C.I.: ${u.idCard}',
+            ].join(' | '),
+            style: const TextStyle(fontSize: 10),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRoleSelector() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Checkbox(
+              value: _isTechnician,
+              activeColor: Colors.teal,
+              onChanged: (v) => setState(() {
+                _isTechnician = v ?? false;
+                if (_isTechnician) _isSupervisor = false;
+              }),
+            ),
+            const Text(
+              'Asignar como Técnico',
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+        if (!_hasSupervisorAssigned)
+          Row(
+            children: [
+              Checkbox(
+                value: _isSupervisor,
+                activeColor: Colors.orange,
+                onChanged: (v) => setState(() {
+                  _isSupervisor = v ?? false;
+                  if (_isSupervisor) _isTechnician = false;
+                }),
+              ),
+              const Text(
+                'Asignar como Supervisor',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+              ),
+            ],
+          )
+        else
+          const Padding(
+            padding: EdgeInsets.only(left: 40),
+            child: Text(
+              'Ya existe un supervisor asignado',
+              style: TextStyle(fontSize: 11, color: Colors.grey),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildList() {
+    if (_isLoading) return const Center(child: CircularProgressIndicator());
+    if (_errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(_errorMessage!, textAlign: TextAlign.center),
+            TextButton(onPressed: _loadUsers, child: const Text('Reintentar')),
+          ],
+        ),
+      );
+    }
+    final items = _filtered;
+    if (items.isEmpty) {
+      return const Center(child: Text('No se encontraron usuarios'));
+    }
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (_, i) {
+        final u = items[i];
+        final isSelected = _selected?.userId == u.userId;
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 3),
+          color: isSelected ? Colors.blue.shade50 : null,
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 4,
+            ),
+            leading: CircleAvatar(
+              radius: 16,
+              child: Text(
+                u.fullName.isNotEmpty ? u.fullName[0].toUpperCase() : '?',
+                style: const TextStyle(fontSize: 11),
+              ),
+            ),
+            title: Text(
+              u.fullName,
+              style: const TextStyle(fontSize: 11),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text(
+              [
+                u.positionName,
+                u.username,
+              ].whereType<String>().where((s) => s.isNotEmpty).join(' · '),
+              style: const TextStyle(fontSize: 11),
+            ),
+            onTap: () => setState(() {
+              _selected = u;
+              _isTechnician = false;
+              _isSupervisor = false;
+            }),
+          ),
+        );
+      },
+    );
   }
 }

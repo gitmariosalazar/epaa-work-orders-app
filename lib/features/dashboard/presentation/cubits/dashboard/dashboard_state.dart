@@ -11,7 +11,5 @@ class DashboardState extends BaseState {
       DashboardState(activeIndex: activeIndex ?? this.activeIndex);
 
   @override
-  List<Object> get props => [
-        activeIndex,
-      ];
+  List<Object> get props => [activeIndex];
 }

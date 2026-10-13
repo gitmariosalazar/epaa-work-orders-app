@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:clean_architecture/features/connections/domain/entities/contact.dart';
 
-class PersonEntity {
+class PersonEntity extends Equatable {
   final String personId;
   final String? firstName;
   final String? lastName;
@@ -30,4 +31,21 @@ class PersonEntity {
     required this.emails,
     required this.phones,
   });
+
+  @override
+  List<Object?> get props => [
+    personId,
+    firstName,
+    lastName,
+    address,
+    country,
+    genderId,
+    parishId,
+    birthDate,
+    isDeceased,
+    professionId,
+    civilStatus,
+    emails,
+    phones,
+  ];
 }

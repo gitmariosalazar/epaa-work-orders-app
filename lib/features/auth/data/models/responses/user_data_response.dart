@@ -16,8 +16,8 @@ class UserDataResponse implements DomainConvertible<UserData> {
   factory UserDataResponse.fromJson(Map<String, dynamic> json) {
     return UserDataResponse(
       user: UserResponse.fromJson(json['user'] ?? {}),
-      accessToken: json['access'] ?? "",
-      refreshToken: json['refresh'] ?? "",
+      accessToken: json['accessToken'] ?? json['access'] ?? "",
+      refreshToken: json['refreshToken'] ?? json['refresh'] ?? "",
     );
   }
 

@@ -44,10 +44,10 @@ class AddWorkOrderAttachmentModel {
 
   factory AddWorkOrderAttachmentModel.fromJson(Map<String, dynamic> json) {
     return AddWorkOrderAttachmentModel(
-      workOrderId: json['workOrderId'] as String,
-      fileName: json['fileName'] as String,
-      fileType: json['fileType'] as String,
-      fileUrl: json['fileUrl'] as String,
+      workOrderId: (json['workOrderId'] ?? json['work_order_id'] ?? '').toString(),
+      fileName: (json['fileName'] ?? json['file_name'] ?? json['nombreArchivo'] ?? '').toString(),
+      fileType: (json['fileType'] ?? json['file_type'] ?? json['tipoAdjunto'] ?? '').toString(),
+      fileUrl: (json['fileUrl'] ?? json['file_url'] ?? json['url'] ?? '').toString(),
     );
   }
 }

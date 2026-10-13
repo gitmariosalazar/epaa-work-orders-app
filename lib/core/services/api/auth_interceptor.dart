@@ -10,24 +10,27 @@ interface class AuthInterceptor extends Interceptor {
   SessionService get _sessionManager => SessionUtil.I;
   final Dio _dio = Dio();
 
-  /// This flag is to prevent multiple refresh token requests. If the request
-  /// is in progress then other token refresh requests are discarded
-  bool _isTokenBeingRefreshed = false;
+  /// Renovación compartida (single-flight) con el resto de clientes HTTP.
+  TokenRefresher get _tokenRefresher => GetIt.I<TokenRefresher>();
 
-  /// Whenever token is expired, the requests are added to the list.
-  /// So that even if simultaneously multiple requests are made and
-  /// token is expired, each requests are retried after refreshing token
-  final List<DioRequestData> _pendingRequests = [];
+  static const _retryFlag = '_authRetried';
 
-  AuthInterceptor();
+  AuthInterceptor(AppConfig appConfig) {
+    _dio.options.baseUrl = appConfig.apiBaseUrl;
+  }
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     /// Add authorization token if the user is logged in
     if (_sessionManager.isLoggedIn) {
-      options.headers.addAll({
-        "Authorization": "Bearer ${_sessionManager.accessToken}",
-      });
+      if (kDebugMode) log("AuthInterceptor: Adding token to ${options.path}");
+      options.headers["Authorization"] =
+          "Bearer ${_sessionManager.accessToken}";
+    } else {
+      if (kDebugMode)
+        log(
+          "AuthInterceptor: User not logged in, skipping token for ${options.path}",
+        );
     }
 
     return super.onRequest(options, handler);
@@ -35,92 +38,49 @@ interface class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    /// If the error contains a status code of 401. That means token is expired.
-    if (err.response?.statusCode == 401) {
-      _pendingRequests.add(DioRequestData(error: err, handler: handler));
+    final options = err.requestOptions;
+    final isUnauthorized = err.response?.statusCode == 401;
+    final isAuthCall =
+        options.path.contains(ApiEndpoints.refreshToken) ||
+        options.path.contains(ApiEndpoints.login);
+    final alreadyRetried = options.extra[_retryFlag] == true;
 
-      /// Don't refresh token again, if it is already being refreshed
-      if (_isTokenBeingRefreshed) return;
-      _isTokenBeingRefreshed = true;
-
-      bool tokenRefreshSucceed = await _refreshToken(err.requestOptions);
-
-      /// If token refreshing is successful, retry the pending requests
-      if (tokenRefreshSucceed) {
-        for (final request in _pendingRequests) {
-          try {
-            final response = await _retryRequest(request.error.requestOptions);
-            request.handler.resolve(response);
-          } on DioException catch (error) {
-            if (kDebugMode) log("Retry request: ${error.response.toString()}");
-            request.handler.next(error);
-          } catch (error) {
-            if (kDebugMode) log("Retry request: ${error.toString()}");
-          }
-        }
-      }
-
-      /// Clear pending requests
-      _pendingRequests.clear();
-      _isTokenBeingRefreshed = false;
-      return;
+    if (!isUnauthorized ||
+        isAuthCall ||
+        alreadyRetried ||
+        _sessionManager.refreshToken.isEmpty) {
+      return handler.next(err);
     }
 
-    return super.onError(err, handler);
-  }
+    final refreshed = await _refreshOnce();
+    if (!refreshed) return handler.next(err);
 
-  /// Try to refresh access token. Log out the user if it fails.
-  Future<bool> _refreshToken(RequestOptions requestOptions) async {
     try {
-      final request = RefreshTokenRequest(
-        refreshToken: _sessionManager.refreshToken,
-      );
-      final response = await _dio.post(
-        ApiEndpoints.refreshToken,
-        data: request.toJson(),
-        options: Options(headers: requestOptions.headers),
-      );
-
-      /// If api response is successful, return the new accessToken
-      ApiResponse<MapDynamic> apiResponse = ApiResponse.fromResponse(response);
-      if (apiResponse.success) {
-        final tokenResponse = RefreshTokenResponse.fromJson(apiResponse.data);
-        _sessionManager.refreshAccessToken(tokenResponse.accessToken);
-        return true;
-      }
-    } on DioException catch (_) {
-      _sessionManager.clearSessionData();
-    } catch (error) {
-      _sessionManager.clearSessionData();
-      if (kDebugMode) log("Token refresh: ${error.toString()}");
+      final response = await _retryRequest(options);
+      handler.resolve(response);
+    } on DioException catch (e) {
+      handler.next(e);
+    } catch (e) {
+      handler.next(DioException(requestOptions: options, error: e));
     }
-
-    return false;
   }
 
-  Future<Response> _retryRequest(RequestOptions requestOptions) async {
-    /// Reset authorization header
-    requestOptions.headers.remove("Authorization");
-    requestOptions.headers.addAll({
-      "Authorization": "Bearer ${_sessionManager.accessToken}",
-    });
+  Future<bool> _refreshOnce() => _tokenRefresher.refresh();
 
-    /// RequestOptions with the same method, path, data,
-    /// query parameters, but with new access token.
-    final options = Options(
-      method: requestOptions.method,
-      headers: requestOptions.headers,
+  Future<Response> _retryRequest(RequestOptions requestOptions) {
+    // Reutiliza las opciones originales (baseUrl, contentType,
+    // responseType, timeouts…) con el nuevo token.
+    final options = requestOptions.copyWith(
+      headers: {
+        ...requestOptions.headers,
+        "Authorization": "Bearer ${_sessionManager.accessToken}",
+      },
+      extra: {...requestOptions.extra, _retryFlag: true},
     );
-
-    /// Retry the request with the new requestOptions.
-    return _dio.request(
-      requestOptions.path,
-      data: requestOptions.data,
-      queryParameters: requestOptions.queryParameters,
-      options: options,
-    );
+    return _dio.fetch(options);
   }
 }
+
 
 /// Stores failed dio request's data
 class DioRequestData {

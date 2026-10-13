@@ -12,5 +12,8 @@ class AuthenticationRequest {
         password: authentication.password,
       );
 
-  Map<String, String> toJson() => {"username": username, "password": password};
+  Map<String, String> toJson() => {
+    "username_or_email": username,
+    "password": password,
+  };
 }

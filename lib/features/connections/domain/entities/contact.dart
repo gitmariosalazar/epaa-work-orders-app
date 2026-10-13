@@ -1,12 +1,17 @@
+import 'package:equatable/equatable.dart';
 
-class PhoneEntity  {
+class PhoneEntity extends Equatable {
   final int telefonoid;
   final String numero;
-  PhoneEntity(this.telefonoid, this.numero);
+  const PhoneEntity(this.telefonoid, this.numero);
+  @override
+  List<Object?> get props => [telefonoid, numero];
 }
 
-class EmailEntity {
+class EmailEntity extends Equatable {
   final int correoid;
   final String email;
-  EmailEntity(this.correoid, this.email);
+  const EmailEntity(this.correoid, this.email);
+  @override
+  List<Object?> get props => [correoid, email];
 }

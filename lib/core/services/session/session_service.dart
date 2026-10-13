@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:clean_architecture/core/constants/local_db_keys.dart';
 import 'package:clean_architecture/core/domain/entities/user_data.dart';
@@ -6,6 +7,7 @@ import 'package:clean_architecture/core/services/database/local_database_service
 import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
 import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
@@ -17,7 +19,7 @@ abstract interface class SessionService {
   String get fullName;
   Future<void> checkForUserCredential();
   set setUserData(UserData model);
-  Future<void> refreshAccessToken(String accessToken);
+  Future<void> refreshAccessToken(String accessToken, {String? refreshToken});
   void clearSessionData();
 }
 
@@ -63,12 +65,24 @@ final class SessionServiceImpl implements SessionService {
   }
 
   @override
-  set setUserData(UserData model) => _userData = model;
+  set setUserData(UserData model) {
+    if (kDebugMode)
+      log(
+        "SessionService: Setting user data. Token: ${model.accessToken.isNotEmpty}",
+      );
+    _userData = model;
+  }
 
   /// Store new access token if it is expired.
   @override
-  Future<void> refreshAccessToken(String accessToken) async {
-    setUserData = _userData.copyWith(accessToken: accessToken);
+  Future<void> refreshAccessToken(
+    String accessToken, {
+    String? refreshToken,
+  }) async {
+    setUserData = _userData.copyWith(
+      accessToken: accessToken,
+      refreshToken: (refreshToken?.isNotEmpty ?? false) ? refreshToken : null,
+    );
     final resp = UserDataResponse.fromDomain(_userData);
     await _localDatabase.setString(
       LocalDbKeys.userData,

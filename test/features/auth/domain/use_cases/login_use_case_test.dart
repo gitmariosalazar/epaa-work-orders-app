@@ -23,11 +23,13 @@ void main() {
     password: 'password',
   );
   const tUser = User(
-    id: 1,
+    userId: '1',
     firstName: 'Test',
     lastName: 'User',
     username: 'testuser',
     email: 'test@example.com',
+    roles: [],
+    permissions: [],
     isActive: true,
   );
   const tUserData = UserData(

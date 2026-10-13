@@ -14,10 +14,13 @@ import 'package:clean_architecture/features/auth/presentation/cubits/login/login
 import 'package:clean_architecture/features/auth/presentation/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol/patrol.dart';
 
+import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart';
+import '../../../../../testing/mocks/cubit_mocks.dart';
 import '../../../../../testing/mocks/external/router_mocks.dart';
 import '../../../../../testing/mocks/service_mocks.dart';
 import '../../../../../testing/mocks/use_case_mocks.dart';
@@ -30,22 +33,25 @@ void main() {
   late MockSessionService mockSessionService;
   late MockNavigationService mockNavigationService;
   late MockImagePickerService mockImagePickerService;
+  late MockScreenObserverCubit mockScreenObserverCubit;
   late UserData userData;
 
   setUpAll(() {
     userData = UserData(
       user: User(
-        id: 0,
+        userId: "0",
         firstName: '',
         lastName: '',
         username: '',
         email: '',
+        roles: const [],
+        permissions: const [],
         isActive: true,
       ),
       accessToken: '',
       refreshToken: '',
     );
-    registerFallbackValue(Authentication(username: '', password: ''));
+    registerFallbackValue(const Authentication(username: '', password: ''));
     registerFallbackValue(MockPageRouteInfo());
     registerFallbackValue(userData);
   });
@@ -56,6 +62,11 @@ void main() {
     mockSessionService = MockSessionService();
     mockNavigationService = MockNavigationService();
     mockImagePickerService = MockImagePickerService();
+    mockScreenObserverCubit = MockScreenObserverCubit();
+
+    when(
+      () => mockScreenObserverCubit.state,
+    ).thenReturn(ScreenObserverState.initial());
 
     locator.registerSingleton<LoginUseCase>(mockLoginUseCase);
     locator.registerSingleton<SaveUserDataUseCase>(mockSaveUserDataUseCase);
@@ -99,11 +110,19 @@ void main() {
     ).thenAnswer((_) async => SuccessState(data: true));
 
     // Render the view
-    await $.pumpWidget(MaterialApp(theme: lightTheme, home: const LoginPage()));
+    await $.pumpWidget(
+      MaterialApp(
+        theme: lightTheme,
+        home: BlocProvider<ScreenObserverCubit>.value(
+          value: mockScreenObserverCubit,
+          child: const LoginPage(),
+        ),
+      ),
+    );
 
     // Expect the login button to be enabled initially
-    expect($("Login"), findsOne);
-    expect($("Password"), findsOne);
+    expect($("INICIAR SESIÓN"), findsOne);
+    expect($("Enter your password"), findsOne);
     final enabledButton = $(
       ElevatedButton,
     ).which<ElevatedButton>((b) => b.enabled);
@@ -119,7 +138,7 @@ void main() {
 
     // Use the login cubit's login method in the login_button widget.
     // Otherwise the test will fail.
-    await enabledButton.tap();
+    await enabledButton.scrollTo().tap();
 
     verify(() => mockLoginUseCase.call(any())).called(1);
     verify(() => mockSessionService.setUserData = any()).called(1);

@@ -15,13 +15,22 @@ class ApiResponse<T extends Object?> {
 
   factory ApiResponse.fromResponse(Response response) {
     Map<String, dynamic> data = response.data;
-    int statusCode = response.statusCode ?? 0;
+    int statusCode = data['status_code'] ?? response.statusCode ?? 0;
+    bool success = statusCode >= 200 && statusCode < 300;
+
+    String responseMessage = "";
+    final rawMessage = data['message'];
+    if (rawMessage is String) {
+      responseMessage = rawMessage;
+    } else if (rawMessage is List && rawMessage.isNotEmpty) {
+      responseMessage = rawMessage.first as String;
+    }
 
     return ApiResponse<T>(
       data: data['data'] as T,
       statusCode: statusCode,
-      success: data['success'] as bool,
-      message: data['message'] as String,
+      success: success,
+      message: responseMessage,
     );
   }
 }

@@ -1,6 +1,6 @@
 // lib/core/components/common/dynamic_field_list.dart
-import 'package:clean_architecture/shared_ui/components/common/compact_add_button.dart';
-import 'package:clean_architecture/shared_ui/components/common/form_card.dart';
+import 'package:clean_architecture/components/common/compact_add_button.dart';
+import 'package:clean_architecture/components/common/form_card.dart';
 import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
 import 'package:flutter/material.dart';

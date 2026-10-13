@@ -15,7 +15,7 @@ class AddMaterialsWorkOrderCubit extends Cubit<AddMaterialsWorkOrderState> {
        super(AddMaterialsWorkOrderInitial());
 
   Future<void> addMaterialsToWorkOrder(
-    List<AddMaterialWorkOrderEntity> materials
+    List<AddMaterialWorkOrderEntity> materials,
   ) async {
     emit(AddMaterialsWorkOrderLoading());
 

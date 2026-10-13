@@ -37,6 +37,7 @@ class _WorkOrdersHomeView extends StatefulWidget {
 
 class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
   final _searchController = TextEditingController();
+  final _scrollController = ScrollController();
   int? _filterStatus;
   int? _filterPriority;
   int? _filterWorkType;
@@ -44,9 +45,24 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
   String? _filterOrderCode;
 
   @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !_scrollController.position.outOfRange) {
+      context.read<WorkOrdersCubit>().loadMore();
+    }
   }
 
   void _showFilterDialog() {
@@ -352,16 +368,23 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
             onRefresh: () async =>
                 context.read<WorkOrdersCubit>().loadWorkOrders(),
             child: ListView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.all(8),
               itemCount: filteredOrders.length,
               itemBuilder: (context, index) {
+                if (index == filteredOrders.length) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
                 final order = filteredOrders[index];
                 return WorkOrderCard(
                   order: order,
                   onEdit: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: const Text('Editar orden - Próximamente'),
+                        content: const Text('Imprimir orden - Próximamente'),
                         behavior: SnackBarBehavior.floating,
                         margin: EdgeInsets.only(
                           left: 16,

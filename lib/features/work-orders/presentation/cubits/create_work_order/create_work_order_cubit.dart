@@ -1,11 +1,11 @@
-// features/work-orders/presentation/cubits/create_work_order/create_work_order_cubit.dart
-
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_entity.dart';
 import 'package:clean_architecture/features/work-orders/domain/usecases/create_work_order_use_case.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 part 'create_work_order_state.dart';
 
+@injectable
 class CreateWorkOrderCubit extends Cubit<CreateWorkOrderState> {
   final CreateWorkOrderUseCase _createWorkOrderUseCase;
 

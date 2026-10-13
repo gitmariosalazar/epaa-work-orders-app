@@ -1,80 +1,94 @@
 // lib/core/utils/map_utils.dart
 
+import 'package:clean_architecture/core/constants/work_order_status.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+/// Utilidades de presentación para mapas/estados de OT.
+/// Los estados provienen de [WorkOrderStatus] (códigos string del backend).
 class MapUtils {
-  /// Colores profesionales únicos para cada estado (para UI, custom info window, etc.)
-  static Color getStatusColor(int status) {
-    switch (status) {
-      case 1: // Pendiente
-        return const Color(0xFFFF9800); // Naranja vibrante
-      case 2: // Asignada
-        return const Color(0xFF2196F3); // Azul primario
-      case 3: // Reasignada
-        return const Color(0xFF9C27B0); // Púrpura
-      case 4: // En Progreso
-        return const Color(0xFFFF00FF); // Magenta
-      case 5: // En Espera
-        return const Color(0xFFFFC107); // Amarillo ámbar
-      case 6: // Reanudada
+  MapUtils._();
+
+  /// Color de UI de cada estado.
+  static Color getStatusColor(String status) {
+    switch (WorkOrderStatus.normalize(status)) {
+      case WorkOrderStatus.notificada:
+      case WorkOrderStatus.notificadaInspeccion:
+      case WorkOrderStatus.notificadaInstalacion:
+        return const Color(0xFF607D8B); // Gris azulado
+      case WorkOrderStatus.pendiente:
+      case WorkOrderStatus.pendienteInspeccion:
+      case WorkOrderStatus.pendienteInstalacion:
+        return const Color(0xFFFF9800); // Naranja
+      case WorkOrderStatus.asignada:
+        return const Color(0xFF2196F3); // Azul
+      case WorkOrderStatus.preparacion:
         return const Color(0xFF00BCD4); // Cian
-      case 7: // Completada
-        return const Color(0xFF2E7D32); // Verde oscuro
-      case 8: // Cancelada
-        return const Color(0xFFE53935); // Rojo intenso
+      case WorkOrderStatus.enProceso:
+      case WorkOrderStatus.enProcesoInspeccion:
+      case WorkOrderStatus.enProcesoInstalacion:
+        return const Color(0xFF9C27B0); // Púrpura
+      case WorkOrderStatus.ejecutada:
+      case WorkOrderStatus.inspeccionEjecutada:
+      case WorkOrderStatus.instalacionEjecutada:
+        return const Color(0xFFFFC107); // Ámbar
+      case WorkOrderStatus.revisionRechazada:
+      case WorkOrderStatus.rechazadaTecnica:
+        return const Color(0xFFFF5722); // Naranja rojizo
+      case WorkOrderStatus.completada:
+      case WorkOrderStatus.inspeccionCompletada:
+      case WorkOrderStatus.instalacionCompletada:
+        return const Color(0xFF2E7D32); // Verde
+      case WorkOrderStatus.cancelada:
+        return const Color(0xFFE53935); // Rojo
       default:
         return Colors.grey;
     }
   }
 
-  /// Hue más cercano posible al color personalizado (para usar con defaultMarkerWithHue)
-  static double getStatusHue(int status) {
-    switch (status) {
-      case 1: // Pendiente (naranja)
+  /// Hue del marcador (defaultMarkerWithHue), coherente con [getStatusColor].
+  static double getStatusHue(String status) {
+    switch (WorkOrderStatus.normalize(status)) {
+      case WorkOrderStatus.notificada:
+      case WorkOrderStatus.notificadaInspeccion:
+      case WorkOrderStatus.notificadaInstalacion:
+        return BitmapDescriptor.hueRose;
+      case WorkOrderStatus.pendiente:
+      case WorkOrderStatus.pendienteInspeccion:
+      case WorkOrderStatus.pendienteInstalacion:
         return BitmapDescriptor.hueOrange;
-      case 2: // Asignada (azul)
+      case WorkOrderStatus.asignada:
         return BitmapDescriptor.hueAzure;
-      case 3: // Reasignada (púrpura)
-        return BitmapDescriptor.hueViolet;
-      case 4: // En Progreso (verde)
-        return BitmapDescriptor.hueMagenta;
-      case 5: // En Espera (amarillo)
-        return BitmapDescriptor.hueYellow;
-      case 6: // Reanudada (cian)
+      case WorkOrderStatus.preparacion:
         return BitmapDescriptor.hueCyan;
-      case 7: // Completada (verde oscuro)
+      case WorkOrderStatus.enProceso:
+      case WorkOrderStatus.enProcesoInspeccion:
+      case WorkOrderStatus.enProcesoInstalacion:
+        return BitmapDescriptor.hueViolet;
+      case WorkOrderStatus.ejecutada:
+      case WorkOrderStatus.inspeccionEjecutada:
+      case WorkOrderStatus.instalacionEjecutada:
+        return BitmapDescriptor.hueYellow;
+      case WorkOrderStatus.revisionRechazada:
+      case WorkOrderStatus.rechazadaTecnica:
+        return BitmapDescriptor.hueMagenta;
+      case WorkOrderStatus.completada:
+      case WorkOrderStatus.inspeccionCompletada:
+      case WorkOrderStatus.instalacionCompletada:
         return BitmapDescriptor.hueGreen;
-      case 8: // Cancelada (rojo)
+      case WorkOrderStatus.cancelada:
         return BitmapDescriptor.hueRed;
       default:
-        return BitmapDescriptor.hueYellow;
+        return BitmapDescriptor.hueBlue;
     }
   }
 
-  /// Texto legible del estado
-  static String getStatusText(int status) {
-    switch (status) {
-      case 1:
-        return 'Pendiente';
-      case 2:
-        return 'Asignada';
-      case 3:
-        return 'Reasignada';
-      case 4:
-        return 'En Progreso';
-      case 5:
-        return 'En Espera';
-      case 6:
-        return 'Reanudada';
-      case 7:
-        return 'Completada';
-      case 8:
-        return 'Cancelada';
-      default:
-        return 'Desconocido';
-    }
-  }
+  /// Texto legible del estado.
+  static String getStatusText(String status) => WorkOrderStatus.labelOf(status);
+
+  /// Descripción del estado.
+  static String getStatusDescription(String status) =>
+      WorkOrderStatus.descriptionOf(status);
 
   /// Texto del tipo de trabajo
   static String getWorkTypeText(int id) {

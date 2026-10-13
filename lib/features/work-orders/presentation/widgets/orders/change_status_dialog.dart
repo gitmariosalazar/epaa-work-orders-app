@@ -1,3 +1,5 @@
+import 'package:clean_architecture/core/utils/map_utils.dart';
+import 'package:clean_architecture/core/constants/work_order_status.dart';
 // lib/features/work-orders/presentation/widgets/change_status_dialog.dart
 
 import 'package:clean_architecture/core/constants/app_colors.dart';
@@ -14,37 +16,42 @@ class ChangeStatusDialog extends StatefulWidget {
 }
 
 class _ChangeStatusDialogState extends State<ChangeStatusDialog> {
-  late int? selectedStatus = widget.order.status;
+  late final String _current = WorkOrderStatus.normalize(widget.order.status);
+  late String? selectedStatus = _current;
 
-  final List<Map<String, dynamic>> statuses = [
-    {'id': 1, 'name': 'Pendiente', 'color': Colors.grey},
-    {'id': 2, 'name': 'Asignada', 'color': Colors.blue},
-    {'id': 3, 'name': 'Reasignada', 'color': Colors.indigo},
-    {'id': 4, 'name': 'En Progreso', 'color': Colors.teal},
-    {'id': 5, 'name': 'En Espera', 'color': Colors.amber},
-    {'id': 6, 'name': 'Reanudada', 'color': Colors.lightGreen},
-    {'id': 7, 'name': 'Completada', 'color': Colors.green},
-    {'id': 8, 'name': 'Cancelada', 'color': Colors.red},
+  /// Estados del flujo de la OT + Cancelada (catálogo único).
+  late final List<Map<String, dynamic>> statuses = [
+    for (final code in [
+      ...WorkOrderStatus.flowOf(_current),
+      WorkOrderStatus.cancelada,
+    ])
+      {
+        'id': code,
+        'name': WorkOrderStatus.labelOf(code),
+        'color': MapUtils.getStatusColor(code),
+      },
   ];
 
-  String _getStatusText(int status) {
-    return statuses.firstWhere((s) => s['id'] == status)['name'] as String;
+  String _getStatusText(String status) => WorkOrderStatus.labelOf(status);
+
+  // Solo permite el siguiente estado o Cancelada (si no es final)
+  bool _isStatusAllowed(String statusId) {
+    if (WorkOrderStatus.isFinal(_current)) return false;
+    return statusId == WorkOrderStatus.nextOf(_current) ||
+        statusId == WorkOrderStatus.cancelada;
   }
 
-  // Solo permite el siguiente estado o Cancelada
-  bool _isStatusAllowed(int statusId) {
-    final current = widget.order.status;
-    return statusId == current + 1 || statusId == 8;
-  }
-
-  bool _isPreviousStatus(int statusId) {
-    return statusId < widget.order.status;
+  bool _isPreviousStatus(String statusId) {
+    final flow = WorkOrderStatus.flowOf(_current);
+    final i = flow.indexOf(statusId);
+    final c = flow.indexOf(_current);
+    return i >= 0 && c >= 0 && i < c;
   }
 
   @override
   Widget build(BuildContext context) {
     final bool hasChanged =
-        selectedStatus != widget.order.status && selectedStatus != null;
+        selectedStatus != _current && selectedStatus != null;
 
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -113,7 +120,7 @@ class _ChangeStatusDialogState extends State<ChangeStatusDialog> {
               const SizedBox(height: 12),
 
               ...statuses.map((status) {
-                final int id = status['id'] as int;
+                final String id = status['id'] as String;
                 final isSelected = selectedStatus == id;
                 final isAllowed = _isStatusAllowed(id);
                 final isPrevious = _isPreviousStatus(id);

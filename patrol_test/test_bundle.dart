@@ -11,9 +11,11 @@ import 'login_test.dart' as login_test;
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
-  final platformAutomator = PlatformAutomator(config: PlatformAutomatorConfig.defaultConfig());
+  final platformAutomator = PlatformAutomator(
+    config: PlatformAutomatorConfig.defaultConfig(),
+  );
   await platformAutomator.initialize();
-  
+
   PatrolBinding.ensureInitialized(platformAutomator)
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;

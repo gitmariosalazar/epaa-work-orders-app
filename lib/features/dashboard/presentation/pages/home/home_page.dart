@@ -154,20 +154,34 @@ class HomePage extends StatelessWidget {
                   onTap: () => {showMenuDashboardDialog(context)},
                 ), // ← NUEVO BOTÓN
                 _DashboardButton(
-                  icon: Icons.notifications_active,
-                  label: 'Alertas',
-                  color: Colors.red,
-                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Alertas - Próximamente')),
-                  ),
+                  icon: Icons.qr_code_scanner_rounded,
+                  label: 'Escanear QR',
+                  color: Colors.blueAccent,
+                  onTap: () => context.router.push(const PropertyScanRoute()),
+                ),
+                _DashboardButton(
+                  icon: Icons.edit_note_rounded,
+                  label: 'Buscar Manual',
+                  color: Colors.deepPurple,
+                  onTap: () => context.router.push(const ManualEntryConnectionWithPropertiesScreen()),
+                ),
+                _DashboardButton(
+                  icon: Icons.cable,
+                  label: 'Acometidas',
+                  color: Colors.green,
+                  onTap: () => context.router.push(SearchConnectionRoute()),
+                ),
+                _DashboardButton(
+                  icon: Icons.report,
+                  label: 'Reportar Incid.',
+                  color: Colors.redAccent,
+                  onTap: () => context.router.push(CreateIncidentForm()),
                 ),
                 _DashboardButton(
                   icon: Icons.history,
                   label: 'Historial',
-                  color: Colors.brown,
-                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Historial - Próximamente')),
-                  ),
+                  color: Colors.blueGrey,
+                  onTap: () => context.router.push(const IncidentHistoryRoute()),
                 ),
                 _DashboardButton(
                   icon: Icons.settings,

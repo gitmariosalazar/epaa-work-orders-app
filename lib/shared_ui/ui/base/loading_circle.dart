@@ -19,12 +19,8 @@ class LoadingCircle extends StatefulWidget {
   @override
   State<LoadingCircle> createState() => _LoadingCircleState();
 
-  factory LoadingCircle.small([Color? color]) => LoadingCircle(
-        strokeWidth: 2,
-        height: 20,
-        width: 20,
-        color: color,
-      );
+  factory LoadingCircle.small([Color? color]) =>
+      LoadingCircle(strokeWidth: 2, height: 20, width: 20, color: color);
 }
 
 class _LoadingCircleState extends State<LoadingCircle>
@@ -91,11 +87,7 @@ class _LoadingCircleState extends State<LoadingCircle>
       );
     }
 
-    child = SizedBox(
-      height: widget.height,
-      width: widget.width,
-      child: child,
-    );
+    child = SizedBox(height: widget.height, width: widget.width, child: child);
 
     if (widget.centered) return Center(child: child);
     return child;

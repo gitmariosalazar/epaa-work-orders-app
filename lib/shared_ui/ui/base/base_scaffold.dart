@@ -78,6 +78,13 @@ class BaseScaffold extends StatelessWidget {
       );
     }
 
+    if (bottomNavigationWidget != null) {
+      bottomNavigationWidget = SafeArea(
+        top: false, // Don't add padding at the top of the bottom nav
+        child: bottomNavigationWidget,
+      );
+    }
+
     Widget scaffold = Scaffold(
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       appBar: appBarWidget,

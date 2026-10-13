@@ -22,7 +22,7 @@ class AddWorkOrderAttachmentsCubit extends Cubit<AddWorkOrderAttachmentsState> {
         workOrderId: attachments.first.workOrderId,
         files:
             [], // Aquí deberías mapear los attachments a PlatformFile si es necesario
-        description: '', // Puedes agregar una descripción si es necesario  
+        description: '', // Puedes agregar una descripción si es necesario
       );
       final result = await _addWorkOrderAttachmentUseCase(params);
 

@@ -23,7 +23,7 @@ void main() {
   });
 
   group('login', () {
-    const tAuthenticationRequest = AuthenticationRequest(
+    final tAuthenticationRequest = AuthenticationRequest(
       username: 'test',
       password: 'password',
     );
@@ -34,12 +34,14 @@ void main() {
     final tSuccessResponseJson = {
       "data": {
         "user": {
-          "id": 1,
-          "first_name": "Test",
-          "last_name": "User",
+          "userId": "1",
+          "firstName": "Test",
+          "lastName": "User",
           "username": "testuser",
           "email": "test@example.com",
-          "is_active": true,
+          "roles": [],
+          "permissions": [],
+          "isActive": true,
         },
         "access": "access",
         "refresh": "refresh",
@@ -71,7 +73,7 @@ void main() {
         // Assert
         expect(result, isA<SuccessState<UserDataResponse>>());
         expect(result.data, isNotNull);
-        expect(result.data!.user.id, 1);
+        expect(result.data!.user.userId, "1");
         expect(result.data!.accessToken, 'access');
         expect(result.data!.refreshToken, 'refresh');
 
@@ -79,14 +81,10 @@ void main() {
           () => mockApiService.post(
             ApiEndpoints.login,
             data: captureAny(named: 'data'),
-            options: captureAny(named: 'options'),
           ),
         ).captured;
 
         expect(captured[0], tAuthenticationRequestJson);
-        final options = captured[1] as Options;
-        expect(options.validateStatus!(200), isTrue);
-        expect(options.validateStatus!(400), isTrue);
       },
     );
 

@@ -1,19 +1,19 @@
+import 'package:clean_architecture/core/constants/work_order_status.dart';
+import 'package:clean_architecture/core/utils/geo/coordinate_parser.dart';
 // lib/features/work-orders/presentation/pages/work_orders_map_page.dart
 
 import 'dart:async';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/constants/app_icons.dart';
-import 'package:clean_architecture/core/utils/map_utils.dart'; // ← Import del utils
-import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
+import 'package:clean_architecture/core/utils/map_utils.dart';
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_entity.dart';
 import 'package:clean_architecture/features/work-orders/domain/usecases/get_all_work_order_use_case.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/maps/map_legend.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
-import 'package:clean_architecture/shared_ui/components/button/widget_button.dart';
+import 'package:clean_architecture/components/button/widget_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -27,19 +27,23 @@ class WorkOrdersMapPage extends StatefulWidget {
 }
 
 class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
-  final Completer<GoogleMapController> _mapController = Completer();
+  //final Completer<GoogleMapController> _mapController = Completer();
   Set<Marker> _markers = {};
 
   List<WorkOrderEntity> _allOrders = [];
   List<WorkOrderEntity> _displayedOrders = [];
 
-  int? _selectedStatusFilter;
+  String? _selectedStatusFilter;
   int? _selectedWorkTypeFilter;
 
   bool _isLoadingOrders = true;
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
   String? _errorMessage;
 
-  static const int _maxOrdersToShow = 50; // Límite seguro
+  static const int _pageSize = 10; // Ahora usamos 10 en 10
+  int _currentOffset = 0;
+
   static const double _boundsPadding = 100.0;
 
   final GetAllWorkOrdersUseCase _getAllWorkOrdersUseCase =
@@ -50,30 +54,52 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
   @override
   void initState() {
     super.initState();
-    _loadOrders();
+    _loadOrders(refresh: true);
   }
 
-  Future<void> _loadOrders() async {
+  Future<void> _loadOrders({required bool refresh}) async {
+    if (refresh) {
+      _currentOffset = 0;
+      _hasMore = true;
+      _allOrders.clear();
+    }
+
+    if (!_hasMore && !refresh) return;
+
     setState(() {
-      _isLoadingOrders = true;
+      _isLoadingOrders = refresh ? true : _isLoadingOrders;
+      _isLoadingMore = !refresh;
       _errorMessage = null;
     });
 
     try {
-      final result = await _getAllWorkOrdersUseCase.call();
+      final result = await _getAllWorkOrdersUseCase.call(
+        limit: _pageSize,
+        offset: _currentOffset,
+      );
 
       result.when(
         success: (orders) {
           setState(() {
-            _allOrders = orders;
+            if (refresh) {
+              _allOrders = orders;
+            } else {
+              _allOrders.addAll(orders);
+            }
+
+            _hasMore = orders.length == _pageSize;
+            _currentOffset += orders.length;
+
             _applyFiltersAndLimit();
             _isLoadingOrders = false;
+            _isLoadingMore = false;
           });
         },
         failure: (message, _) {
           setState(() {
             _errorMessage = message ?? 'Error al cargar órdenes';
             _isLoadingOrders = false;
+            _isLoadingMore = false;
           });
         },
         loading: () => setState(() {
@@ -84,61 +110,53 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
       setState(() {
         _errorMessage = 'Error inesperado: $e';
         _isLoadingOrders = false;
+        _isLoadingMore = false;
       });
     }
   }
 
   void _applyFiltersAndLimit() {
     List<WorkOrderEntity> filtered = _allOrders.where((order) {
-      if (order.coordinates == null || order.coordinates!.isEmpty) return false;
+      if (_positionOf(order) == null) return false;
       final statusMatch =
           _selectedStatusFilter == null ||
-          order.status == _selectedStatusFilter;
+          WorkOrderStatus.normalize(order.status) == _selectedStatusFilter;
       final typeMatch =
           _selectedWorkTypeFilter == null ||
           order.workTypeId == _selectedWorkTypeFilter;
       return statusMatch && typeMatch;
     }).toList();
 
-    _displayedOrders = filtered.take(_maxOrdersToShow).toList();
+    _displayedOrders = filtered;
 
     _updateMarkers();
   }
 
-  LatLng _parseLatLng(String coordStr) {
-    try {
-      final String cleanHex = coordStr.trim().replaceAll(' ', '');
-      final List<int> bytes = [];
-      for (int i = 0; i < cleanHex.length; i += 2) {
-        bytes.add(int.parse(cleanHex.substring(i, i + 2), radix: 16));
-      }
-
-      final ByteData byteData = ByteData.sublistView(
-        Uint8List.fromList(bytes),
-        9,
-      );
-      final double lon = byteData.getFloat64(0, Endian.little);
-      final double lat = byteData.getFloat64(8, Endian.little);
-
-      return LatLng(lat, lon);
-    } catch (e) {
-      debugPrint('Error parsing WKB: $e');
-      return const LatLng(0, 0);
-    }
+  /// Posición de la orden o `null` si no tiene coordenadas válidas.
+  LatLng? _positionOf(WorkOrderEntity order) {
+    final p = CoordinateParser.parse(
+      order.coordinates,
+      latitude: order.latitude,
+      longitude: order.longitude,
+    );
+    return p == null ? null : LatLng(p.lat, p.lng);
   }
 
   Future<void> _updateMarkers() async {
     final Set<Marker> newMarkers = {};
 
     for (final order in _displayedOrders) {
-      final position = _parseLatLng(order.coordinates!);
-      if (position.latitude == 0 && position.longitude == 0) continue;
-
-      final customIcon = await MapUtils.getStatusHue(order.status);
+      final position = _positionOf(order);
+      if (position == null) continue;
 
       newMarkers.add(
         Marker(
-          markerId: MarkerId(order.orderCode ?? 'unknown'),
+          markerId: MarkerId(
+            [order.workOrderId, order.orderCode].firstWhere(
+              (s) => s != null && s.isNotEmpty,
+              orElse: () => '${position.latitude},${position.longitude}',
+            )!,
+          ),
           position: position,
           icon: BitmapDescriptor.defaultMarkerWithHue(
             MapUtils.getStatusHue(order.status),
@@ -154,14 +172,22 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
       );
     }
 
+    // Solo actualizamos si el widget sigue montado
+    if (!mounted) return;
+
     setState(() => _markers = newMarkers);
 
-    // Ajustar cámara para mostrar todos los marcadores
-    if (_markers.isNotEmpty && _controller != null) {
-      final LatLngBounds bounds = _getBoundsFromMarkers(_markers);
-      _controller!.animateCamera(
-        CameraUpdate.newLatLngBounds(bounds, _boundsPadding),
-      );
+    // Verificamos que el widget esté montado y el controller no sea null
+    if (_markers.isNotEmpty && mounted && _controller != null) {
+      try {
+        final LatLngBounds bounds = _getBoundsFromMarkers(_markers);
+        await _controller!.animateCamera(
+          CameraUpdate.newLatLngBounds(bounds, _boundsPadding),
+        );
+      } catch (e) {
+        // Si falla el animateCamera (por controller disposed), lo ignoramos silenciosamente
+        debugPrint('Error al ajustar cámara: $e');
+      }
     }
   }
 
@@ -220,7 +246,7 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
                     decoration: BoxDecoration(
                       color: MapUtils.getStatusColor(
                         order.status,
-                      ).withOpacity(0.2),
+                      ).withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: MapUtils.getStatusColor(order.status),
@@ -360,9 +386,24 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
         appBar: AppBar(
           title: const Text(
             'Mapa de Órdenes',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(
+              color: Colors.blue,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Actualizar órdenes',
+              onPressed: () {
+                _loadOrders(refresh: true);
+              },
+            ),
+          ],
         ),
         body: Center(
           child: Text(
@@ -376,9 +417,9 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
     return Scaffold(
       extendBody: true,
       appBar: AppBar(
-        title: const Text(
-          'Mapa de Órdenes',
-          style: TextStyle(
+        title: Text(
+          'Mapa de Órdenes (${_displayedOrders.length}${_hasMore ? '+' : ''})',
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -387,6 +428,22 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: _isLoadingMore
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Icon(Icons.refresh),
+            onPressed: _isLoadingMore ? null : () => _loadOrders(refresh: true),
+            tooltip: 'Actualizar órdenes',
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -396,8 +453,11 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
               zoom: 13,
             ),
             onMapCreated: (controller) {
-              _mapController.complete(controller);
-              _controller = controller;
+              if (mounted) {
+                setState(() {
+                  _controller = controller;
+                });
+              }
             },
             markers: _markers,
             myLocationEnabled: true,
@@ -405,7 +465,9 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
             compassEnabled: true,
             mapToolbarEnabled: true,
             zoomControlsEnabled: true,
-            padding: EdgeInsets.only(bottom: bottomInset + 45),
+            padding: EdgeInsets.only(
+              bottom: bottomInset + 120,
+            ), // + espacio para botón
           ),
 
           // Positioned de Informacion de Contenido mostrado
@@ -426,7 +488,7 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    DropdownButton<int?>(
+                    DropdownButton<String?>(
                       isExpanded: true,
                       value: _selectedStatusFilter,
                       hint: const Text('Filtrar por Estado'),
@@ -438,28 +500,26 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
                             style: TextStyle(fontSize: 12),
                           ),
                         ),
-                        ...[1, 2, 3, 4, 5, 6, 7, 8].map(
-                          (v) => DropdownMenuItem(
-                            value: v,
+                        ...WorkOrderStatus.all.map(
+                          (s) => DropdownMenuItem<String?>(
+                            value: s.code,
                             child: Row(
                               children: [
                                 Icon(
                                   Icons.circle,
-                                  color: HSVColor.fromAHSV(
-                                    1.0,
-                                    MapUtils.getStatusHue(v),
-                                    1.0,
-                                    1.0,
-                                  ).toColor(),
+                                  color: MapUtils.getStatusColor(s.code),
                                   size: 12,
                                 ),
                                 const SizedBox(width: 8),
-                                Text(
-                                  MapUtils.getStatusText(v),
-                                  style: const TextStyle(fontSize: 12),
+                                Expanded(
+                                  child: Text(
+                                    s.label,
+                                    style: const TextStyle(fontSize: 12),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ],
-                            ), // ← Usando utils
+                            ),
                           ),
                         ),
                       ],
@@ -506,6 +566,54 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
               ),
             ),
           ),
+
+          if (_hasMore)
+            Positioned(
+              bottom: bottomInset + 35,
+              left: 20,
+              right: 20,
+              child: Center(
+                child: ElevatedButton.icon(
+                  onPressed: _isLoadingMore
+                      ? null
+                      : () => _loadOrders(refresh: false),
+                  icon: _isLoadingMore
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.refresh_sharp),
+                  label: Text(
+                    _isLoadingMore
+                        ? 'Cargando...'
+                        : 'Cargar más $_pageSize OTs',
+                  ),
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(
+                      Color.fromARGB(
+                        255,
+                        141,
+                        68,
+                        243,
+                      ).withValues(alpha: _isLoadingMore ? 0.5 : 1.0),
+                    ),
+                    foregroundColor: WidgetStateProperty.all(Colors.white),
+                    padding: WidgetStateProperty.all(
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    ),
+                    shape: WidgetStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

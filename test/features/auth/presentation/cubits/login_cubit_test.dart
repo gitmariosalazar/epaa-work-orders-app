@@ -32,17 +32,19 @@ void main() {
   setUpAll(() {
     userData = UserData(
       user: User(
-        id: 0,
+        userId: "0",
         firstName: '',
         lastName: '',
         username: '',
         email: '',
+        roles: const [],
+        permissions: const [],
         isActive: true,
       ),
       accessToken: '',
       refreshToken: '',
     );
-    registerFallbackValue(Authentication(username: '', password: ''));
+    registerFallbackValue(const Authentication(username: '', password: ''));
     registerFallbackValue(MockPageRouteInfo());
     registerFallbackValue(userData);
   });

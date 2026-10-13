@@ -29,11 +29,8 @@ class BaseIconButton extends StatelessWidget {
       onPressed: onPressed,
       padding: padding ?? EdgeInsets.zero,
       constraints: boxConstraints ?? const BoxConstraints(),
-      visualDensity: visualDensity ??
-          const VisualDensity(
-            horizontal: -4,
-            vertical: -4,
-          ),
+      visualDensity:
+          visualDensity ?? const VisualDensity(horizontal: -4, vertical: -4),
       highlightColor: disableSplash ? Colors.transparent : null,
       icon: icon,
     );
@@ -46,11 +43,7 @@ class BaseIconButton extends StatelessWidget {
     }
 
     if (targetSize != null) {
-      child = SizedBox(
-        height: targetSize,
-        width: targetSize,
-        child: child,
-      );
+      child = SizedBox(height: targetSize, width: targetSize, child: child);
     }
 
     return child;

@@ -14,13 +14,42 @@ class WorkOrdersInitial extends WorkOrdersState {}
 
 class WorkOrdersLoading extends WorkOrdersState {}
 
+class WorkOrdersEmpty extends WorkOrdersState {}
+
 class WorkOrdersLoaded extends WorkOrdersState {
   final List<WorkOrderEntity> orders;
+  final bool isLoadingMore;
+  final bool hasMore;
+  final String? partialErrorMessage;
 
-  const WorkOrdersLoaded(this.orders);
+  const WorkOrdersLoaded({
+    required this.orders,
+    this.isLoadingMore = false,
+    this.hasMore = true,
+    this.partialErrorMessage,
+  });
+
+  WorkOrdersLoaded copyWith({
+    List<WorkOrderEntity>? orders,
+    bool? isLoadingMore,
+    bool? hasMore,
+    String? partialErrorMessage,
+  }) {
+    return WorkOrdersLoaded(
+      orders: orders ?? this.orders,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      hasMore: hasMore ?? this.hasMore,
+      partialErrorMessage: partialErrorMessage ?? this.partialErrorMessage,
+    );
+  }
 
   @override
-  List<Object?> get props => [orders];
+  List<Object?> get props => [
+    orders,
+    isLoadingMore,
+    hasMore,
+    partialErrorMessage,
+  ];
 }
 
 class WorkOrdersError extends WorkOrdersState {
@@ -31,5 +60,3 @@ class WorkOrdersError extends WorkOrdersState {
   @override
   List<Object?> get props => [message];
 }
-
-class WorkOrdersEmpty extends WorkOrdersState {}

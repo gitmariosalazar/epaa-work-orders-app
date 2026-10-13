@@ -41,12 +41,28 @@ class AddMaterialWorkOrderModel {
     );
   }
 
+  static int _toInt(dynamic value, [int defaultValue = 0]) {
+    if (value == null) return defaultValue;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value.trim()) ?? defaultValue;
+    return defaultValue;
+  }
+
+  static double _toDouble(dynamic value, [double defaultValue = 0.0]) {
+    if (value == null) return defaultValue;
+    if (value is double) return value;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value.trim()) ?? defaultValue;
+    return defaultValue;
+  }
+
   factory AddMaterialWorkOrderModel.fromJson(Map<String, dynamic> json) {
     return AddMaterialWorkOrderModel(
-      workOrderId: json['workOrderId'] as String,
-      materialId: json['materialId'] as int,
-      quantity: (json['quantity'] as num).toDouble(),
-      unitCost: (json['unitCost'] as num).toDouble(),
+      workOrderId: (json['workOrderId'] ?? json['work_order_id'] ?? '').toString(),
+      materialId: _toInt(json['materialId'] ?? json['material_id']),
+      quantity: _toDouble(json['quantity']),
+      unitCost: _toDouble(json['unitCost'] ?? json['unit_cost']),
     );
   }
 }

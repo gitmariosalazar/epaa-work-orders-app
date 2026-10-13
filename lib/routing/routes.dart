@@ -31,6 +31,42 @@ class AppRouter extends RootStackRouter {
         ),
         AutoRoute(path: WORKERS_PATH, page: WorkersHomeRoute.page),
         AutoRoute(
+          path: 'property-scan',
+          page: PropertyScanRoute.page,
+        ),
+        AutoRoute(
+          path: 'manually-entry-properties',
+          page: ManualEntryConnectionWithPropertiesScreen.page,
+        ),
+        AutoRoute(
+          path: 'update-connection-number',
+          page: UpdateMeterNumberFormScreen.page,
+        ),
+        AutoRoute(
+          path: 'update-location-form',
+          page: UpdateLocationFormScreen.page,
+        ),
+        AutoRoute(
+          path: 'search-connection',
+          page: SearchConnectionRoute.page,
+        ),
+        AutoRoute(
+          path: 'create-incident',
+          page: CreateIncidentForm.page,
+        ),
+        AutoRoute(
+          path: 'incidents-history',
+          page: IncidentHistoryRoute.page,
+        ),
+        AutoRoute(
+          path: 'solve-incident',
+          page: SolveIncidentScreen.page,
+        ),
+        AutoRoute(
+          path: 'solve-and-change-meter',
+          page: SolveAndChangeMeterIncidentScreen.page,
+        ),
+        AutoRoute(
           path: PRODUCTS_MATERIALS_PATH,
           page: ProductsMaterialsHomeRoute.page,
         ),
@@ -38,6 +74,10 @@ class AppRouter extends RootStackRouter {
         AutoRoute(
           path: WORK_ORDER_DETAIL_PATH,
           page: WorkOrderDetailRoute.page,
+        ),
+        AutoRoute(
+          path: WORK_ORDER_PROCESS_PATH,
+          page: WorkOrderProcessRoute.page,
         ),
         AutoRoute(path: WORK_ORDER_MAP_PATH, page: WorkOrderMapRoute.page),
         AutoRoute(path: WORK_ORDERS_MAP_PATH, page: WorkOrdersMapRoute.page),

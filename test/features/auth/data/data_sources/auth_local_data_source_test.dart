@@ -21,15 +21,17 @@ void main() {
   const tStorageKey = 'userData';
 
   const userModel = UserResponse(
-    id: 1,
+    userId: '1',
     firstName: 'Test',
     lastName: 'User',
     username: 'testuser',
     email: 'test@example.com',
+    roles: [],
+    permissions: [],
     isActive: true,
   );
 
-  // Assuming UserDataModel has a constructor like this and a toJson method.
+  // Assuming UserDataResponse has a constructor like this and a toJson method.
   final tUserDataModel = UserDataResponse(
     user: userModel,
     accessToken: "access",
@@ -93,7 +95,7 @@ void main() {
         // Assert
         expect(result, isA<SuccessState<UserDataResponse>>());
         expect(result.data, isNotNull);
-        expect(result.data!.user.id, userModel.id);
+        expect(result.data!.user.userId, userModel.userId);
         expect(result.data!.accessToken, "access");
         verify(() => mockLocalDatabase.getString(tStorageKey)).called(1);
       },

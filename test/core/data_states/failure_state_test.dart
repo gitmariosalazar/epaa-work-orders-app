@@ -26,8 +26,16 @@ void main() {
     });
 
     test('should be equatable', () {
-      final state1 = FailureState<int>(message: 'msg', errorType: ErrorType.dioError, statusCode: 500);
-      final state2 = FailureState<int>(message: 'msg', errorType: ErrorType.dioError, statusCode: 500);
+      final state1 = FailureState<int>(
+        message: 'msg',
+        errorType: ErrorType.dioError,
+        statusCode: 500,
+      );
+      final state2 = FailureState<int>(
+        message: 'msg',
+        errorType: ErrorType.dioError,
+        statusCode: 500,
+      );
 
       expect(state1, equals(state2));
     });

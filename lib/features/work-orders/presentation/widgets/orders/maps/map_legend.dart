@@ -1,8 +1,9 @@
+import 'package:clean_architecture/core/constants/work_order_status.dart';
 import 'package:clean_architecture/core/utils/map_utils.dart';
 import 'package:flutter/material.dart';
 
 class MapLegend extends StatefulWidget {
-  const MapLegend({Key? key, this.bottomInset = 16.0}) : super(key: key);
+  const MapLegend({super.key, this.bottomInset = 16.0});
 
   final double bottomInset;
 
@@ -11,6 +12,20 @@ class MapLegend extends StatefulWidget {
 }
 
 class _MapLegendState extends State<MapLegend> {
+  /// Un representante por grupo de color (los sub-flujos de inspección e
+  /// instalación comparten color con su estado general equivalente).
+  static const List<(String, String)> _legend = [
+    (WorkOrderStatus.notificada, 'Notificada'),
+    (WorkOrderStatus.pendiente, 'Pendiente'),
+    (WorkOrderStatus.asignada, 'Asignada'),
+    (WorkOrderStatus.preparacion, 'En Preparación'),
+    (WorkOrderStatus.enProceso, 'En Proceso'),
+    (WorkOrderStatus.ejecutada, 'Ejecutada'),
+    (WorkOrderStatus.rechazadaTecnica, 'Rechazada'),
+    (WorkOrderStatus.completada, 'Completada'),
+    (WorkOrderStatus.cancelada, 'Cancelada'),
+  ];
+
   bool _isExpanded = true;
 
   @override
@@ -29,7 +44,7 @@ class _MapLegendState extends State<MapLegend> {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.97),
+                  color: Colors.white.withValues(alpha: 0.97),
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: Column(
@@ -72,9 +87,9 @@ class _MapLegendState extends State<MapLegend> {
                             mainAxisSpacing: 4,
                             crossAxisSpacing: 4,
                           ),
-                      itemCount: 8,
+                      itemCount: _legend.length,
                       itemBuilder: (context, index) {
-                        final status = index + 1;
+                        final (status, label) = _legend[index];
                         return Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -86,7 +101,7 @@ class _MapLegendState extends State<MapLegend> {
                             const SizedBox(width: 2),
                             Flexible(
                               child: Text(
-                                MapUtils.getStatusText(status),
+                                label,
                                 style: const TextStyle(fontSize: 10),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -108,7 +123,7 @@ class _MapLegendState extends State<MapLegend> {
             right: 8,
             child: FloatingActionButton(
               mini: true,
-              backgroundColor: Colors.white.withOpacity(0.95),
+              backgroundColor: Colors.white.withValues(alpha: 0.95),
               foregroundColor: Colors.black87,
               elevation: 6,
               onPressed: () => setState(() => _isExpanded = !_isExpanded),

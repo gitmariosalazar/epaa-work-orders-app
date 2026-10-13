@@ -1,3 +1,4 @@
+import 'package:clean_architecture/core/utils/geo/coordinate_parser.dart';
 // lib/features/work-orders/presentation/pages/work_order_map_page.dart
 
 import 'dart:async';
@@ -37,8 +38,8 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
   LatLng? _workLocation;
   LatLng? _currentLocation;
 
-  Set<Marker> _markers = {};
-  Set<Polyline> _polylines = {};
+  final Set<Marker> _markers = {};
+  final Set<Polyline> _polylines = {};
 
   String _routeInfo = '';
   MapType _currentMapType = MapType.normal;
@@ -53,33 +54,18 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
   }
 
   void _parseCoordinates() {
-    final String? coordStr = widget.order.coordinates?.trim();
-    if (coordStr == null || coordStr.isEmpty) {
+    final p = CoordinateParser.parse(
+      widget.order.coordinates,
+      latitude: widget.order.latitude,
+      longitude: widget.order.longitude,
+    );
+    if (p == null) {
       setState(() => _errorMessage = 'No hay coordenadas disponibles.');
       return;
     }
-
-    try {
-      final String cleanHex = coordStr.replaceAll(' ', '');
-      final List<int> bytes = [];
-      for (int i = 0; i < cleanHex.length; i += 2) {
-        bytes.add(int.parse(cleanHex.substring(i, i + 2), radix: 16));
-      }
-
-      final ByteData byteData = ByteData.sublistView(
-        Uint8List.fromList(bytes),
-        9,
-      );
-      final double lon = byteData.getFloat64(0, Endian.little);
-      final double lat = byteData.getFloat64(8, Endian.little);
-
-      _workLocation = LatLng(lat, lon);
-
-      _addWorkMarker();
-      setState(() {});
-    } catch (e) {
-      setState(() => _errorMessage = 'Error al leer coordenadas: $e');
-    }
+    _workLocation = LatLng(p.lat, p.lng);
+    _addWorkMarker();
+    setState(() {});
   }
 
   Future<void> _getCurrentLocation() async {
@@ -190,8 +176,9 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
   Future<void> _zoomToFitBoth() async {
     if (_currentLocation == null ||
         _workLocation == null ||
-        _mapController == null)
+        _mapController == null) {
       return;
+    }
 
     try {
       final LatLngBounds bounds = LatLngBounds(
@@ -452,7 +439,7 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
             left: 0,
             right: 0,
             child: Container(
-              color: Colors.black.withOpacity(0.7),
+              color: Colors.black.withValues(alpha: 0.7),
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
               child: Row(
                 children: [
@@ -626,7 +613,7 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
                     decoration: BoxDecoration(
                       color: MapUtils.getStatusColor(
                         order.status,
-                      ).withOpacity(0.2),
+                      ).withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: MapUtils.getStatusColor(order.status),

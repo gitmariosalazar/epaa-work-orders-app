@@ -62,6 +62,9 @@ class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
         theme: lightTheme,
         routerDelegate: NavigationUtil.I.routerDelegate,
         routeInformationParser: NavigationUtil.I.routeInformationParser,
+        builder: (context, child) {
+          return SafeArea(child: child!);
+        },
       ),
     );
   }

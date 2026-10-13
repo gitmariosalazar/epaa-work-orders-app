@@ -6,7 +6,7 @@ import 'package:clean_architecture/features/connections/domain/entities/connecti
 import 'package:clean_architecture/features/connections/domain/usecases/connection_use_case.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/connection-step/connection_search_dialog.dart';
 import 'package:clean_architecture/shared_ui/components/common/custom_text_field.dart';
-import 'package:clean_architecture/shared_ui/components/common/form_card.dart';
+import 'package:clean_architecture/components/common/form_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 

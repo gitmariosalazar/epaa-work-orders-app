@@ -75,38 +75,4 @@ class LoginCubit extends BaseCubit<LoginFormState> {
     _isLoading = false;
     _refreshState(); // Quita loading
   }
-
-  Future<void> fakeLogin({
-    required String username,
-    required String password,
-  }) async {
-    _isLoading = true;
-    _refreshState();
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    final fakeUserData = UserData(
-      accessToken: "fake_access_token_123",
-      refreshToken: "fake_refresh_token_456",
-      user: User(
-        id: 1,
-        firstName: "Flutter",
-        lastName: "Developer",
-        username: username,
-        email: "$username@example.com",
-        isActive: true,
-      ),
-    );
-
-    _sessionService.setUserData = fakeUserData;
-
-    if (state.saveUserCredential) {
-      await _useCases.saveUserData(fakeUserData);
-    }
-
-    replaceAllRoute(const HomeRoute());
-
-    _isLoading = false;
-    _refreshState();
-  }
 }
