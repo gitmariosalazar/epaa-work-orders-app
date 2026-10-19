@@ -1,5 +1,4 @@
 import 'package:clean_architecture/features/connections/data/models/contact.dart';
-import 'package:clean_architecture/features/connections/domain/entities/contact.dart';
 import 'package:clean_architecture/features/connections/domain/entities/person.dart';
 
 class PersonModel {

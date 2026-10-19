@@ -1,6 +1,5 @@
 import 'package:clean_architecture/features/connections/data/models/contact.dart';
 import 'package:clean_architecture/features/connections/domain/entities/company.dart';
-import 'package:clean_architecture/features/connections/domain/entities/contact.dart';
 
 class CompanyModel {
   final String ruc;

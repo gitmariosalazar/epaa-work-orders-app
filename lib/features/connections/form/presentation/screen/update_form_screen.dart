@@ -2,7 +2,6 @@
 import 'package:clean_architecture/features/connections/form/add-img/presentation/blocs/add_property_image_bloc.dart';
 import 'package:clean_architecture/features/connections/form/add-img/presentation/blocs/add_property_image_event.dart';
 import 'package:clean_architecture/features/connections/form/add-img/presentation/blocs/add_property_image_state.dart';
-import 'package:clean_architecture/features/connections/form/presentation/widgets/connection/images_section.dart';
 import 'package:clean_architecture/features/connections/form/presentation/widgets/property/property_form.dart';
 import 'package:clean_architecture/features/connections/domain/entities/property.dart';
 import 'package:clean_architecture/features/connections/search/presentation/info/components/readings_history_table.dart';
@@ -490,7 +489,7 @@ class _UpdateConnectionFormScreenState extends State<UpdateConnectionFormScreen>
             place.locality,
             place.subAdministrativeArea,
             place.administrativeArea,
-          ].where((e) => e != null && (e as String).isNotEmpty).join(', ');
+          ].where((e) => e != null && e.isNotEmpty).join(', ');
         });
       }
     } catch (e) {
@@ -1548,29 +1547,30 @@ class _UpdateConnectionFormScreenState extends State<UpdateConnectionFormScreen>
         ),
         clipBehavior: Clip.antiAlias,
         child: SwitchListTile(
-        title: Text(
-          title,
-          style: context.bodyMedium.copyWith(
-            fontWeight: FontWeight.w500,
-            color: value ? cs.onPrimaryContainer : cs.onSurface,
+          title: Text(
+            title,
+            style: context.bodyMedium.copyWith(
+              fontWeight: FontWeight.w500,
+              color: value ? cs.onPrimaryContainer : cs.onSurface,
+            ),
           ),
-        ),
-        value: value,
-        onChanged: onChanged,
-        // ── Track (fondo del switch) ──────────────────────────
-        activeTrackColor: cs.primary,
-        inactiveTrackColor: cs.surfaceContainerHighest,
-        // ── Thumb (bolita del switch) ─────────────────────────
-        activeThumbColor: cs.onPrimary,
-        inactiveThumbColor: cs.outline,
-        contentPadding: EdgeInsets.symmetric(horizontal: context.smallSpacing),
-        dense: true,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(context.smallBorderRadiusValue),
-        ),
+          value: value,
+          onChanged: onChanged,
+          // ── Track (fondo del switch) ──────────────────────────
+          activeTrackColor: cs.primary,
+          inactiveTrackColor: cs.surfaceContainerHighest,
+          // ── Thumb (bolita del switch) ─────────────────────────
+          activeThumbColor: cs.onPrimary,
+          inactiveThumbColor: cs.outline,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: context.smallSpacing,
+          ),
+          dense: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(context.smallBorderRadiusValue),
+          ),
         ),
       ),
     ),
   );
 }
-

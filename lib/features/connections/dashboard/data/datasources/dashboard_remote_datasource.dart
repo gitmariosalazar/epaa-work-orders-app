@@ -1,8 +1,6 @@
 import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:clean_architecture/core/data_handling/data_handler.dart';
 import 'package:clean_architecture/core/services/api/api_service.dart';
-import 'package:clean_architecture/features/incidents/data/datasources/incident_remote_datasource.dart';
-import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
 class DashboardAdvanceDto {

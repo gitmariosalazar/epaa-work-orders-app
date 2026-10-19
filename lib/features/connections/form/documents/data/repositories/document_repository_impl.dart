@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:clean_architecture/core/utils/type_defs.dart';
-import 'package:clean_architecture/core/data_states/data_state.dart';
 import 'package:injectable/injectable.dart';
 import '../datasources/document_remote_datasource.dart';
 import '../../domain/entities/uploaded_document.dart';
