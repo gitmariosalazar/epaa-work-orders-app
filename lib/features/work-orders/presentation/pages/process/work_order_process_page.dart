@@ -100,26 +100,128 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
           return Scaffold(
             backgroundColor: const Color(0xFFF8FAFC),
             appBar: AppBar(
-              title: Text(
-                order != null
-                    ? 'Proceso OT: ${order.codigoOrden}'
-                    : 'Gestión de Proceso OT',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              backgroundColor: Colors.transparent,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              centerTitle: true,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 12.0),
+                child: Center(
+                  child: Material(
+                    color: Colors.white.withOpacity(0.15),
+                    shape: const CircleBorder(),
+                    clipBehavior: Clip.antiAlias,
+                    child: IconButton(
+                      iconSize: 20,
+                      splashRadius: 22,
+                      constraints: const BoxConstraints(
+                        minWidth: 38,
+                        minHeight: 38,
+                      ),
+                      icon: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Colors.white, // Color blanco garantizado
+                      ),
+                      tooltip: 'Atrás',
+                      onPressed: () => Navigator.of(context).maybePop(),
+                    ),
+                  ),
                 ),
               ),
-              centerTitle: true,
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
+
+              // Borde inferior sutilmente redondeado
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(15),
+                ),
+              ),
+              // Fondo con degradado moderno
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.primary,
+                      AppColors.primary.withBlue(
+                        (AppColors.primary.blue + 35).clamp(0, 255),
+                      ), // Un tono ligeramente más vibrante
+                    ],
+                  ),
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(8),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.25),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+              ),
+              title: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    order != null ? 'PROCESO OT' : 'GESTIÓN DE ORDEN',
+                    style: TextStyle(
+                      fontSize: 11,
+                      letterSpacing: 1.2,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white.withOpacity(0.85),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    order != null ? order.codigoOrden : 'Proceso OT',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                      letterSpacing: 0.5,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
               actions: [
                 if (order != null)
-                  IconButton(
-                    icon: const Icon(Icons.refresh_rounded),
-                    tooltip: 'Recargar orden',
-                    onPressed: state.isLoading || state.isActionLoading
-                        ? null
-                        : () => _cubit.reloadCurrentOrder(),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: Center(
+                      child: Material(
+                        color: Colors.white.withOpacity(0.15),
+                        shape: const CircleBorder(),
+                        clipBehavior: Clip.antiAlias,
+                        child: IconButton(
+                          iconSize: 20,
+                          splashRadius: 22,
+                          constraints: const BoxConstraints(
+                            minWidth: 38,
+                            minHeight: 38,
+                          ),
+                          icon: state.isLoading || state.isActionLoading
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.refresh_rounded,
+                                  color: Colors.white,
+                                ),
+                          tooltip: 'Recargar orden',
+                          onPressed: state.isLoading || state.isActionLoading
+                              ? null
+                              : () => _cubit.reloadCurrentOrder(),
+                        ),
+                      ),
+                    ),
                   ),
               ],
             ),
