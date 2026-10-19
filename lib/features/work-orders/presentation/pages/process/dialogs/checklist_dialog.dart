@@ -37,7 +37,11 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
               color: Colors.amber.shade100,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.checklist, color: Colors.amber.shade800, size: 22),
+            child: Icon(
+              Icons.checklist,
+              color: Colors.amber.shade800,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -77,7 +81,9 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: _passed ? Colors.green.shade50 : Colors.grey.shade100,
+                        color: _passed
+                            ? Colors.green.shade50
+                            : Colors.grey.shade100,
                         border: Border.all(
                           color: _passed ? Colors.green : Colors.grey.shade300,
                           width: _passed ? 2 : 1,
@@ -96,8 +102,12 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
                           Text(
                             'Aprobada',
                             style: TextStyle(
-                              fontWeight: _passed ? FontWeight.bold : FontWeight.normal,
-                              color: _passed ? Colors.green.shade900 : Colors.grey.shade700,
+                              fontWeight: _passed
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: _passed
+                                  ? Colors.green.shade900
+                                  : Colors.grey.shade700,
                               fontSize: 13,
                             ),
                           ),
@@ -114,7 +124,9 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: !_passed ? Colors.red.shade50 : Colors.grey.shade100,
+                        color: !_passed
+                            ? Colors.red.shade50
+                            : Colors.grey.shade100,
                         border: Border.all(
                           color: !_passed ? Colors.red : Colors.grey.shade300,
                           width: !_passed ? 2 : 1,
@@ -133,8 +145,12 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
                           Text(
                             'Rechazada',
                             style: TextStyle(
-                              fontWeight: !_passed ? FontWeight.bold : FontWeight.normal,
-                              color: !_passed ? Colors.red.shade900 : Colors.grey.shade700,
+                              fontWeight: !_passed
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: !_passed
+                                  ? Colors.red.shade900
+                                  : Colors.grey.shade700,
                               fontSize: 13,
                             ),
                           ),
@@ -155,7 +171,8 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
               controller: _observationsController,
               maxLines: 3,
               decoration: InputDecoration(
-                hintText: 'Detalle el estado de herramientas, permisos y condiciones...',
+                hintText:
+                    'Detalle el estado de herramientas, permisos y condiciones...',
                 hintStyle: const TextStyle(fontSize: 13),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -174,7 +191,9 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: _passed ? Colors.green : Colors.red,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -185,7 +204,10 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
                   : _observationsController.text.trim(),
             );
           },
-          child: const Text('Guardar Checklist', style: TextStyle(color: Colors.white)),
+          child: const Text(
+            'Guardar Checklist',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ],
     );

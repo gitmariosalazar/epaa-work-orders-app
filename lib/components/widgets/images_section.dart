@@ -1,4 +1,7 @@
 import 'dart:io';
+
+import 'package:clean_architecture/components/widgets/attachment_source_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_architecture/utils/responsive_utils.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,6 +11,7 @@ class ImagesSection extends StatelessWidget {
   final String mode;
   final Function(File) onImageAdded;
   final Function(int) onImageRemoved;
+  final bool allowFiles;
 
   const ImagesSection({
     super.key,
@@ -15,18 +19,54 @@ class ImagesSection extends StatelessWidget {
     required this.mode,
     required this.onImageAdded,
     required this.onImageRemoved,
+    this.allowFiles = false,
   });
 
-  Future<void> _pickImage() async {
+  Future<void> _pickFromSource(
+    BuildContext context,
+    AttachmentSource source,
+  ) async {
+    if (source == AttachmentSource.file) {
+      final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+      if (!context.mounted || result == null) return;
+      for (final path in result.paths.whereType<String>()) {
+        onImageAdded(File(path));
+      }
+      return;
+    }
+
     final picker = ImagePicker();
-    final XFile? pickedImage = await picker.pickImage(
-      source: ImageSource.camera,
+    if (source == AttachmentSource.camera) {
+      final pickedImage = await picker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+      if (context.mounted && pickedImage != null) {
+        onImageAdded(File(pickedImage.path));
+      }
+      return;
+    }
+
+    final pickedImages = await picker.pickMultiImage(
       maxWidth: 1024,
       maxHeight: 1024,
       imageQuality: 85,
     );
-    if (pickedImage != null) {
-      onImageAdded(File(pickedImage.path));
+    if (!context.mounted) return;
+    for (final image in pickedImages) {
+      onImageAdded(File(image.path));
+    }
+  }
+
+  Future<void> _showImageSourcePicker(BuildContext context) async {
+    final source = await AttachmentSourcePicker.show(
+      context,
+      allowFiles: allowFiles,
+    );
+    if (source != null && context.mounted) {
+      await _pickFromSource(context, source);
     }
   }
 
@@ -36,19 +76,22 @@ class ImagesSection extends StatelessWidget {
     double size,
   ) {
     return GestureDetector(
-      onTap: _pickImage,
+      onTap: () => _showImageSourcePicker(context),
       child: Container(
         width: size,
         height: size,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
-          color: colors.primaryContainer.withOpacity(0.15),
-          border: Border.all(color: colors.primary.withOpacity(0.45), width: 2),
+          color: colors.primaryContainer.withValues(alpha: 0.15),
+          border: Border.all(
+            color: colors.primary.withValues(alpha: 0.45),
+            width: 2,
+          ),
         ),
         child: Icon(
           Icons.add_a_photo_rounded,
           size: size * 0.48,
-          color: colors.primary.withOpacity(0.82),
+          color: colors.primary.withValues(alpha: 0.82),
         ),
       ),
     );
@@ -63,7 +106,9 @@ class ImagesSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Cargar Imágenes *',
+          mode == 'completion'
+              ? 'Evidencias de finalización'
+              : 'Evidencias adjuntas',
           style: ResponsiveUtils.bodyLarge(
             context,
           ).copyWith(fontWeight: FontWeight.w600, color: colors.onSurface),
@@ -74,37 +119,53 @@ class ImagesSection extends StatelessWidget {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: attachedImages.length + 1,
-            separatorBuilder: (_, __) =>
+            separatorBuilder: (_, _) =>
                 SizedBox(width: ResponsiveUtils.smallSpacing(context)),
             itemBuilder: (context, index) {
               if (index == attachedImages.length) {
                 return _buildAddImageButton(context, colors, imageSize);
               } else {
                 final file = attachedImages[index];
+                final extension = file.path.split('.').last.toLowerCase();
+                final isImage = {
+                  'jpg',
+                  'jpeg',
+                  'png',
+                  'gif',
+                  'webp',
+                  'bmp',
+                }.contains(extension);
                 return Stack(
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(14),
-                      child: Image.file(
-                        file,
-                        width: imageSize,
-                        height: imageSize,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            width: imageSize,
-                            height: imageSize,
-                            color: colors.error.withOpacity(0.3),
-                            child: Center(
-                              child: Text(
-                                'Error',
-                                style: ResponsiveUtils.bodySmall(
-                                  context,
-                                ).copyWith(color: colors.error),
-                              ),
-                            ),
-                          );
-                        },
+                      child: isImage
+                          ? Image.file(
+                              file,
+                              width: imageSize,
+                              height: imageSize,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  _filePreview(colors, imageSize),
+                            )
+                          : _filePreview(colors, imageSize),
+                    ),
+                    Positioned(
+                      left: 2,
+                      right: 2,
+                      bottom: 2,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 3),
+                        color: Colors.black54,
+                        child: Text(
+                          file.path.split(Platform.pathSeparator).last,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 8,
+                          ),
+                        ),
                       ),
                     ),
                     Positioned(
@@ -114,7 +175,7 @@ class ImagesSection extends StatelessWidget {
                         onTap: () => onImageRemoved(index),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.7),
+                            color: Colors.black.withValues(alpha: 0.7),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -134,4 +195,15 @@ class ImagesSection extends StatelessWidget {
       ],
     );
   }
+
+  Widget _filePreview(ColorScheme colors, double size) => Container(
+    width: size,
+    height: size,
+    color: colors.surfaceContainerHighest,
+    child: Icon(
+      Icons.insert_drive_file_outlined,
+      color: colors.primary,
+      size: size * 0.48,
+    ),
+  );
 }

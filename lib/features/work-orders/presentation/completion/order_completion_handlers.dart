@@ -6,17 +6,26 @@
 //   - LSP: todos los handlers son intercambiables vía la interfaz.
 //   - DIP: la página depende del coordinador/abstracción, no de los handlers.
 import 'package:auto_route/auto_route.dart';
+import 'package:clean_architecture/features/work-orders/domain/entities/evidence_stage.dart';
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_detail_entity.dart';
 import 'package:clean_architecture/features/incidents/presentation/pages/solve_incident_screen.dart'
     show SolveIncidentResult;
+import 'package:clean_architecture/features/work-orders/presentation/pages/process/dialogs/completion_description_dialog.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:flutter/material.dart';
 
 /// Datos producidos por el paso previo (extensible por origen).
 class CompletionPreStepResult {
+  /// Descripción enviada al completar la orden.
+  final String description;
+
   /// Rutas locales de evidencias a adjuntar a la OT antes del cierre.
   final List<String> evidencePaths;
-  const CompletionPreStepResult({this.evidencePaths = const []});
+
+  const CompletionPreStepResult({
+    required this.description,
+    this.evidencePaths = const [],
+  });
 }
 
 /// Contrato: acción previa al cierre de una OT para un origen concreto.
@@ -55,9 +64,12 @@ final class IncidentOriginCompletionHandler
       ),
     );
     if (result is SolveIncidentResult) {
-      return CompletionPreStepResult(evidencePaths: result.imagePaths);
+      return CompletionPreStepResult(
+        description: result.description,
+        evidencePaths: result.imagePaths,
+      );
     }
-    return result == true ? const CompletionPreStepResult() : null;
+    return null;
   }
 }
 
@@ -72,8 +84,17 @@ final class DefaultCompletionHandler implements OrderOriginCompletionHandler {
   Future<CompletionPreStepResult?> beforeComplete(
     BuildContext context,
     WorkOrderDetailEntity order,
-  ) async =>
-      const CompletionPreStepResult();
+  ) async {
+    final result = await showDialog<CompletionDescriptionDialogResult>(
+      context: context,
+      builder: (_) => const CompletionDescriptionDialog(),
+    );
+    if (result == null) return null;
+    return CompletionPreStepResult(
+      description: result.description,
+      evidencePaths: result.evidencePaths,
+    );
+  }
 }
 
 /// Selecciona el handler adecuado y orquesta el cierre.
@@ -98,14 +119,16 @@ final class OrderCompletionCoordinator {
   Future<void> run(
     BuildContext context,
     WorkOrderDetailEntity order, {
-    required Future<void> Function() complete,
-    Future<void> Function(List<String> paths)? uploadEvidence,
+    required Future<void> Function(String description) complete,
+    required Future<void> Function(List<String> paths, EvidenceStage stage)
+    uploadEvidence,
   }) async {
     final result = await _resolve(order).beforeComplete(context, order);
     if (result == null || !context.mounted) return;
-    if (result.evidencePaths.isNotEmpty && uploadEvidence != null) {
-      await uploadEvidence(result.evidencePaths);
+    if (result.evidencePaths.isNotEmpty) {
+      // Evidencias del cierre (OT e incidente resuelto) = trabajo terminado.
+      await uploadEvidence(result.evidencePaths, EvidenceStage.workCompleted);
     }
-    await complete();
+    await complete(result.description);
   }
 }

@@ -16,7 +16,17 @@ class WorkOrdersCubit extends Cubit<WorkOrdersState> {
 
   int _currentOffset = 0;
   bool _hasReachedEnd = false;
+  String? _searchValue;
+
+  String? get searchValue => _searchValue;
   final List<WorkOrderEntity> _cachedOrders = [];
+
+  /// Searches in the database by order code, card id or cadastral key.
+  Future<void> search(String? value) {
+    final trimmed = value?.trim();
+    _searchValue = (trimmed == null || trimmed.isEmpty) ? null : trimmed;
+    return loadWorkOrders(refresh: true);
+  }
 
   Future<void> loadWorkOrders({bool refresh = false}) async {
     if (refresh) {
@@ -42,6 +52,7 @@ class WorkOrdersCubit extends Cubit<WorkOrdersState> {
 
     try {
       final result = await getAllWorkOrdersUseCase(
+        searchValue: _searchValue,
         limit: _pageSize,
         offset: _currentOffset,
       );

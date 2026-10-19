@@ -10,6 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class BaseBottomNavigation extends StatelessWidget {
   const BaseBottomNavigation({super.key});
 
+  /// Altura de la barra (fuente única de verdad para el layout).
+  static const double height = 70;
+
   @override
   Widget build(BuildContext context) {
     final icons = [
@@ -23,7 +26,7 @@ class BaseBottomNavigation extends StatelessWidget {
     final labels = ['Inicio', 'Órdenes', 'Trabaj...', 'Productos', 'Perfil'];
 
     return Container(
-      height: 70,
+      height: height,
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16),

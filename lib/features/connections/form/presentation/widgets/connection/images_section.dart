@@ -1,5 +1,6 @@
 // lib/features/properties/form/add-img/presentation/widgets/images_section.dart
 import 'dart:io';
+import 'package:clean_architecture/components/widgets/attachment_source_picker.dart';
 import 'package:clean_architecture/components/common/form_card.dart';
 import 'package:clean_architecture/features/connections/form/add-img/presentation/blocs/add_property_image_bloc.dart';
 import 'package:clean_architecture/features/connections/form/add-img/presentation/blocs/add_property_image_event.dart';
@@ -7,6 +8,7 @@ import 'package:clean_architecture/features/connections/form/add-img/presentatio
 import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 /// Images upload section. All colors from [ColorScheme] — adapts to light/dark.
 class ImagesSection extends StatefulWidget {
@@ -129,6 +131,13 @@ class _ImagesSectionState extends State<ImagesSection> {
           ),
           BlocListener<AddPropertyImageBloc, AddPropertyImageState>(
             listener: (context, state) {
+              if (state is AddPropertyImagePicked ||
+                  state is AddPropertyImageError ||
+                  state is AddPropertyImageInitial ||
+                  state is AddPropertyImageSuccess) {
+                _isPickingImage = false;
+              }
+
               if (state is AddPropertyImageSuccess) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -178,18 +187,30 @@ class _ImagesSectionState extends State<ImagesSection> {
           ? null
           : () async {
               if (_isPickingImage) return;
-              setState(() => _isPickingImage = true);
-
-              context.read<AddPropertyImageBloc>().add(
-                PickImageFromCameraEvent(
-                  connectionId: widget.connectionId,
-                  description: widget.description,
-                ),
+              final bloc = context.read<AddPropertyImageBloc>();
+              final source = await AttachmentSourcePicker.show(
+                context,
+                allowFiles: false,
+                title: 'Adjuntar Evidencia Fotográfica',
               );
-
-              Future.delayed(const Duration(seconds: 3), () {
-                if (mounted) setState(() => _isPickingImage = false);
-              });
+              if (!mounted || source == null) return;
+              setState(() => _isPickingImage = true);
+              if (source == AttachmentSource.camera) {
+                bloc.add(
+                  PickImageFromCameraEvent(
+                    connectionId: widget.connectionId,
+                    description: widget.description,
+                  ),
+                );
+              } else {
+                bloc.add(
+                  PickImagesEvent(
+                    widget.connectionId,
+                    widget.description,
+                    source: ImageSource.gallery,
+                  ),
+                );
+              }
             },
       child: Opacity(
         opacity: isLoading ? 0.5 : 1.0,

@@ -91,7 +91,8 @@ class WorkOrderQualityCard extends StatelessWidget {
                       ],
                     ),
                   )
-                else if (onRegisterQuality != null)
+                else if (onRegisterQuality != null &&
+                    order.estado == 'COMPLETADA')
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple.shade700,
@@ -100,6 +101,7 @@ class WorkOrderQualityCard extends StatelessWidget {
                         vertical: 6,
                       ),
                       minimumSize: Size.zero,
+
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

@@ -70,15 +70,24 @@ class WorkOrderTrackingModel {
   }
 
   factory WorkOrderTrackingModel.fromJson(Map<String, dynamic> json) {
-    final history = (json['historial'] as List?)
-            ?.map((e) => TimelineMilestoneModel.fromJson(Map<String, dynamic>.from(e as Map)))
+    final history =
+        (json['historial'] as List?)
+            ?.map(
+              (e) => TimelineMilestoneModel.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ),
+            )
             .toList() ??
         [];
 
     return WorkOrderTrackingModel(
-      idOrdenTrabajo: (json['idOrdenTrabajo'] ?? json['id_orden_trabajo'] ?? '').toString(),
-      codigoOrden: (json['codigoOrden'] ?? json['codigo_orden'] ?? '').toString(),
-      numeroSecuencial: _toInt(json['numeroSecuencial'] ?? json['numero_secuencial']),
+      idOrdenTrabajo: (json['idOrdenTrabajo'] ?? json['id_orden_trabajo'] ?? '')
+          .toString(),
+      codigoOrden: (json['codigoOrden'] ?? json['codigo_orden'] ?? '')
+          .toString(),
+      numeroSecuencial: _toInt(
+        json['numeroSecuencial'] ?? json['numero_secuencial'],
+      ),
       origen: (json['origen'] ?? '').toString(),
       idEntidadOrigen: json['idEntidadOrigen']?.toString(),
       tipoTrabajo: (json['tipoTrabajo'] ?? '').toString(),

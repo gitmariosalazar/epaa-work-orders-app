@@ -37,7 +37,11 @@ class WorkOrderTimelineCard extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Text(
                   'No hay eventos de trazabilidad registrados.',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontStyle: FontStyle.italic),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
               )
             else
@@ -58,7 +62,9 @@ class WorkOrderTimelineCard extends StatelessWidget {
                             width: 12,
                             height: 12,
                             decoration: BoxDecoration(
-                              color: index == 0 ? AppColors.primary : Colors.grey.shade400,
+                              color: index == 0
+                                  ? AppColors.primary
+                                  : Colors.grey.shade400,
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 2),
                               boxShadow: [
@@ -85,34 +91,48 @@ class WorkOrderTimelineCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     m.estado.replaceAll('_', ' '),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12.5,
-                                      color: index == 0 ? AppColors.primary : Colors.black87,
+                                      color: index == 0
+                                          ? AppColors.primary
+                                          : Colors.black87,
                                     ),
                                   ),
                                   Text(
                                     m.fecha.split('T').first,
-                                    style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey.shade600,
+                                    ),
                                   ),
                                 ],
                               ),
-                              if (m.usuario != null && m.usuario!.isNotEmpty) ...[
+                              if (m.usuario != null &&
+                                  m.usuario!.isNotEmpty) ...[
                                 const SizedBox(height: 2),
                                 Text(
                                   'Por: ${m.usuario}',
-                                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.grey.shade600,
+                                  ),
                                 ),
                               ],
-                              if (m.comentario != null && m.comentario!.isNotEmpty) ...[
+                              if (m.comentario != null &&
+                                  m.comentario!.isNotEmpty) ...[
                                 const SizedBox(height: 4),
                                 Text(
                                   m.comentario!,
-                                  style: TextStyle(fontSize: 12, color: Colors.grey.shade800),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade800,
+                                  ),
                                 ),
                               ],
                             ],

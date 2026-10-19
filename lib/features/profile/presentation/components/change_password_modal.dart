@@ -165,7 +165,7 @@ class _ChangePasswordModalState extends State<ChangePasswordModal> {
               const SizedBox(width: 12),
               const Text(
                 'Cambiar contraseña',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
               ),
             ],
           ),

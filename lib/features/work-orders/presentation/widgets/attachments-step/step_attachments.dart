@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:clean_architecture/components/widgets/attachment_source_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -32,7 +33,7 @@ class _StepAttachmentsState extends State<StepAttachments> {
     _descController.text = widget.formData['attachmentDescription'] ?? '';
   }
 
-  Future<void> _pickFromGallery() async {
+  Future<void> _pickFiles() async {
     try {
       final result = await FilePicker.platform.pickFiles(
         allowMultiple: true,
@@ -48,6 +49,44 @@ class _StepAttachmentsState extends State<StepAttachments> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Error al seleccionar archivos: $e"),
+            backgroundColor: Colors.red,
+            margin: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: 24 + MediaQuery.of(context).padding.bottom,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _pickFromGallery() async {
+    try {
+      final images = await _picker.pickMultiImage(
+        imageQuality: 85,
+        maxWidth: 1920,
+        maxHeight: 1920,
+      );
+      if (!mounted || images.isEmpty) return;
+
+      final files = <PlatformFile>[];
+      for (final image in images) {
+        final file = File(image.path);
+        files.add(
+          PlatformFile(
+            name: image.name,
+            path: image.path,
+            size: await file.length(),
+          ),
+        );
+      }
+      _addFiles(files);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al seleccionar imágenes: $e'),
             backgroundColor: Colors.red,
             margin: EdgeInsets.only(
               left: 16,
@@ -111,40 +150,18 @@ class _StepAttachmentsState extends State<StepAttachments> {
     widget.updateData('attachedFiles', currentFiles);
   }
 
-  void _showAddOptions() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_camera, color: AppColors.primary),
-              title: const Text("Tomar foto"),
-              onTap: () {
-                Navigator.pop(context);
-                _takePhoto();
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.photo_library,
-                color: AppColors.primary,
-              ),
-              title: const Text("Seleccionar de galería"),
-              onTap: () {
-                Navigator.pop(context);
-                _pickFromGallery();
-              },
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
+  Future<void> _showAddOptions() async {
+    final source = await AttachmentSourcePicker.show(context);
+    if (!mounted || source == null) return;
+
+    switch (source) {
+      case AttachmentSource.camera:
+        await _takePhoto();
+      case AttachmentSource.gallery:
+        await _pickFromGallery();
+      case AttachmentSource.file:
+        await _pickFiles();
+    }
   }
 
   @override
@@ -279,6 +296,8 @@ class _StepAttachmentsState extends State<StepAttachments> {
                               child: Icon(
                                 isPdf
                                     ? Icons.picture_as_pdf
+                                    : isImage
+                                    ? Icons.image_outlined
                                     : Icons.description,
                                 color: Colors.indigo.shade700,
                                 size: 28,

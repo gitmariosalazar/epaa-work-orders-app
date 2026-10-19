@@ -31,9 +31,7 @@ class WorkOrderStepIndicator extends StatelessWidget {
       child: Row(
         children: [
           for (int i = 0; i < steps.length; i++) ...[
-            Expanded(
-              child: _buildStepItem(context, steps[i]),
-            ),
+            Expanded(child: _buildStepItem(context, steps[i])),
             if (i < steps.length - 1)
               _buildConnector(context, isCompleted: currentStep > steps[i].id),
           ],
@@ -50,8 +48,8 @@ class WorkOrderStepIndicator extends StatelessWidget {
     final circleColor = isCompleted
         ? Colors.green.shade600
         : isCurrent
-            ? cs.primary
-            : cs.surfaceContainerHighest;
+        ? cs.primary
+        : cs.surfaceContainerHighest;
 
     final iconColor = isCompleted || isCurrent
         ? Colors.white
@@ -60,8 +58,8 @@ class WorkOrderStepIndicator extends StatelessWidget {
     final textColor = isCurrent
         ? cs.primary
         : isCompleted
-            ? Colors.green.shade700
-            : cs.onSurfaceVariant;
+        ? Colors.green.shade700
+        : cs.onSurfaceVariant;
 
     return InkWell(
       onTap: onStepTapped != null ? () => onStepTapped!(item.id) : null,

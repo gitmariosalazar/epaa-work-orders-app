@@ -13,10 +13,16 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
 abstract interface class WorkOrdersRemoteDataSource {
-  FutureData<List<WorkOrderModel>> getAllWorkOrders({int? limit, int? offset});
+  FutureData<List<WorkOrderModel>> getAllWorkOrders({
+    String? searchValue,
+    int? limit,
+    int? offset,
+  });
   FutureData<WorkOrderModel> createWorkOrder(WorkOrderModel order);
 
-  FutureData<void> createWorkOrderFromIncident(CreateWorkOrderFromIncidentParams request);
+  FutureData<void> createWorkOrderFromIncident(
+    CreateWorkOrderFromIncidentParams request,
+  );
   FutureData<void> receiveWorkOrder(dynamic request);
   FutureData<void> assignWorkOrderToCrew(dynamic request);
   FutureData<void> assignWorkOrderToWorker(dynamic request);
@@ -46,6 +52,7 @@ abstract interface class WorkOrdersRemoteDataSource {
     String workOrderId,
     List<String> filePaths, {
     String? createdByUserId,
+    String? evidenceStageCode,
   });
 }
 
@@ -57,11 +64,17 @@ class WorkOrdersRemoteDataSourceImpl implements WorkOrdersRemoteDataSource {
     : _apiService = apiService;
 
   @override
-  FutureData<List<WorkOrderModel>> getAllWorkOrders({int? limit, int? offset}) {
+  FutureData<List<WorkOrderModel>> getAllWorkOrders({
+    String? searchValue,
+    int? limit,
+    int? offset,
+  }) {
     return DataHandler.safeApiCall<List<WorkOrderModel>, WorkOrderModel>(
       request: () => _apiService.get(
         ApiEndpoints.getAllWorkOrders,
         queryParameters: {
+          if (searchValue != null && searchValue.trim().isNotEmpty)
+            'searchValue': searchValue.trim(),
           if (limit != null) 'limit': limit,
           if (offset != null) 'offset': offset,
         },
@@ -87,7 +100,9 @@ class WorkOrdersRemoteDataSourceImpl implements WorkOrdersRemoteDataSource {
   }
 
   @override
-  FutureData<void> createWorkOrderFromIncident(CreateWorkOrderFromIncidentParams request) {
+  FutureData<void> createWorkOrderFromIncident(
+    CreateWorkOrderFromIncidentParams request,
+  ) {
     return DataHandler.safeApiCall<void, void>(
       request: () => _apiService.post(
         ApiEndpoints.createWorkOrderFromIncident,
@@ -398,7 +413,10 @@ class WorkOrdersRemoteDataSourceImpl implements WorkOrdersRemoteDataSource {
 
   @override
   FutureData<WorkOrderTrackingModel> getTrackingByNumeroOrden(String id) {
-    return DataHandler.safeApiCall<WorkOrderTrackingModel, WorkOrderTrackingModel>(
+    return DataHandler.safeApiCall<
+      WorkOrderTrackingModel,
+      WorkOrderTrackingModel
+    >(
       request: () => _apiService.get(
         ApiEndpoints.getTrackingByNumeroOrden,
         queryParameters: {'numeroOrden': id},
@@ -427,11 +445,15 @@ class WorkOrdersRemoteDataSourceImpl implements WorkOrdersRemoteDataSource {
     String workOrderId,
     List<String> filePaths, {
     String? createdByUserId,
+    String? evidenceStageCode,
   }) async {
     final formData = FormData();
     formData.fields.add(MapEntry('workOrderId', workOrderId));
     if (createdByUserId != null && createdByUserId.isNotEmpty) {
       formData.fields.add(MapEntry('createdByUserId', createdByUserId));
+    }
+    if (evidenceStageCode != null && evidenceStageCode.isNotEmpty) {
+      formData.fields.add(MapEntry('evidenceStageCode', evidenceStageCode));
     }
     for (final path in filePaths) {
       final fileName = path.split('/').last;

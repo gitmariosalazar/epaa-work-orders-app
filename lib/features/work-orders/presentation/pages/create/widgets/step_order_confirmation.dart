@@ -6,10 +6,7 @@ import '../models/work_order_form_state.dart';
 class StepOrderConfirmation extends StatelessWidget {
   final WorkOrderFormState form;
 
-  const StepOrderConfirmation({
-    super.key,
-    required this.form,
-  });
+  const StepOrderConfirmation({super.key, required this.form});
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +39,7 @@ class StepOrderConfirmation extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.blue.withValues(alpha: isDark ? 0.15 : 0.08),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.blue.withValues(alpha: 0.3),
-              ),
+              border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +65,9 @@ class StepOrderConfirmation extends StatelessWidget {
                       Text(
                         'Verifica que todos los datos sean correctos. Una vez creada, la OT entrará automáticamente al estado NOTIFICADA.',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: isDark ? Colors.blue.shade200 : Colors.blue.shade900,
+                          color: isDark
+                              ? Colors.blue.shade200
+                              : Colors.blue.shade900,
                         ),
                       ),
                     ],
@@ -148,7 +145,10 @@ class StepOrderConfirmation extends StatelessWidget {
                 icon: Icons.flag_rounded,
                 label: 'Prioridad',
                 customValue: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: priorityItem.color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
@@ -226,11 +226,16 @@ class StepOrderConfirmation extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.blue.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.blue.withValues(alpha: 0.4)),
+                    border: Border.all(
+                      color: Colors.blue.withValues(alpha: 0.4),
+                    ),
                   ),
                   child: const Text(
                     'NOTIFICADA',
@@ -247,7 +252,9 @@ class StepOrderConfirmation extends StatelessWidget {
                   child: Text(
                     'Estado inicial que se asignará al guardar',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
+                      color: theme.textTheme.bodySmall?.color?.withValues(
+                        alpha: 0.7,
+                      ),
                     ),
                   ),
                 ),
@@ -276,7 +283,9 @@ class StepOrderConfirmation extends StatelessWidget {
         color: isDark ? theme.colorScheme.surface : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isDark ? theme.dividerColor.withValues(alpha: 0.2) : Colors.grey.shade200,
+          color: isDark
+              ? theme.dividerColor.withValues(alpha: 0.2)
+              : Colors.grey.shade200,
         ),
         boxShadow: [
           BoxShadow(
@@ -346,7 +355,8 @@ class StepOrderConfirmation extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: customValue ??
+            child:
+                customValue ??
                 Text(
                   value ?? '—',
                   style: theme.textTheme.bodyMedium?.copyWith(

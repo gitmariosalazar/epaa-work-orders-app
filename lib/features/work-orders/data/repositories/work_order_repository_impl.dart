@@ -1,3 +1,4 @@
+import 'package:clean_architecture/features/work-orders/domain/entities/evidence_stage.dart';
 import 'package:clean_architecture/features/work-orders/domain/params/create_work_order_from_incident_params.dart';
 // features/work-orders/data/repositories/work_order_repository_impl.dart
 
@@ -27,10 +28,18 @@ class WorkOrderRepositoryImpl implements WorkOrderRepository {
        _remoteDataSource = remoteDataSource;
 
   @override
-  FutureData<List<WorkOrderEntity>> getAllWorkOrders({int? limit, int? offset}) async {
+  FutureData<List<WorkOrderEntity>> getAllWorkOrders({
+    String? searchValue,
+    int? limit,
+    int? offset,
+  }) async {
     final result = await DataHandler.fetchWithFallback<List<WorkOrderModel>>(
       _internet.isConnected,
-      remoteCallback: () => _remoteDataSource.getAllWorkOrders(limit: limit, offset: offset),
+      remoteCallback: () => _remoteDataSource.getAllWorkOrders(
+        searchValue: searchValue,
+        limit: limit,
+        offset: offset,
+      ),
     );
 
     return result.when(
@@ -82,7 +91,9 @@ class WorkOrderRepositoryImpl implements WorkOrderRepository {
   }
 
   @override
-  FutureData<void> createWorkOrderFromIncident(CreateWorkOrderFromIncidentParams request) async {
+  FutureData<void> createWorkOrderFromIncident(
+    CreateWorkOrderFromIncidentParams request,
+  ) async {
     final result = await DataHandler.fetchWithFallback<void>(
       _internet.isConnected,
       remoteCallback: () =>
@@ -423,11 +434,10 @@ class WorkOrderRepositoryImpl implements WorkOrderRepository {
     return result.when(
       success: (model) =>
           SuccessState<WorkOrderDetailEntity>(data: model.toEntity()),
-      failure: (message, errorType) =>
-          FailureState<WorkOrderDetailEntity>(
-            message: message,
-            errorType: errorType,
-          ),
+      failure: (message, errorType) => FailureState<WorkOrderDetailEntity>(
+        message: message,
+        errorType: errorType,
+      ),
       loading: () => LoadingState<WorkOrderDetailEntity>(),
     );
   }
@@ -444,11 +454,10 @@ class WorkOrderRepositoryImpl implements WorkOrderRepository {
     return result.when(
       success: (model) =>
           SuccessState<WorkOrderTrackingEntity>(data: model.toEntity()),
-      failure: (message, errorType) =>
-          FailureState<WorkOrderTrackingEntity>(
-            message: message,
-            errorType: errorType,
-          ),
+      failure: (message, errorType) => FailureState<WorkOrderTrackingEntity>(
+        message: message,
+        errorType: errorType,
+      ),
       loading: () => LoadingState<WorkOrderTrackingEntity>(),
     );
   }
@@ -479,6 +488,7 @@ class WorkOrderRepositoryImpl implements WorkOrderRepository {
     String workOrderId,
     List<String> filePaths, {
     String? createdByUserId,
+    EvidenceStage? evidenceStage,
   }) async {
     final result = await DataHandler.fetchWithFallback<void>(
       _internet.isConnected,
@@ -486,6 +496,7 @@ class WorkOrderRepositoryImpl implements WorkOrderRepository {
         workOrderId,
         filePaths,
         createdByUserId: createdByUserId,
+        evidenceStageCode: evidenceStage?.code,
       ),
     );
     return result.when(

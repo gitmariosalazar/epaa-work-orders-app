@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:clean_architecture/components/text/acometida_id_input_formatter.dart';
 import 'package:clean_architecture/features/incidents/data/models/models/incident-category.model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:auto_route/auto_route.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:clean_architecture/features/incidents/presentation/stubs/map_picker_screen_stub.dart';
@@ -21,9 +20,6 @@ import '../cubit/incident_state.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:clean_architecture/features/reading/domain/usecases/get_reading_info.dart';
-
-import 'package:clean_architecture/features/incidents/presentation/cubit/incident_cubit.dart';
-import 'package:clean_architecture/config/injector/injector.dart';
 
 @RoutePage()
 class CreateIncidentForm extends StatefulWidget implements AutoRouteWrapper {

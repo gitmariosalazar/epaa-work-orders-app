@@ -66,7 +66,11 @@ class _AssignWorkerDialogState extends State<AssignWorkerDialog> {
               color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.person_add_alt_1, color: AppColors.primary, size: 22),
+            child: Icon(
+              Icons.person_add_alt_1,
+              color: AppColors.primary,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -74,10 +78,14 @@ class _AssignWorkerDialogState extends State<AssignWorkerDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Asignar Técnico Responsable',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('OT: ${widget.orderCode}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                const Text(
+                  'Asignar Técnico Responsable',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'OT: ${widget.orderCode}',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
               ],
             ),
           ),
@@ -88,41 +96,62 @@ class _AssignWorkerDialogState extends State<AssignWorkerDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Técnico Responsable *',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+            const Text(
+              'Técnico Responsable *',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            ),
             const SizedBox(height: 6),
             InkWell(
               borderRadius: BorderRadius.circular(10),
               onTap: _selectWorker,
               child: InputDecorator(
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   suffixIcon: const Icon(Icons.search),
                   errorText: _showError ? 'Debe seleccionar un técnico' : null,
                 ),
                 child: _selected == null
-                    ? Text('Toca para buscar técnico...',
-                        style: TextStyle(fontSize: 13, color: Colors.grey.shade600))
+                    ? Text(
+                        'Toca para buscar técnico...',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
+                        ),
+                      )
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(_selected!.fullName,
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w600)),
+                          Text(
+                            _selected!.fullName,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                           if ((_selected!.positionName ?? '').isNotEmpty)
-                            Text(_selected!.positionName!,
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.grey.shade600)),
+                            Text(
+                              _selected!.positionName!,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
                         ],
                       ),
               ),
             ),
             const SizedBox(height: 12),
-            const Text('Comentario / Observación',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+            const Text(
+              'Comentario / Observación',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            ),
             const SizedBox(height: 6),
             TextField(
               controller: _commentController,
@@ -130,9 +159,13 @@ class _AssignWorkerDialogState extends State<AssignWorkerDialog> {
               decoration: InputDecoration(
                 hintText: 'Instrucciones u observaciones...',
                 hintStyle: const TextStyle(fontSize: 13),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
               ),
             ),
           ],
@@ -146,7 +179,9 @@ class _AssignWorkerDialogState extends State<AssignWorkerDialog> {
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
           onPressed: _submit,
           child: const Text('Asignar', style: TextStyle(color: Colors.white)),

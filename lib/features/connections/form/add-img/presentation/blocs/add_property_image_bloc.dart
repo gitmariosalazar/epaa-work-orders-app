@@ -16,9 +16,7 @@ class AddPropertyImageBloc
     on<PickImagesEvent>(_onPickImages);
     on<RemoveImageEvent>(_onRemoveImage);
     on<UploadAllImagesEvent>(_onUploadAll);
-    on<PickImageFromCameraEvent>(
-      _onPickImageFromCamera,
-    );
+    on<PickImageFromCameraEvent>(_onPickImageFromCamera);
   }
 
   Future<void> _onPickImageFromCamera(
@@ -77,15 +75,23 @@ class AddPropertyImageBloc
   }
 
   Future<void> _onPickImages(PickImagesEvent event, Emitter emit) async {
-    final XFile? file = await picker.pickImage(
-      source: event.source,
-      maxWidth: 1024,
-      maxHeight: 1024,
-      imageQuality: 85,
-    );
-    if (file != null) {
-      _selectedImages.add(file);
+    emit(AddPropertyImageLoading());
+
+    try {
+      final XFile? file = await picker.pickImage(
+        source: event.source,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+
+      if (file != null) {
+        _selectedImages.add(file);
+      }
+
       emit(AddPropertyImagePicked(_selectedImages.map((e) => e.path).toList()));
+    } catch (e) {
+      emit(AddPropertyImageError('Error al seleccionar la imagen: $e'));
     }
   }
 
@@ -108,7 +114,8 @@ class AddPropertyImageBloc
     );
 
     result.when(
-      failure: (message, _) => emit(AddPropertyImageError(message ?? 'Error desconocido')),
+      failure: (message, _) =>
+          emit(AddPropertyImageError(message ?? 'Error desconocido')),
       success: (uploaded) {
         _selectedImages.clear();
         emit(AddPropertyImageSuccess(uploaded));

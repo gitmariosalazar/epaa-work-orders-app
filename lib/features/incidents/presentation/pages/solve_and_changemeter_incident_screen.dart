@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:clean_architecture/components/widgets/attachment_source_picker.dart';
 
 import 'package:clean_architecture/core/services/session/session_service.dart';
 import 'package:clean_architecture/features/incidents/data/models/requests/resolve_incident_request.dart';
@@ -35,10 +36,7 @@ class SolveAndChangeMeterIncidentScreen extends StatefulWidget
 
   @override
   Widget wrappedRoute(BuildContext context) {
-    return BlocProvider(
-      create: (_) => GetIt.I<IncidentCubit>(),
-      child: this,
-    );
+    return BlocProvider(create: (_) => GetIt.I<IncidentCubit>(), child: this);
   }
 
   @override
@@ -128,6 +126,21 @@ class _SolveAndChangeMeterIncidentScreenState
     }
   }
 
+  Future<void> _showImageSourcePicker() async {
+    if (_images.length >= 3) return;
+    final source = await AttachmentSourcePicker.show(
+      context,
+      allowFiles: false,
+      title: 'Adjuntar Evidencia Fotográfica',
+    );
+    if (!mounted || source == null) return;
+    await _pickImage(
+      source == AttachmentSource.camera
+          ? ImageSource.camera
+          : ImageSource.gallery,
+    );
+  }
+
   void _removeImage(int index) {
     setState(() {
       _images.removeAt(index);
@@ -161,8 +174,9 @@ class _SolveAndChangeMeterIncidentScreenState
               : null,
           medidorAnterior: OldMeterData(
             numeroMedidor: _connection?.connectionMeterNumber,
-            ultimaLectura:
-                double.tryParse(_oldMeterReadingController.text.trim()),
+            ultimaLectura: double.tryParse(
+              _oldMeterReadingController.text.trim(),
+            ),
             fechaUltimaLectura: DateTime.now().toIso8601String(),
           ),
           medidorNuevo: NewMeterData(
@@ -202,8 +216,9 @@ class _SolveAndChangeMeterIncidentScreenState
                 : null,
             medidorAnterior: cmr.OldMeterData(
               numeroMedidor: currentConn.connectionMeterNumber,
-              ultimaLectura:
-                  double.tryParse(_oldMeterReadingController.text.trim()),
+              ultimaLectura: double.tryParse(
+                _oldMeterReadingController.text.trim(),
+              ),
               fechaUltimaLectura: DateTime.now().toIso8601String(),
             ),
             medidorNuevo: cmr.NewMeterData(
@@ -346,13 +361,16 @@ class _SolveAndChangeMeterIncidentScreenState
                       hintText:
                           'Ej. Se reparó la fuga de agua en la tubería principal...',
                       alignLabelWithHint: true,
-                      suffixIcon:
-                          MicSuffixButton(controller: _descriptionController),
+                      suffixIcon: MicSuffixButton(
+                        controller: _descriptionController,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       filled: true,
-                      fillColor: cs.surfaceContainerHighest.withValues(alpha: 0.3),
+                      fillColor: cs.surfaceContainerHighest.withValues(
+                        alpha: 0.3,
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -388,7 +406,9 @@ class _SolveAndChangeMeterIncidentScreenState
                         borderRadius: BorderRadius.circular(12),
                       ),
                       filled: true,
-                      fillColor: cs.surfaceContainerHighest.withValues(alpha: 0.2),
+                      fillColor: cs.surfaceContainerHighest.withValues(
+                        alpha: 0.2,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -418,8 +438,9 @@ class _SolveAndChangeMeterIncidentScreenState
 
                   TextFormField(
                     controller: _oldMeterReadingController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Última Lectura Medidor Anterior (Opcional)',
                       hintText: 'Ej. 120.5',
@@ -427,15 +448,18 @@ class _SolveAndChangeMeterIncidentScreenState
                         borderRadius: BorderRadius.circular(12),
                       ),
                       filled: true,
-                      fillColor: cs.surfaceContainerHighest.withValues(alpha: 0.2),
+                      fillColor: cs.surfaceContainerHighest.withValues(
+                        alpha: 0.2,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
 
                   TextFormField(
                     controller: _newMeterInitialReadingController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Lectura Inicial Medidor Nuevo (Opcional)',
                       hintText: 'Ej. 0.0',
@@ -443,15 +467,18 @@ class _SolveAndChangeMeterIncidentScreenState
                         borderRadius: BorderRadius.circular(12),
                       ),
                       filled: true,
-                      fillColor: cs.surfaceContainerHighest.withValues(alpha: 0.2),
+                      fillColor: cs.surfaceContainerHighest.withValues(
+                        alpha: 0.2,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
 
                   TextFormField(
                     controller: _newMeterCurrentReadingController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Lectura Actual Medidor Nuevo (Opcional)',
                       hintText: 'Ej. 0.0',
@@ -459,7 +486,9 @@ class _SolveAndChangeMeterIncidentScreenState
                         borderRadius: BorderRadius.circular(12),
                       ),
                       filled: true,
-                      fillColor: cs.surfaceContainerHighest.withValues(alpha: 0.2),
+                      fillColor: cs.surfaceContainerHighest.withValues(
+                        alpha: 0.2,
+                      ),
                     ),
                   ),
 
@@ -493,7 +522,9 @@ class _SolveAndChangeMeterIncidentScreenState
                       width: double.infinity,
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: cs.surfaceContainerHighest.withValues(alpha: 0.2),
+                        color: cs.surfaceContainerHighest.withValues(
+                          alpha: 0.2,
+                        ),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: cs.outlineVariant,
@@ -562,30 +593,16 @@ class _SolveAndChangeMeterIncidentScreenState
                     ),
 
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ActionButton(
-                          onPressed: _images.length >= 3 || isLoading
-                              ? null
-                              : () => _pickImage(ImageSource.camera),
-                          icon: Icons.camera_alt_rounded,
-                          label: 'Tomar Foto',
-                          style: ActionButtonStyle.outlined,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ActionButton(
-                          onPressed: _images.length >= 3 || isLoading
-                              ? null
-                              : () => _pickImage(ImageSource.gallery),
-                          icon: Icons.photo_rounded,
-                          label: 'Galería',
-                          style: ActionButtonStyle.outlined,
-                        ),
-                      ),
-                    ],
+                  SizedBox(
+                    width: double.infinity,
+                    child: ActionButton(
+                      onPressed: _images.length >= 3 || isLoading
+                          ? null
+                          : _showImageSourcePicker,
+                      icon: Icons.add_photo_alternate_outlined,
+                      label: 'Agregar foto',
+                      style: ActionButtonStyle.outlined,
+                    ),
                   ),
 
                   const SizedBox(height: 40),

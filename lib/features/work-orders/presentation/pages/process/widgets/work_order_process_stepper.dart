@@ -32,12 +32,27 @@ class WorkOrderProcessStepper extends StatelessWidget {
     final upper = status.trim().toUpperCase();
     if (upper == 'NOTIFICADA') return 0;
     if (upper == 'PENDIENTE') return 1;
-    if (['ASIGNADA', 'PREPARACION', 'REVISION_RECHAZADA'].contains(upper)) return 2;
-    if (['EN_PROCESO', 'EN_PROCESO_INSPECCION', 'EN_PROCESO_INSTALACION'].contains(upper)) {
+    if (['ASIGNADA', 'PREPARACION', 'REVISION_RECHAZADA'].contains(upper))
+      return 2;
+    if ([
+      'EN_PROCESO',
+      'EN_PROCESO_INSPECCION',
+      'EN_PROCESO_INSTALACION',
+    ].contains(upper)) {
       return 3 + (executionSubStep > 0 ? 1 : 0);
     }
-    if (['EJECUTADA', 'INSPECCION_EJECUTADA', 'INSTALACION_EJECUTADA'].contains(upper)) return 5;
-    if (['COMPLETADA', 'INSPECCION_COMPLETADA', 'INSTALACION_COMPLETADA'].contains(upper)) return 6;
+    if ([
+      'EJECUTADA',
+      'INSPECCION_EJECUTADA',
+      'INSTALACION_EJECUTADA',
+    ].contains(upper))
+      return 5;
+    if ([
+      'COMPLETADA',
+      'INSPECCION_COMPLETADA',
+      'INSTALACION_COMPLETADA',
+    ].contains(upper))
+      return 6;
     return 0;
   }
 
@@ -123,7 +138,9 @@ class WorkOrderProcessStepper extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 10,
-                          fontWeight: isCurrent ? FontWeight.bold : FontWeight.w500,
+                          fontWeight: isCurrent
+                              ? FontWeight.bold
+                              : FontWeight.w500,
                           color: textColor,
                         ),
                       ),

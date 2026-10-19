@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:clean_architecture/features/connections/domain/entities/connection.dart';
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_entity.dart';
 
@@ -9,6 +11,7 @@ class WorkOrderFormState {
   final String clientPhone;
   final String tipoPersona; // 'NATURAL' | 'JURIDICA'
   final ConnectionEntity? selectedConnection;
+  final List<File>? attachments;
 
   // Step 2: Order details
   final String origin;
@@ -33,6 +36,7 @@ class WorkOrderFormState {
     this.cadastralKey = '',
     this.location = '',
     this.description = '',
+    this.attachments,
     this.latitude,
     this.longitude,
   });
@@ -54,6 +58,8 @@ class WorkOrderFormState {
     double? latitude,
     double? longitude,
     bool clearCoordinates = false,
+    List<File>? attachments,
+    bool clearAttachments = false,
   }) {
     return WorkOrderFormState(
       clientId: clientId ?? this.clientId,
@@ -72,6 +78,7 @@ class WorkOrderFormState {
       description: description ?? this.description,
       latitude: clearCoordinates ? null : (latitude ?? this.latitude),
       longitude: clearCoordinates ? null : (longitude ?? this.longitude),
+      attachments: clearAttachments ? null : (attachments ?? this.attachments),
     );
   }
 
@@ -88,6 +95,7 @@ class WorkOrderFormState {
       longitude: longitude,
       createdByUserId: createdByUserId,
       status: 'NOTIFICADA', // NOTIFICADA
+      attachments: attachments,
     );
   }
 }

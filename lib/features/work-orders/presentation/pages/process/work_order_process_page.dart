@@ -32,15 +32,18 @@ class WorkOrderProcessPage extends StatefulWidget {
 }
 
 class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
+  static const double _searchBarHeight = 44;
   late final WorkOrderProcessCubit _cubit;
   final TextEditingController _searchController = TextEditingController();
+  bool _completionFlowRunning = false;
 
   @override
   void initState() {
     super.initState();
     _cubit = GetIt.I<WorkOrderProcessCubit>();
 
-    if (widget.initialOrderCode != null && widget.initialOrderCode!.isNotEmpty) {
+    if (widget.initialOrderCode != null &&
+        widget.initialOrderCode!.isNotEmpty) {
       _searchController.text = widget.initialOrderCode!;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _cubit.loadWorkOrder(widget.initialOrderCode!);
@@ -101,7 +104,10 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                 order != null
                     ? 'Proceso OT: ${order.codigoOrden}'
                     : 'Gestión de Proceso OT',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
               centerTitle: true,
               backgroundColor: AppColors.primary,
@@ -125,7 +131,10 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 10,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -134,38 +143,62 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                       elevation: 1,
                       margin: EdgeInsets.zero,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         child: Row(
                           children: [
                             const Icon(Icons.search, color: Colors.grey),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: TextField(
-                                controller: _searchController,
-                                textCapitalization: TextCapitalization.characters,
-                                onSubmitted: (_) => _onSearch(),
-                                decoration: const InputDecoration(
-                                  hintText: 'Ingresar código de OT (ej. OT-2024-001)',
-                                  hintStyle: TextStyle(fontSize: 13),
-                                  border: InputBorder.none,
+                              child: SizedBox(
+                                height: _searchBarHeight,
+                                child: TextField(
+                                  controller: _searchController,
+                                  textCapitalization:
+                                      TextCapitalization.characters,
+                                  textAlignVertical: TextAlignVertical.center,
+                                  onSubmitted: (_) => _onSearch(),
+                                  decoration: const InputDecoration(
+                                    hintText:
+                                        'Ingresar código de OT (ej. OT-2024-001)',
+                                    hintStyle: TextStyle(fontSize: 13),
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                            const SizedBox(width: 8),
+                            SizedBox(
+                              height: _searchBarHeight,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  minimumSize: const Size(0, _searchBarHeight),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 15,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                 ),
-                              ),
-                              onPressed: state.isLoading ? null : _onSearch,
-                              child: const Text(
-                                'Buscar',
-                                style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                onPressed: state.isLoading ? null : _onSearch,
+                                child: const Text(
+                                  'Buscar',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -177,10 +210,10 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                     if (state.isLoading)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 40),
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                        child: Center(child: CircularProgressIndicator()),
                       )
+                    else if (state.isAutoProcessing)
+                      const _AutoProcessingView()
                     else if (order == null)
                       _buildEmptyState()
                     else ...[
@@ -194,10 +227,15 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                       // 2. Action Card de la fase activa
                       WorkOrderPhaseActionCard(
                         order: order,
-                        isActionLoading: state.isActionLoading,
-                        loadingMessage: state.actionLoadingMessage,
+                        automationPolicy: _cubit.automationPolicy,
+                        isActionLoading:
+                            state.isActionLoading || _completionFlowRunning,
+                        loadingMessage: _completionFlowRunning
+                            ? 'Procesando cierre...'
+                            : state.actionLoadingMessage,
                         executionSubStep: state.executionSubStep,
-                        onSubStepChanged: (step) => _cubit.setExecutionSubStep(step),
+                        onSubStepChanged: (step) =>
+                            _cubit.setExecutionSubStep(step),
                         onReceive: () => _cubit.receiveWorkOrder(),
                         onAssignWorker: () {
                           showDialog(
@@ -205,7 +243,10 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                             builder: (ctx) => AssignWorkerDialog(
                               orderCode: order.codigoOrden,
                               onAssign: (workerId, comment) =>
-                                  _cubit.assignWorker(workerId: workerId, comment: comment),
+                                  _cubit.assignWorker(
+                                    workerId: workerId,
+                                    comment: comment,
+                                  ),
                             ),
                           );
                         },
@@ -216,8 +257,10 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                             context: context,
                             builder: (ctx) => ChecklistDialog(
                               orderCode: order.codigoOrden,
-                              onSubmit: (passed, obs) =>
-                                  _cubit.createChecklist(passed: passed, observations: obs),
+                              onSubmit: (passed, obs) => _cubit.createChecklist(
+                                passed: passed,
+                                observations: obs,
+                              ),
                             ),
                           );
                         },
@@ -230,23 +273,50 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                             builder: (ctx) => QualityControlDialog(
                               orderCode: order.codigoOrden,
                               onSubmit: (approved, comments) =>
-                                  _cubit.createQualityControl(approved: approved, comments: comments),
+                                  _cubit.createQualityControl(
+                                    approved: approved,
+                                    comments: comments,
+                                  ),
                             ),
                           );
                         },
-                        onCompleteOrder: () => const OrderCompletionCoordinator().run(
-                          context,
-                          order,
-                          complete: _cubit.completeWorkOrder,
-                          uploadEvidence: _cubit.uploadAttachments,
-                        ),
+                        onCompleteOrder: () async {
+                          if (_completionFlowRunning) return;
+                          setState(() => _completionFlowRunning = true);
+                          try {
+                            await const OrderCompletionCoordinator().run(
+                              context,
+                              order,
+                              complete: _cubit.completeWorkOrderFlow,
+                              uploadEvidence: _cubit.uploadCompletionEvidence,
+                            );
+                          } catch (error) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  error is StateError
+                                      ? error.message.toString()
+                                      : 'No se pudo completar la orden: $error',
+                                ),
+                              ),
+                            );
+                          } finally {
+                            if (mounted) {
+                              setState(() => _completionFlowRunning = false);
+                            }
+                          }
+                        },
                         onOpenSurvey: () {
                           showDialog(
                             context: context,
                             builder: (ctx) => SatisfactionSurveyDialog(
                               orderCode: order.codigoOrden,
                               onSubmit: (rating, comments) =>
-                                  _cubit.registerSurvey(rating: rating, comments: comments),
+                                  _cubit.registerSurvey(
+                                    rating: rating,
+                                    comments: comments,
+                                  ),
                             ),
                           );
                         },
@@ -264,15 +334,18 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                       // 5. Personal Asignado en Campo
                       WorkOrderWorkersCard(
                         order: order,
-                        onAddWorkers: (workers) => _cubit.addWorkersBatch(workers),
-                        onRemoveWorker: (workerId) => _cubit.removeWorker(workerId),
+                        onAddWorkers: (workers) =>
+                            _cubit.addWorkersBatch(workers),
+                        onRemoveWorker: (workerId) =>
+                            _cubit.removeWorker(workerId),
                       ),
                       const SizedBox(height: 14),
 
                       // 6. Materiales y Costos
                       WorkOrderMaterialsCard(
                         order: order,
-                        onAddMaterials: (mats) => _cubit.addMaterialsBatch(mats),
+                        onAddMaterials: (mats) =>
+                            _cubit.addMaterialsBatch(mats),
                         onAddCosts: (costs) => _cubit.addCostsBatch(costs),
                       ),
                       const SizedBox(height: 14),
@@ -280,7 +353,8 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                       // 7. Evidencias y Archivos
                       WorkOrderAttachmentsCard(
                         order: order,
-                        onUploadAttachments: (paths) => _cubit.uploadAttachments(paths),
+                        onUploadAttachments: (paths) =>
+                            _cubit.uploadAttachments(paths),
                       ),
                       const SizedBox(height: 14),
 
@@ -342,17 +416,21 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
 
   Widget _buildEmptyState() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
       alignment: Alignment.center,
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.assignment_outlined, size: 48, color: AppColors.primary),
+            child: Icon(
+              Icons.assignment_outlined,
+              size: 48,
+              color: AppColors.primary,
+            ),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -363,7 +441,42 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
           Text(
             'Ingrese el código de la orden de trabajo arriba para visualizar y ejecutar todas las etapas del proceso técnico.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: Colors.grey.shade600, height: 1.4),
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey.shade600,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Loading mostrado mientras se ejecutan los pasos automáticos ocultos.
+class _AutoProcessingView extends StatelessWidget {
+  const _AutoProcessingView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Column(
+        children: [
+          const SizedBox(
+            width: 44,
+            height: 44,
+            child: CircularProgressIndicator(strokeWidth: 3.5),
+          ),
+          const SizedBox(height: 18),
+          const Text(
+            'Preparando la orden de trabajo...',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Esto tomará solo unos segundos',
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
           ),
         ],
       ),

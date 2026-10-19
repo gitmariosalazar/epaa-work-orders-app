@@ -1,3 +1,4 @@
+import 'package:clean_architecture/shared/files/domain/utils/file_path_utils.dart';
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_detail_entity.dart';
 
 int _parseInt(dynamic value, [int defaultValue = 0]) {
@@ -6,7 +7,9 @@ int _parseInt(dynamic value, [int defaultValue = 0]) {
   if (value is num) return value.toInt();
   if (value is String) {
     final trimmed = value.trim();
-    return int.tryParse(trimmed) ?? double.tryParse(trimmed)?.toInt() ?? defaultValue;
+    return int.tryParse(trimmed) ??
+        double.tryParse(trimmed)?.toInt() ??
+        defaultValue;
   }
   return defaultValue;
 }
@@ -65,12 +68,28 @@ class AssignedWorkerModel {
 
   factory AssignedWorkerModel.fromJson(Map<String, dynamic> json) {
     return AssignedWorkerModel(
-      idAsignacion: (json['idAsignacion'] ?? json['id_asignacion'] ?? '').toString(),
-      idTrabajador: (json['idTrabajador'] ?? json['id_trabajador'] ?? json['workerId'] ?? '').toString(),
-      nombreTrabajador: (json['nombreTrabajador'] ?? json['nombre_trabajador'] ?? json['workerName'] ?? '').toString(),
+      idAsignacion: (json['idAsignacion'] ?? json['id_asignacion'] ?? '')
+          .toString(),
+      idTrabajador:
+          (json['idTrabajador'] ??
+                  json['id_trabajador'] ??
+                  json['workerId'] ??
+                  '')
+              .toString(),
+      nombreTrabajador:
+          (json['nombreTrabajador'] ??
+                  json['nombre_trabajador'] ??
+                  json['workerName'] ??
+                  '')
+              .toString(),
       rol: json['rol']?.toString(),
-      esResponsable: json['esResponsable'] == true || json['es_responsable'] == true || json['isResponsible'] == true,
-      fechaAsignacion: (json['fechaAsignacion'] ?? json['fecha_asignacion'] ?? '').toString(),
+      esResponsable:
+          json['esResponsable'] == true ||
+          json['es_responsable'] == true ||
+          json['isResponsible'] == true,
+      fechaAsignacion:
+          (json['fechaAsignacion'] ?? json['fecha_asignacion'] ?? '')
+              .toString(),
     );
   }
 
@@ -107,16 +126,28 @@ class UsedMaterialModel {
 
   factory UsedMaterialModel.fromJson(Map<String, dynamic> json) {
     final qty = _parseDouble(json['cantidad'] ?? json['quantity'], 0.0);
-    final cost = _parseDouble(json['costoUnitario'] ?? json['costo_unitario'] ?? json['unitCost'], 0.0);
+    final cost = _parseDouble(
+      json['costoUnitario'] ?? json['costo_unitario'] ?? json['unitCost'],
+      0.0,
+    );
     final sub = json['subtotal'] != null
         ? _parseDouble(json['subtotal'], qty * cost)
         : (qty * cost);
 
     return UsedMaterialModel(
       idDetalle: (json['idDetalle'] ?? json['id_detalle'] ?? '').toString(),
-      idMaterial: (json['idMaterial'] ?? json['id_material'] ?? json['materialId'] ?? '').toString(),
-      codigoMaterial: json['codigoMaterial']?.toString() ?? json['codigo_material']?.toString(),
-      nombreMaterial: json['nombreMaterial']?.toString() ?? json['nombre_material']?.toString(),
+      idMaterial:
+          (json['idMaterial'] ??
+                  json['id_material'] ??
+                  json['materialId'] ??
+                  '')
+              .toString(),
+      codigoMaterial:
+          json['codigoMaterial']?.toString() ??
+          json['codigo_material']?.toString(),
+      nombreMaterial:
+          json['nombreMaterial']?.toString() ??
+          json['nombre_material']?.toString(),
       cantidad: qty,
       costoUnitario: cost,
       subtotal: sub,
@@ -153,7 +184,10 @@ class AdditionalCostModel {
 
   factory AdditionalCostModel.fromJson(Map<String, dynamic> json) {
     final qty = _parseDouble(json['cantidad'] ?? json['quantity'], 1.0);
-    final cost = _parseDouble(json['costoUnitario'] ?? json['costo_unitario'] ?? json['unitCost'], 0.0);
+    final cost = _parseDouble(
+      json['costoUnitario'] ?? json['costo_unitario'] ?? json['unitCost'],
+      0.0,
+    );
     final tot = json['total'] != null
         ? _parseDouble(json['total'], qty * cost)
         : (qty * cost);
@@ -183,6 +217,7 @@ class EvidenceAttachmentModel {
   final String nombreArchivo;
   final String url;
   final String tipoAdjunto;
+  final String? evidenceStep;
   final String? mimeType;
   final String fechaCarga;
 
@@ -191,16 +226,41 @@ class EvidenceAttachmentModel {
     required this.nombreArchivo,
     required this.url,
     required this.tipoAdjunto,
+    this.evidenceStep,
     this.mimeType,
     required this.fechaCarga,
   });
 
+  /// Nombre real del archivo en storage (derivado de la URL del backend).
+  String get filePath =>
+      FilePathUtils.filenameFromUrl(url, fallback: nombreArchivo);
+
+  /// `true` si el adjunto es una imagen visualizable.
+  bool get isImage =>
+      FilePathUtils.isImage(filePath, mimeType: mimeType) ||
+      FilePathUtils.isImage(nombreArchivo, mimeType: mimeType);
+
   factory EvidenceAttachmentModel.fromJson(Map<String, dynamic> json) {
     return EvidenceAttachmentModel(
       idAdjunto: (json['idAdjunto'] ?? json['id_adjunto'] ?? '').toString(),
-      nombreArchivo: (json['nombreArchivo'] ?? json['nombre_archivo'] ?? json['nombre'] ?? '').toString(),
+      nombreArchivo:
+          (json['nombreArchivo'] ??
+                  json['nombre_archivo'] ??
+                  json['nombre'] ??
+                  '')
+              .toString(),
       url: (json['url'] ?? '').toString(),
-      tipoAdjunto: (json['tipoAdjunto'] ?? json['tipo_adjunto'] ?? json['tipo'] ?? 'EVIDENCIA').toString(),
+      tipoAdjunto:
+          (json['tipoAdjunto'] ??
+                  json['tipo_adjunto'] ??
+                  json['tipo'] ??
+                  'EVIDENCIA')
+              .toString(),
+      evidenceStep:
+          (json['evidenceStep'] ??
+                  json['evidence_step'] ??
+                  json['codigoEtapaEvidencia'])
+              ?.toString(),
       mimeType: json['mimeType']?.toString() ?? json['mime_type']?.toString(),
       fechaCarga: (json['fechaCarga'] ?? json['fecha_carga'] ?? '').toString(),
     );
@@ -212,6 +272,7 @@ class EvidenceAttachmentModel {
       nombreArchivo: nombreArchivo,
       url: url,
       tipoAdjunto: tipoAdjunto,
+      evidenceStep: evidenceStep,
       mimeType: mimeType,
       fechaCarga: fechaCarga,
     );
@@ -233,10 +294,12 @@ class LogObservationModel {
 
   factory LogObservationModel.fromJson(Map<String, dynamic> json) {
     return LogObservationModel(
-      idObservacion: (json['idObservacion'] ?? json['id_observacion'] ?? '').toString(),
+      idObservacion: (json['idObservacion'] ?? json['id_observacion'] ?? '')
+          .toString(),
       texto: (json['texto'] ?? json['comentario'] ?? '').toString(),
       fecha: (json['fecha'] ?? '').toString(),
-      autorId: (json['autorId'] ?? json['autor_id'] ?? json['usuarioId'] ?? '').toString(),
+      autorId: (json['autorId'] ?? json['autor_id'] ?? json['usuarioId'] ?? '')
+          .toString(),
     );
   }
 
@@ -402,7 +465,8 @@ class WorkOrderDetailModel {
       }
     } else if (json['company'] is Map) {
       final c = json['company'] as Map<String, dynamic>;
-      cNombre = c['businessName']?.toString() ?? c['commercialName']?.toString();
+      cNombre =
+          c['businessName']?.toString() ?? c['commercialName']?.toString();
       if (c['phones'] is List && (c['phones'] as List).isNotEmpty) {
         cTel = (c['phones'] as List).first['numero']?.toString();
       }
@@ -420,68 +484,127 @@ class WorkOrderDetailModel {
       rate = ac['rate_name']?.toString();
     }
 
-    final workers = (json['personalAsignado'] as List?)
-            ?.map((e) => AssignedWorkerModel.fromJson(Map<String, dynamic>.from(e as Map)))
+    final workers =
+        (json['personalAsignado'] as List?)
+            ?.map(
+              (e) => AssignedWorkerModel.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ),
+            )
             .toList() ??
         [];
 
-    final mats = (json['materiales'] as List?)
-            ?.map((e) => UsedMaterialModel.fromJson(Map<String, dynamic>.from(e as Map)))
+    final mats =
+        (json['materiales'] as List?)
+            ?.map(
+              (e) => UsedMaterialModel.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ),
+            )
             .toList() ??
         [];
 
-    final costs = (json['costosAdicionales'] as List?)
-            ?.map((e) => AdditionalCostModel.fromJson(Map<String, dynamic>.from(e as Map)))
+    final costs =
+        (json['costosAdicionales'] as List?)
+            ?.map(
+              (e) => AdditionalCostModel.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ),
+            )
             .toList() ??
         [];
 
-    final atts = (json['adjuntos'] as List?)
-            ?.map((e) => EvidenceAttachmentModel.fromJson(Map<String, dynamic>.from(e as Map)))
+    final atts =
+        (json['adjuntos'] as List?)
+            ?.map(
+              (e) => EvidenceAttachmentModel.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ),
+            )
             .toList() ??
         [];
 
-    final obs = (json['observaciones'] as List?)
-            ?.map((e) => LogObservationModel.fromJson(Map<String, dynamic>.from(e as Map)))
+    final obs =
+        (json['observaciones'] as List?)
+            ?.map(
+              (e) => LogObservationModel.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ),
+            )
             .toList() ??
         [];
 
     return WorkOrderDetailModel(
-      idOrdenTrabajo: (json['idOrdenTrabajo'] ?? json['id_orden_trabajo'] ?? json['workOrderId'] ?? '').toString(),
-      codigoOrden: (json['codigoOrden'] ?? json['codigo_orden'] ?? json['orderCode'] ?? '').toString(),
-      numeroSecuencial: _parseInt(json['numeroSecuencial'] ?? json['numero_secuencial']),
+      idOrdenTrabajo:
+          (json['idOrdenTrabajo'] ??
+                  json['id_orden_trabajo'] ??
+                  json['workOrderId'] ??
+                  '')
+              .toString(),
+      codigoOrden:
+          (json['codigoOrden'] ??
+                  json['codigo_orden'] ??
+                  json['orderCode'] ??
+                  '')
+              .toString(),
+      numeroSecuencial: _parseInt(
+        json['numeroSecuencial'] ?? json['numero_secuencial'],
+      ),
       version: _parseInt(json['version'], 1),
       estado: (json['estado'] ?? json['status'] ?? 'NOTIFICADA').toString(),
-      estadoLabel: (json['estadoLabel'] ?? json['estado'] ?? 'Notificada').toString(),
+      estadoLabel: (json['estadoLabel'] ?? json['estado'] ?? 'Notificada')
+          .toString(),
       origen: (json['origen'] ?? 'SOLICITUD').toString(),
-      origenLabel: (json['origenLabel'] ?? json['origen'] ?? 'Solicitud').toString(),
+      origenLabel: (json['origenLabel'] ?? json['origen'] ?? 'Solicitud')
+          .toString(),
       codigoEntidadOrigen: json['codigoEntidadOrigen']?.toString(),
-      idEntidadOrigen: (json['idEntidadOrigen'] ?? json['id_entidad_origen'])?.toString(),
-      tipoTrabajo: (json['tipoTrabajo'] ?? json['workTypeName'] ?? 'Mantenimiento').toString(),
+      idEntidadOrigen: (json['idEntidadOrigen'] ?? json['id_entidad_origen'])
+          ?.toString(),
+      tipoTrabajo:
+          (json['tipoTrabajo'] ?? json['workTypeName'] ?? 'Mantenimiento')
+              .toString(),
       tipoTrabajoDescripcion: json['tipoTrabajoDescripcion']?.toString(),
       departamento: (json['departamento'] ?? '').toString(),
       prioridad: (json['prioridad'] ?? 'Media').toString(),
       slaHoras: _parseInt(json['slaHoras'] ?? json['sla_horas'], 48),
       direccion: json['direccion']?.toString() ?? json['location']?.toString(),
       ubicacionDetalles: json['ubicacionDetalles']?.toString(),
-      claveCatastral: json['claveCatastral']?.toString() ?? json['cadastralKey']?.toString(),
+      claveCatastral:
+          json['claveCatastral']?.toString() ??
+          json['cadastralKey']?.toString(),
       latitud: _parseNullableDouble(json['latitud'] ?? json['latitude']),
       longitud: _parseNullableDouble(json['longitud'] ?? json['longitude']),
-      descripcion: json['descripcion']?.toString() ?? json['description']?.toString(),
-      metadata: json['metadata'] is Map ? Map<String, dynamic>.from(json['metadata'] as Map) : null,
-      fechaCreacion: (json['fechaCreacion'] ?? json['createdAt'] ?? '').toString(),
+      descripcion:
+          json['descripcion']?.toString() ?? json['description']?.toString(),
+      metadata: json['metadata'] is Map
+          ? Map<String, dynamic>.from(json['metadata'] as Map)
+          : null,
+      fechaCreacion: (json['fechaCreacion'] ?? json['createdAt'] ?? '')
+          .toString(),
       fechaAsignacion: json['fechaAsignacion']?.toString(),
       fechaInicioCampo: json['fechaInicioCampo']?.toString(),
       fechaCompletada: json['fechaCompletada']?.toString(),
-      diasEnProceso: _parseInt(json['diasEnProceso'] ?? json['dias_en_proceso']),
-      horasTotalesProceso: _parseInt(json['horasTotalesProceso'] ?? json['horas_totales_proceso']),
-      horasHastaAsignacion: _parseNullableInt(json['horasHastaAsignacion'] ?? json['horas_hasta_asignacion']),
-      horasEjecucionCampo: _parseNullableInt(json['horasEjecucionCampo'] ?? json['horas_ejecucion_campo']),
+      diasEnProceso: _parseInt(
+        json['diasEnProceso'] ?? json['dias_en_proceso'],
+      ),
+      horasTotalesProceso: _parseInt(
+        json['horasTotalesProceso'] ?? json['horas_totales_proceso'],
+      ),
+      horasHastaAsignacion: _parseNullableInt(
+        json['horasHastaAsignacion'] ?? json['horas_hasta_asignacion'],
+      ),
+      horasEjecucionCampo: _parseNullableInt(
+        json['horasEjecucionCampo'] ?? json['horas_ejecucion_campo'],
+      ),
       cumpleSla: json['cumpleSla'] != false,
-      horasRestantesSla: _parseInt(json['horasRestantesSla'] ?? json['horas_restantes_sla']),
+      horasRestantesSla: _parseInt(
+        json['horasRestantesSla'] ?? json['horas_restantes_sla'],
+      ),
       inspectorNombre: json['inspectorNombre']?.toString(),
       nombreAsignador: json['nombreAsignador']?.toString(),
       nombreCompletador: json['nombreCompletador']?.toString(),
-      creadorNombre: (json['creadorNombre'] ?? json['creadorUsername'] ?? '').toString(),
+      creadorNombre: (json['creadorNombre'] ?? json['creadorUsername'] ?? '')
+          .toString(),
       idCliente: json['idCliente']?.toString() ?? json['clientId']?.toString(),
       clienteNombre: cNombre,
       clienteTelefono: cTel,
@@ -493,9 +616,15 @@ class WorkOrderDetailModel {
       costosAdicionales: costs,
       adjuntos: atts,
       observaciones: obs,
-      costoTotalMateriales: _parseDouble(json['costoTotalMateriales'] ?? json['costo_total_materiales']),
-      costoTotalAdicionales: _parseDouble(json['costoTotalAdicionales'] ?? json['costo_total_adicionales']),
-      costoTotalOrden: _parseDouble(json['costoTotalOrden'] ?? json['costo_total_orden']),
+      costoTotalMateriales: _parseDouble(
+        json['costoTotalMateriales'] ?? json['costo_total_materiales'],
+      ),
+      costoTotalAdicionales: _parseDouble(
+        json['costoTotalAdicionales'] ?? json['costo_total_adicionales'],
+      ),
+      costoTotalOrden: _parseDouble(
+        json['costoTotalOrden'] ?? json['costo_total_orden'],
+      ),
       idInspeccion: json['idInspeccion']?.toString(),
       checklistAprobado: json['checklistAprobado'] as bool?,
       observacionesChecklist: json['observacionesChecklist']?.toString(),
@@ -503,7 +632,11 @@ class WorkOrderDetailModel {
       calidadAprobada: json['calidadAprobada'] as bool?,
       comentariosCalidad: json['comentariosCalidad']?.toString(),
       idEncuesta: json['idEncuesta']?.toString(),
-      calificacionSatisfaccion: _parseNullableInt(json['calificacionSatisfaccion'] ?? json['calificacion_satisfaccion'] ?? json['rating']),
+      calificacionSatisfaccion: _parseNullableInt(
+        json['calificacionSatisfaccion'] ??
+            json['calificacion_satisfaccion'] ??
+            json['rating'],
+      ),
       comentariosSatisfaccion: json['comentariosSatisfaccion']?.toString(),
     );
   }

@@ -235,6 +235,8 @@ import 'package:clean_architecture/features/work-orders/domain/usecases/add_work
     as _i12;
 import 'package:clean_architecture/features/work-orders/domain/usecases/create_work_order_use_case.dart'
     as _i780;
+import 'package:clean_architecture/features/work-orders/domain/usecases/create_work_order_with_evidence_use_case.dart'
+    as _i483;
 import 'package:clean_architecture/features/work-orders/domain/usecases/get_all_work_order_use_case.dart'
     as _i817;
 import 'package:clean_architecture/features/work-orders/domain/usecases/process/create_work_order_from_incident_use_case.dart'
@@ -998,9 +1000,10 @@ extension GetItInjectableX on _i174.GetIt {
         changePasswordUseCase: gh<_i750.ChangePasswordUseCase>(),
       ),
     );
-    gh.factory<_i841.CreateWorkOrderCubit>(
-      () => _i841.CreateWorkOrderCubit(
-        createWorkOrderUseCase: gh<_i780.CreateWorkOrderUseCase>(),
+    gh.lazySingleton<_i483.CreateWorkOrderWithEvidenceUseCase>(
+      () => _i483.CreateWorkOrderWithEvidenceUseCase(
+        gh<_i780.CreateWorkOrderUseCase>(),
+        gh<_i56.UploadWorkOrderAttachmentsUseCase>(),
       ),
     );
     gh.lazySingleton<_i964.PreviewFileUseCase>(
@@ -1023,6 +1026,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i981.ConnectionWithPropertiesBloc>(
       () => _i981.ConnectionWithPropertiesBloc(
         gh<_i453.GetConnectionWithProperties>(),
+      ),
+    );
+    gh.factory<_i841.CreateWorkOrderCubit>(
+      () => _i841.CreateWorkOrderCubit(
+        createWorkOrderUseCase: gh<_i483.CreateWorkOrderWithEvidenceUseCase>(),
       ),
     );
     return this;

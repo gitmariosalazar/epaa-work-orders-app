@@ -37,7 +37,11 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
               color: Colors.purple.shade100,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.verified_outlined, color: Colors.purple.shade800, size: 22),
+            child: Icon(
+              Icons.verified_outlined,
+              color: Colors.purple.shade800,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -77,9 +81,13 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: _approved ? Colors.green.shade50 : Colors.grey.shade100,
+                        color: _approved
+                            ? Colors.green.shade50
+                            : Colors.grey.shade100,
                         border: Border.all(
-                          color: _approved ? Colors.green : Colors.grey.shade300,
+                          color: _approved
+                              ? Colors.green
+                              : Colors.grey.shade300,
                           width: _approved ? 2 : 1,
                         ),
                         borderRadius: BorderRadius.circular(10),
@@ -96,8 +104,12 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
                           Text(
                             'Aprobado',
                             style: TextStyle(
-                              fontWeight: _approved ? FontWeight.bold : FontWeight.normal,
-                              color: _approved ? Colors.green.shade900 : Colors.grey.shade700,
+                              fontWeight: _approved
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: _approved
+                                  ? Colors.green.shade900
+                                  : Colors.grey.shade700,
                               fontSize: 13,
                             ),
                           ),
@@ -114,7 +126,9 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: !_approved ? Colors.red.shade50 : Colors.grey.shade100,
+                        color: !_approved
+                            ? Colors.red.shade50
+                            : Colors.grey.shade100,
                         border: Border.all(
                           color: !_approved ? Colors.red : Colors.grey.shade300,
                           width: !_approved ? 2 : 1,
@@ -133,8 +147,12 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
                           Text(
                             'Rechazado',
                             style: TextStyle(
-                              fontWeight: !_approved ? FontWeight.bold : FontWeight.normal,
-                              color: !_approved ? Colors.red.shade900 : Colors.grey.shade700,
+                              fontWeight: !_approved
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: !_approved
+                                  ? Colors.red.shade900
+                                  : Colors.grey.shade700,
                               fontSize: 13,
                             ),
                           ),
@@ -155,9 +173,12 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
               controller: _commentsController,
               maxLines: 3,
               decoration: InputDecoration(
-                hintText: 'Detalle de la inspección técnica o motivos de rechazo...',
+                hintText:
+                    'Detalle de la inspección técnica o motivos de rechazo...',
                 hintStyle: const TextStyle(fontSize: 13),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 contentPadding: const EdgeInsets.all(12),
               ),
             ),
@@ -172,7 +193,9 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: _approved ? Colors.purple : Colors.red,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -183,7 +206,10 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
                   : _commentsController.text.trim(),
             );
           },
-          child: const Text('Guardar Dictamen', style: TextStyle(color: Colors.white)),
+          child: const Text(
+            'Guardar Dictamen',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ],
     );

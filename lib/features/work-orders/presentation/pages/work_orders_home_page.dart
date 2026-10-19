@@ -1,11 +1,12 @@
 // features/work-orders/presentation/pages/home_page.dart
 
 import 'package:auto_route/auto_route.dart';
+import 'package:clean_architecture/components/widgets/app_search_bar.dart';
+import 'package:clean_architecture/core/constants/work_order_status.dart';
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_entity.dart';
 import 'package:clean_architecture/features/work-orders/domain/usecases/get_all_work_order_use_case.dart';
 import 'package:clean_architecture/features/work-orders/presentation/cubits/work-orders/work_orders_cubit.dart';
 import 'package:clean_architecture/features/work-orders/presentation/cubits/work-orders/work_orders_state.dart';
-import 'package:clean_architecture/features/work-orders/presentation/widgets/empty_work_orders.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/loading_work_orders.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/work_order_card.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
@@ -36,13 +37,11 @@ class _WorkOrdersHomeView extends StatefulWidget {
 }
 
 class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
-  final _searchController = TextEditingController();
   final _scrollController = ScrollController();
-  int? _filterStatus;
+  String? _filterStatus;
   int? _filterPriority;
   int? _filterWorkType;
-  String? _filterClientId;
-  String? _filterOrderCode;
+  final _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -52,8 +51,8 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
 
   @override
   void dispose() {
-    _searchController.dispose();
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -65,157 +64,126 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
     }
   }
 
-  void _showFilterDialog() {
-    showDialog(
+  Future<void> _showFilterDialog() async {
+    var filterStatus = _filterStatus;
+    var filterPriority = _filterPriority;
+    var filterWorkType = _filterWorkType;
+
+    await showDialog<void>(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text(
-            'Filtros Avanzados',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        return StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            title: const Text(
+              'Filtros Avanzados',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String?>(
+                    decoration: InputDecoration(
+                      labelText: 'Estado',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    initialValue: filterStatus,
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('Todos los estados'),
+                      ),
+                      ...WorkOrderStatus.all.map(
+                        (status) => DropdownMenuItem(
+                          value: status.code,
+                          child: Text(status.label),
+                        ),
+                      ),
+                    ],
+                    onChanged: (value) =>
+                        setDialogState(() => filterStatus = value),
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<int?>(
+                    decoration: InputDecoration(
+                      labelText: 'Prioridad',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    initialValue: filterPriority,
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('Todas las prioridades'),
+                      ),
+                      ...[1, 2, 3, 4, 5].map(
+                        (p) => DropdownMenuItem(
+                          value: p,
+                          child: Text(_getPriorityText(p)),
+                        ),
+                      ),
+                    ],
+                    onChanged: (value) =>
+                        setDialogState(() => filterPriority = value),
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<int?>(
+                    decoration: InputDecoration(
+                      labelText: 'Tipo de trabajo',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    initialValue: filterWorkType,
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('Todos los tipos'),
+                      ),
+                      ...[1, 2, 3, 4, 5].map(
+                        (t) => DropdownMenuItem(
+                          value: t,
+                          child: Text(_getWorkTypeText(t)),
+                        ),
+                      ),
+                    ],
+                    onChanged: (value) =>
+                        setDialogState(() => filterWorkType = value),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _filterStatus = null;
+                    _filterPriority = null;
+                    _filterWorkType = null;
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text('Limpiar'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _filterStatus = filterStatus;
+                    _filterPriority = filterPriority;
+                    _filterWorkType = filterWorkType;
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text('Aplicar'),
+              ),
+            ],
           ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Código de orden',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onChanged: (value) =>
-                      _filterOrderCode = value.isEmpty ? null : value,
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Cliente ID',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onChanged: (value) =>
-                      _filterClientId = value.isEmpty ? null : value,
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<int?>(
-                  decoration: InputDecoration(
-                    labelText: 'Estado',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  value: _filterStatus,
-                  items: [
-                    const DropdownMenuItem(
-                      value: null,
-                      child: Text('Todos los estados'),
-                    ),
-                    ...[1, 2, 3, 4, 5, 6, 7, 8].map(
-                      (s) => DropdownMenuItem(
-                        value: s,
-                        child: Text(_getStatusText(s)),
-                      ),
-                    ),
-                  ],
-                  onChanged: (value) => setState(() => _filterStatus = value),
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<int?>(
-                  decoration: InputDecoration(
-                    labelText: 'Prioridad',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  value: _filterPriority,
-                  items: [
-                    const DropdownMenuItem(
-                      value: null,
-                      child: Text('Todas las prioridades'),
-                    ),
-                    ...[1, 2, 3, 4, 5].map(
-                      (p) => DropdownMenuItem(
-                        value: p,
-                        child: Text(_getPriorityText(p)),
-                      ),
-                    ),
-                  ],
-                  onChanged: (value) => setState(() => _filterPriority = value),
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<int?>(
-                  decoration: InputDecoration(
-                    labelText: 'Tipo de trabajo',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  value: _filterWorkType,
-                  items: [
-                    const DropdownMenuItem(
-                      value: null,
-                      child: Text('Todos los tipos'),
-                    ),
-                    ...[1, 2, 3, 4, 5].map(
-                      (t) => DropdownMenuItem(
-                        value: t,
-                        child: Text(_getWorkTypeText(t)),
-                      ),
-                    ),
-                  ],
-                  onChanged: (value) => setState(() => _filterWorkType = value),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _filterStatus = null;
-                  _filterPriority = null;
-                  _filterWorkType = null;
-                  _filterClientId = null;
-                  _filterOrderCode = null;
-                });
-                Navigator.pop(context);
-              },
-              child: const Text('Limpiar'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Aplicar'),
-            ),
-          ],
         );
       },
     );
-  }
-
-  String _getStatusText(int status) {
-    switch (status) {
-      case 1:
-        return 'Pendiente';
-      case 2:
-        return 'Asignada';
-      case 3:
-        return 'Reasignada';
-      case 4:
-        return 'En Progreso';
-      case 5:
-        return 'En Espera';
-      case 6:
-        return 'Reanudada';
-      case 7:
-        return 'Completada';
-      case 8:
-        return 'Cancelada';
-      default:
-        return 'Desconocido';
-    }
   }
 
   String _getPriorityText(int priority) {
@@ -274,6 +242,7 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
             color: theme.primaryColorDark,
             icon: const Icon(Icons.filter_list_rounded),
             onPressed: _showFilterDialog,
+            tooltip: 'Filtros',
           ),
           IconButton(
             onPressed: () async {
@@ -283,144 +252,195 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
               await context.router.push(const CreateWorkOrderRoute());
 
               if (mounted) {
-                cubit.loadWorkOrders(); // ← Recarga siempre al volver
+                await cubit.loadWorkOrders(refresh: true);
               }
             },
             icon: const Icon(Icons.add_task),
             color: theme.primaryColorDark,
+            tooltip: 'Nueva Orden de Trabajo',
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
             color: theme.primaryColorDark,
-            onPressed: () => context.read<WorkOrdersCubit>().loadWorkOrders(),
+            onPressed: () =>
+                context.read<WorkOrdersCubit>().loadWorkOrders(refresh: true),
+            tooltip: 'Recargar',
           ),
         ],
       ),
-      body: BlocBuilder<WorkOrdersCubit, WorkOrdersState>(
-        builder: (context, state) {
-          if (state is WorkOrdersLoading || state is WorkOrdersInitial) {
-            return const LoadingWorkOrders();
-          }
+      body: Column(
+        children: [
+          AppSearchBar(
+            controller: _searchController,
+            hintText: 'Código de orden, cédula o clave catastral',
+            onSearch: () =>
+                context.read<WorkOrdersCubit>().search(_searchController.text),
+            onClear: () => context.read<WorkOrdersCubit>().search(null),
+          ),
+          Expanded(child: _buildOrdersBody(context, theme, bottomInset)),
+        ],
+      ),
+    );
+  }
 
-          if (state is WorkOrdersError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.cloud_off, size: 80, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  Text('Error de conexión', style: theme.textTheme.titleLarge),
-                  const SizedBox(height: 8),
-                  Text(
-                    state.message,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: () =>
-                        context.read<WorkOrdersCubit>().loadWorkOrders(),
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Reintentar'),
-                  ),
-                ],
-              ),
-            );
-          }
+  Widget _buildOrdersBody(
+    BuildContext context,
+    ThemeData theme,
+    double bottomInset,
+  ) {
+    return BlocBuilder<WorkOrdersCubit, WorkOrdersState>(
+      builder: (context, state) {
+        if (state is WorkOrdersLoading || state is WorkOrdersInitial) {
+          return const LoadingWorkOrders();
+        }
 
-          final orders = state is WorkOrdersLoaded
-              ? state.orders
-              : <WorkOrderEntity>[];
-
-          // Aplicar filtros
-          final filteredOrders = orders.where((order) {
-            final matchesSearch =
-                _searchController.text.isEmpty ||
-                order.orderCode!.toLowerCase().contains(
-                  _searchController.text.toLowerCase(),
-                ) ||
-                order.description.toLowerCase().contains(
-                  _searchController.text.toLowerCase(),
-                ) ||
-                (_filterClientId == null ||
-                    order.clientId.contains(_filterClientId!)) ||
-                (_filterOrderCode == null ||
-                    order.orderCode!.contains(_filterOrderCode!));
-
-            final matchesStatus =
-                _filterStatus == null || order.status == _filterStatus;
-            final matchesPriority =
-                _filterPriority == null || order.priorityId == _filterPriority;
-            final matchesWorkType =
-                _filterWorkType == null || order.workTypeId == _filterWorkType;
-
-            return matchesSearch &&
-                matchesStatus &&
-                matchesPriority &&
-                matchesWorkType;
-          }).toList();
-
-          if (filteredOrders.isEmpty) {
-            return const EmptyWorkOrders();
-          }
-
-          return RefreshIndicator(
-            onRefresh: () async =>
-                context.read<WorkOrdersCubit>().loadWorkOrders(),
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(8),
-              itemCount: filteredOrders.length,
-              itemBuilder: (context, index) {
-                if (index == filteredOrders.length) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
-                final order = filteredOrders[index];
-                return WorkOrderCard(
-                  order: order,
-                  onEdit: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Imprimir orden - Próximamente'),
-                        behavior: SnackBarBehavior.floating,
-                        margin: EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          bottom: bottomInset,
-                        ),
-                        backgroundColor: Colors.blueAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    );
-                  },
-                  onDelete: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Eliminar orden - Próximamente'),
-                        behavior: SnackBarBehavior.floating,
-                        margin: EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          bottom: bottomInset,
-                        ),
-                        backgroundColor: Colors.redAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
+        if (state is WorkOrdersError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.cloud_off, size: 80, color: Colors.grey),
+                const SizedBox(height: 16),
+                Text('Error de conexión', style: theme.textTheme.titleLarge),
+                const SizedBox(height: 8),
+                Text(
+                  state.message,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () => context
+                      .read<WorkOrdersCubit>()
+                      .loadWorkOrders(refresh: true),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Reintentar'),
+                ),
+              ],
             ),
           );
-        },
-      ),
+        }
+
+        final loadedState = state is WorkOrdersLoaded ? state : null;
+        final orders = loadedState?.orders ?? <WorkOrderEntity>[];
+        final filteredOrders = orders.where((order) {
+          final matchesStatus =
+              _filterStatus == null ||
+              WorkOrderStatus.normalize(order.status) == _filterStatus;
+          final matchesPriority =
+              _filterPriority == null || order.priorityId == _filterPriority;
+          final matchesWorkType =
+              _filterWorkType == null || order.workTypeId == _filterWorkType;
+
+          return matchesStatus && matchesPriority && matchesWorkType;
+        }).toList();
+
+        if (filteredOrders.isEmpty) {
+          return RefreshIndicator(
+            onRefresh: () =>
+                context.read<WorkOrdersCubit>().loadWorkOrders(refresh: true),
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                SizedBox(
+                  height: 260,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.search_off,
+                          size: 64,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          orders.isEmpty
+                              ? 'No hay órdenes de trabajo'
+                              : 'No hay órdenes cargadas que coincidan con los filtros',
+                          textAlign: TextAlign.center,
+                        ),
+                        if (loadedState?.hasMore ?? false)
+                          TextButton(
+                            onPressed: () =>
+                                context.read<WorkOrdersCubit>().loadMore(),
+                            child: const Text('Buscar en más órdenes'),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () =>
+              context.read<WorkOrdersCubit>().loadWorkOrders(refresh: true),
+          child: ListView.builder(
+            controller: _scrollController,
+            padding: const EdgeInsets.all(8),
+            itemCount:
+                filteredOrders.length +
+                ((loadedState?.hasMore ?? false) ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index == filteredOrders.length) {
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Center(
+                    child: loadedState?.isLoadingMore ?? false
+                        ? const CircularProgressIndicator()
+                        : TextButton(
+                            onPressed: () =>
+                                context.read<WorkOrdersCubit>().loadMore(),
+                            child: const Text('Cargar más órdenes'),
+                          ),
+                  ),
+                );
+              }
+              final order = filteredOrders[index];
+              return WorkOrderCard(
+                order: order,
+                onEdit: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Imprimir orden - Próximamente'),
+                      behavior: SnackBarBehavior.floating,
+                      margin: EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        bottom: bottomInset,
+                      ),
+                      backgroundColor: Colors.blueAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                },
+                onDelete: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Eliminar orden - Próximamente'),
+                      behavior: SnackBarBehavior.floating,
+                      margin: EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        bottom: bottomInset,
+                      ),
+                      backgroundColor: Colors.redAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

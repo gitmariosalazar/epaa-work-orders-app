@@ -1,3 +1,4 @@
+import 'package:clean_architecture/components/widgets/images_section.dart';
 import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/features/connections/form/presentation/screen/map_picker_screen.dart';
 import 'package:clean_architecture/utils/convert_coordinates.dart';
@@ -160,12 +161,7 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
     final lng = coords['longitude'];
 
     if (lat != null && lng != null) {
-      widget.onFormChange(
-        widget.form.copyWith(
-          latitude: lat,
-          longitude: lng,
-        ),
-      );
+      widget.onFormChange(widget.form.copyWith(latitude: lat, longitude: lng));
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -191,10 +187,7 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
           onLocationPicked: (lat, lng) {
             if (!mounted) return;
             widget.onFormChange(
-              widget.form.copyWith(
-                latitude: lat,
-                longitude: lng,
-              ),
+              widget.form.copyWith(latitude: lat, longitude: lng),
             );
           },
         ),
@@ -206,8 +199,8 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final hasConnectionCoords = widget.form.selectedConnection?.connectionCoordinates !=
-            null &&
+    final hasConnectionCoords =
+        widget.form.selectedConnection?.connectionCoordinates != null &&
         widget.form.selectedConnection!.connectionCoordinates!.isNotEmpty;
 
     return SingleChildScrollView(
@@ -281,7 +274,9 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
                   }).toList(),
                   onChanged: (val) {
                     if (val != null) {
-                      widget.onFormChange(widget.form.copyWith(workTypeId: val));
+                      widget.onFormChange(
+                        widget.form.copyWith(workTypeId: val),
+                      );
                     }
                   },
                 ),
@@ -322,7 +317,9 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
                   }).toList(),
                   onChanged: (val) {
                     if (val != null) {
-                      widget.onFormChange(widget.form.copyWith(priorityId: val));
+                      widget.onFormChange(
+                        widget.form.copyWith(priorityId: val),
+                      );
                     }
                   },
                 ),
@@ -352,7 +349,9 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
                     errorText: widget.errors?['location'],
                     filled: true,
                     fillColor: isDark
-                        ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                        ? theme.colorScheme.surfaceContainerHighest.withValues(
+                            alpha: 0.3,
+                          )
                         : Colors.grey.shade50,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -370,7 +369,9 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2)
+                        ? theme.colorScheme.surfaceContainerHighest.withValues(
+                            alpha: 0.2,
+                          )
                         : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
@@ -392,7 +393,8 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: widget.form.latitude != null &&
+                        child:
+                            widget.form.latitude != null &&
                                 widget.form.longitude != null
                             ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -464,7 +466,9 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.my_location_rounded, size: 18),
-                      label: Text(_isLocating ? 'Obteniendo GPS...' : 'GPS Actual'),
+                      label: Text(
+                        _isLocating ? 'Obteniendo GPS...' : 'GPS Actual',
+                      ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.primary,
                         shape: RoundedRectangleBorder(
@@ -505,10 +509,7 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
                   const SizedBox(height: 8),
                   Text(
                     _gpsError!,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.red.shade700,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.red.shade700),
                   ),
                 ],
               ],
@@ -523,7 +524,8 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
             icon: Icons.description_outlined,
             iconColor: Colors.deepPurple,
             title: 'Descripción del Trabajo',
-            subtitle: 'Detalle las observaciones técnicas o motivo del requerimiento',
+            subtitle:
+                'Detalle las observaciones técnicas o motivo del requerimiento',
             child: TextFormField(
               controller: _descriptionCtrl,
               maxLines: 4,
@@ -532,7 +534,9 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
                     'Ej: Fuga visible en acometida, medidor trabado, cambio de llave de paso...',
                 filled: true,
                 fillColor: isDark
-                    ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                    ? theme.colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.3,
+                      )
                     : Colors.grey.shade50,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -545,8 +549,31 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
           ),
 
           const SizedBox(height: 24),
+          _buildPhotoSection(context),
         ],
       ),
+    );
+  }
+
+  Widget _buildPhotoSection(BuildContext context) {
+    return ImagesSection(
+      attachedImages: widget.form.attachments ?? [],
+      mode: 'create',
+      allowFiles: true,
+      onImageAdded: (file) {
+        widget.onFormChange(
+          widget.form.copyWith(
+            attachments: [...?widget.form.attachments, file],
+          ),
+        );
+      },
+      onImageRemoved: (index) {
+        widget.onFormChange(
+          widget.form.copyWith(
+            attachments: [...?widget.form.attachments]..removeAt(index),
+          ),
+        );
+      },
     );
   }
 
@@ -573,10 +600,11 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
         fillColor: isDark
             ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
             : Colors.grey.shade50,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       ),
     );
   }
@@ -597,7 +625,9 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
         color: isDark ? theme.colorScheme.surface : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isDark ? theme.dividerColor.withValues(alpha: 0.2) : Colors.grey.shade200,
+          color: isDark
+              ? theme.dividerColor.withValues(alpha: 0.2)
+              : Colors.grey.shade200,
         ),
         boxShadow: [
           BoxShadow(
@@ -635,7 +665,9 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
                     Text(
                       subtitle,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
+                        color: theme.textTheme.bodySmall?.color?.withValues(
+                          alpha: 0.7,
+                        ),
                       ),
                     ),
                   ],

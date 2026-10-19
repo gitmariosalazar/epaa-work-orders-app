@@ -1,15 +1,18 @@
 import 'package:clean_architecture/features/work-orders/domain/params/create_work_order_from_incident_params.dart';
+
 class ProcessWorkOrderTransitionRequest {
   final String workOrderId;
   final String? comment;
   final String? newStatus;
   final String? userId;
+  final String? finalizationDescription;
 
   ProcessWorkOrderTransitionRequest({
     required this.workOrderId,
     this.comment,
     this.newStatus,
     this.userId,
+    this.finalizationDescription,
   });
 
   Map<String, dynamic> toJson() {
@@ -18,6 +21,8 @@ class ProcessWorkOrderTransitionRequest {
       if (comment != null) 'comment': comment,
       if (newStatus != null) 'newStatus': newStatus,
       if (userId != null) 'userId': userId,
+      if (finalizationDescription != null)
+        'finalizationDescription': finalizationDescription,
     };
   }
 }
@@ -62,7 +67,8 @@ class AssignWorkOrderToCrewRequest {
       'workOrderId': workOrderId,
       'crewId': crewId,
       if (comment != null) 'comment': comment,
-      'assignedByUserId': (assignedByUserId != null && assignedByUserId!.trim().isNotEmpty)
+      'assignedByUserId':
+          (assignedByUserId != null && assignedByUserId!.trim().isNotEmpty)
           ? assignedByUserId!
           : 'USER-ADMIN',
     };
@@ -87,7 +93,8 @@ class AssignWorkOrderToWorkerRequest {
       'workOrderId': workOrderId,
       'workerId': workerId,
       if (comment != null) 'comment': comment,
-      'assignedByUserId': (assignedByUserId != null && assignedByUserId!.trim().isNotEmpty)
+      'assignedByUserId':
+          (assignedByUserId != null && assignedByUserId!.trim().isNotEmpty)
           ? assignedByUserId!
           : 'USER-ADMIN',
     };
@@ -221,11 +228,7 @@ class AddAdditionalCostRequest {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'concept': concept,
-      'quantity': quantity,
-      'unitCost': unitCost,
-    };
+    return {'concept': concept, 'quantity': quantity, 'unitCost': unitCost};
   }
 }
 

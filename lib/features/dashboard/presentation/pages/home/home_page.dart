@@ -104,17 +104,13 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 32),
 
-            // Acciones rápidas (todo igual)
-            BaseTitle(title: "Acciones Rápidas"),
-            const SizedBox(height: 12),
-            GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 1.1,
-              children: [
+            // ── Órdenes de Trabajo ──────────────────────────────────
+            _ActionSection(
+              title: 'Órdenes de Trabajo ',
+              subtitle: 'Gestión, creación y seguimiento de OT',
+              icon: Icons.assignment_rounded,
+              color: const Color(0xFF2563EB),
+              actions: [
                 _DashboardButton(
                   icon: Icons.list_alt,
                   label: 'Órdenes',
@@ -129,6 +125,84 @@ class HomePage extends StatelessWidget {
                       context.router.push(const CreateWorkOrderRoute()),
                 ),
                 _DashboardButton(
+                  icon: Icons.map,
+                  label: 'Mapa',
+                  color: Colors.teal,
+                  onTap: () => context.router.push(const WorkOrdersMapRoute()),
+                ),
+                _DashboardButton(
+                  icon: Icons.dashboard,
+                  label: 'Dashboards',
+                  color: Colors.indigo,
+                  onTap: () => showMenuDashboardDialog(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // ── Incidencias ─────────────────────────────────────────
+            _ActionSection(
+              title: 'Incidencias',
+              subtitle: 'Reporte y seguimiento de incidentes',
+              icon: Icons.report_problem_rounded,
+              color: const Color(0xFFDC2626),
+              actions: [
+                _DashboardButton(
+                  icon: Icons.report,
+                  label: 'Reportar Incid.',
+                  color: Colors.redAccent,
+                  onTap: () => context.router.push(CreateIncidentForm()),
+                ),
+                _DashboardButton(
+                  icon: Icons.history,
+                  label: 'Historial',
+                  color: Colors.blueGrey,
+                  onTap: () =>
+                      context.router.push(const IncidentHistoryRoute()),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // ── Acometidas ──────────────────────────────────────────
+            _ActionSection(
+              title: 'Acometidas',
+              subtitle: 'Búsqueda de conexiones y predios',
+              icon: Icons.water_drop_rounded,
+              color: const Color(0xFF0891B2),
+              actions: [
+                _DashboardButton(
+                  icon: Icons.qr_code_scanner_rounded,
+                  label: 'Escanear QR',
+                  color: Colors.blueAccent,
+                  onTap: () => context.router.push(const PropertyScanRoute()),
+                ),
+                _DashboardButton(
+                  icon: Icons.edit_note_rounded,
+                  label: 'Editar Medidor',
+                  color: Colors.deepPurple,
+                  onTap: () => context.router.push(
+                    const ManualEntryConnectionWithPropertiesScreen(),
+                  ),
+                ),
+                _DashboardButton(
+                  icon: Icons.cable,
+                  label: 'Acometidas',
+                  color: Colors.green,
+                  onTap: () => context.router.push(SearchConnectionRoute()),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // ── Recursos y configuración ────────────────────────────
+            _ActionSection(
+              title: 'Recursos',
+              subtitle: 'Personal, materiales y ajustes',
+              icon: Icons.inventory_2_rounded,
+              color: const Color(0xFF7C3AED),
+              actions: [
+                _DashboardButton(
                   icon: Icons.people,
                   label: 'Trabajadores',
                   color: Colors.purple,
@@ -140,48 +214,6 @@ class HomePage extends StatelessWidget {
                   color: Colors.orange,
                   onTap: () =>
                       context.router.push(const ProductsMaterialsHomeRoute()),
-                ),
-                _DashboardButton(
-                  icon: Icons.map,
-                  label: 'Mapa',
-                  color: Colors.teal,
-                  onTap: () => context.router.push(const WorkOrdersMapRoute()),
-                ),
-                _DashboardButton(
-                  icon: Icons.dashboard,
-                  label: 'Dashboards',
-                  color: Colors.indigo,
-                  onTap: () => {showMenuDashboardDialog(context)},
-                ), // ← NUEVO BOTÓN
-                _DashboardButton(
-                  icon: Icons.qr_code_scanner_rounded,
-                  label: 'Escanear QR',
-                  color: Colors.blueAccent,
-                  onTap: () => context.router.push(const PropertyScanRoute()),
-                ),
-                _DashboardButton(
-                  icon: Icons.edit_note_rounded,
-                  label: 'Buscar Manual',
-                  color: Colors.deepPurple,
-                  onTap: () => context.router.push(const ManualEntryConnectionWithPropertiesScreen()),
-                ),
-                _DashboardButton(
-                  icon: Icons.cable,
-                  label: 'Acometidas',
-                  color: Colors.green,
-                  onTap: () => context.router.push(SearchConnectionRoute()),
-                ),
-                _DashboardButton(
-                  icon: Icons.report,
-                  label: 'Reportar Incid.',
-                  color: Colors.redAccent,
-                  onTap: () => context.router.push(CreateIncidentForm()),
-                ),
-                _DashboardButton(
-                  icon: Icons.history,
-                  label: 'Historial',
-                  color: Colors.blueGrey,
-                  onTap: () => context.router.push(const IncidentHistoryRoute()),
                 ),
                 _DashboardButton(
                   icon: Icons.settings,
@@ -280,6 +312,109 @@ class HomePage extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// Sección agrupada de accesos rápidos (cabecera + grilla).
+class _ActionSection extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final List<Widget> actions;
+
+  const _ActionSection({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.actions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withValues(alpha: 0.15)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [color, color.withValues(alpha: 0.7)],
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: Colors.white, size: 18),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '${actions.length}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 1.15,
+            children: actions,
+          ),
+        ],
+      ),
     );
   }
 }

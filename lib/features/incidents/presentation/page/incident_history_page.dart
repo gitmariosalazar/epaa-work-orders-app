@@ -15,9 +15,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:get_it/get_it.dart';
 
-import 'package:clean_architecture/features/incidents/presentation/cubit/incident_cubit.dart';
-import 'package:clean_architecture/config/injector/injector.dart';
-
 @RoutePage()
 class IncidentHistoryPage extends StatefulWidget implements AutoRouteWrapper {
   const IncidentHistoryPage({super.key});
@@ -300,7 +297,7 @@ class _IncidentHistoryPageState extends State<IncidentHistoryPage> {
                             style: TextButton.styleFrom(
                               foregroundColor: cs.error,
                             ),
-                            icon: const Icon(Icons.clear_all_rounded, size: 16),
+                            icon: const Icon(Icons.clear_all, size: 16),
                             label: const Text(
                               'Limpiar',
                               style: TextStyle(fontSize: 12),
@@ -349,6 +346,7 @@ class _IncidentHistoryPageState extends State<IncidentHistoryPage> {
                                   Icons.search_rounded,
                                   color: cs.primary,
                                 ),
+
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(
                                   vertical: 14,

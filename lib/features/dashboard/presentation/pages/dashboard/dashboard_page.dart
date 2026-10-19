@@ -5,6 +5,7 @@ import 'package:clean_architecture/features/dashboard/presentation/pages/dashboa
 import 'package:clean_architecture/features/dashboard/presentation/pages/dashboard/widgets/dashboard_drawer.dart';
 import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart';
 import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
+import 'package:clean_architecture/shared_ui/ui/feedback/bottom_nav_snackbar_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -12,6 +13,9 @@ import 'package:get_it/get_it.dart';
 @RoutePage()
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
+
+  /// Espacio reservado bajo el contenido para la barra flotante.
+  static const double _contentBottomPadding = 50;
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +39,16 @@ class DashboardPage extends StatelessWidget {
                   child: Stack(
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(bottom: 50),
-                        child: const AutoRouter(),
+                        padding: const EdgeInsets.only(
+                          bottom: _contentBottomPadding,
+                        ),
+                        child: isDesktopLargeScreen
+                            ? const AutoRouter()
+                            : const BottomNavSnackBarScope(
+                                navigationHeight: BaseBottomNavigation.height,
+                                reservedBottom: _contentBottomPadding,
+                                child: AutoRouter(),
+                              ),
                       ),
                       if (!isDesktopLargeScreen)
                         const Align(

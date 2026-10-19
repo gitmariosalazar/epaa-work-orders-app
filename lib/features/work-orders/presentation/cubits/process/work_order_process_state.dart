@@ -11,6 +11,8 @@ class WorkOrderProcessState {
   final String? errorMessage;
   final String? successMessage;
   final int executionSubStep; // 0: Personal y Materiales, 1: Evidencias
+  /// `true` mientras se ejecutan pasos automáticos ocultos.
+  final bool isAutoProcessing;
 
   const WorkOrderProcessState({
     this.orderCode = '',
@@ -22,6 +24,7 @@ class WorkOrderProcessState {
     this.errorMessage,
     this.successMessage,
     this.executionSubStep = 0,
+    this.isAutoProcessing = false,
   });
 
   WorkOrderProcessState copyWith({
@@ -39,6 +42,7 @@ class WorkOrderProcessState {
     String? successMessage,
     bool clearSuccessMessage = false,
     int? executionSubStep,
+    bool? isAutoProcessing,
   }) {
     return WorkOrderProcessState(
       orderCode: orderCode ?? this.orderCode,
@@ -49,11 +53,14 @@ class WorkOrderProcessState {
           : (actionLoadingMessage ?? this.actionLoadingMessage),
       order: clearOrder ? null : (order ?? this.order),
       tracking: clearTracking ? null : (tracking ?? this.tracking),
-      errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
+      errorMessage: clearErrorMessage
+          ? null
+          : (errorMessage ?? this.errorMessage),
       successMessage: clearSuccessMessage
           ? null
           : (successMessage ?? this.successMessage),
       executionSubStep: executionSubStep ?? this.executionSubStep,
+      isAutoProcessing: isAutoProcessing ?? this.isAutoProcessing,
     );
   }
 }

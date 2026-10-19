@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:clean_architecture/components/widgets/attachment_source_picker.dart';
 import 'package:get_it/get_it.dart';
 import 'package:clean_architecture/components/widgets/mic_suffix_button.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,9 +20,16 @@ import 'package:clean_architecture/components/button/widget_button.dart';
 
 /// Resultado devuelto al cerrar la pantalla tras resolver con éxito.
 class SolveIncidentResult {
+  /// Descripción ingresada al resolver la incidencia.
+  final String description;
+
   /// Rutas locales de las fotos adjuntadas en la resolución.
   final List<String> imagePaths;
-  const SolveIncidentResult({this.imagePaths = const []});
+
+  const SolveIncidentResult({
+    required this.description,
+    this.imagePaths = const [],
+  });
 }
 
 @RoutePage()
@@ -78,6 +86,21 @@ class _SolveIncidentScreenState extends State<SolveIncidentScreen> {
     }
   }
 
+  Future<void> _showImageSourcePicker() async {
+    if (_images.length >= 3) return;
+    final source = await AttachmentSourcePicker.show(
+      context,
+      allowFiles: false,
+      title: 'Adjuntar Evidencia Fotográfica',
+    );
+    if (!mounted || source == null) return;
+    await _pickImage(
+      source == AttachmentSource.camera
+          ? ImageSource.camera
+          : ImageSource.gallery,
+    );
+  }
+
   void _removeImage(int index) {
     setState(() {
       _images.removeAt(index);
@@ -127,6 +150,7 @@ class _SolveIncidentScreenState extends State<SolveIncidentScreen> {
           // Return to previous screen and potentially trigger a refresh
           context.router.maybePop(
             SolveIncidentResult(
+              description: _descriptionController.text.trim(),
               imagePaths: _images.map((f) => f.path).toList(),
             ),
           );
@@ -352,30 +376,16 @@ class _SolveIncidentScreenState extends State<SolveIncidentScreen> {
                     ),
 
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ActionButton(
-                          onPressed: _images.length >= 3 || isLoading
-                              ? null
-                              : () => _pickImage(ImageSource.camera),
-                          icon: Icons.camera_alt_rounded,
-                          label: 'Tomar Foto',
-                          style: ActionButtonStyle.outlined,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ActionButton(
-                          onPressed: _images.length >= 3 || isLoading
-                              ? null
-                              : () => _pickImage(ImageSource.gallery),
-                          icon: Icons.photo_rounded,
-                          label: 'Galería',
-                          style: ActionButtonStyle.outlined,
-                        ),
-                      ),
-                    ],
+                  SizedBox(
+                    width: double.infinity,
+                    child: ActionButton(
+                      onPressed: _images.length >= 3 || isLoading
+                          ? null
+                          : _showImageSourcePicker,
+                      icon: Icons.add_photo_alternate_outlined,
+                      label: 'Agregar foto',
+                      style: ActionButtonStyle.outlined,
+                    ),
                   ),
 
                   const SizedBox(height: 40),

@@ -1,3 +1,4 @@
+import 'package:clean_architecture/features/work-orders/domain/entities/evidence_stage.dart';
 import 'package:clean_architecture/core/domain/use_cases/use_case.dart';
 import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:clean_architecture/features/work-orders/data/models/requests/process_work_order_requests.dart';
@@ -152,11 +153,13 @@ class UploadWorkOrderAttachmentsParams {
   final String workOrderId;
   final List<String> filePaths;
   final String? createdByUserId;
+  final EvidenceStage? evidenceStage;
 
   UploadWorkOrderAttachmentsParams({
     required this.workOrderId,
     required this.filePaths,
     this.createdByUserId,
+    this.evidenceStage,
   });
 }
 
@@ -173,6 +176,7 @@ class UploadWorkOrderAttachmentsUseCase
         params.workOrderId,
         params.filePaths,
         createdByUserId: params.createdByUserId,
+        evidenceStage: params.evidenceStage,
       );
 }
 

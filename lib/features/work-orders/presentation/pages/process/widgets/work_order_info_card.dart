@@ -15,12 +15,18 @@ class WorkOrderInfoCard extends StatelessWidget {
 
     Uri url;
     if (lat != null && lng != null && lat != 0.0 && lng != 0.0) {
-      url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+      url = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+      );
     } else if (address.isNotEmpty) {
-      url = Uri.parse('https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}');
+      url = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}',
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No hay información de ubicación disponible')),
+        const SnackBar(
+          content: Text('No hay información de ubicación disponible'),
+        ),
       );
       return;
     }
@@ -53,12 +59,19 @@ class WorkOrderInfoCard extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(Icons.contact_page_outlined, color: AppColors.primary, size: 20),
+                      Icon(
+                        Icons.contact_page_outlined,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       const Expanded(
                         child: Text(
                           'Información del Predio y Solicitante',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -67,7 +80,10 @@ class WorkOrderInfoCard extends StatelessWidget {
                 ),
                 TextButton.icon(
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
@@ -78,19 +94,54 @@ class WorkOrderInfoCard extends StatelessWidget {
               ],
             ),
             const Divider(height: 16),
-            _buildRow('Cliente / Usuario', order.nombreCliente ?? 'No registrado', icon: Icons.person_outline),
-            if (order.identificacionCliente != null && order.identificacionCliente!.isNotEmpty)
-              _buildRow('Cédula / RUC', order.identificacionCliente!, icon: Icons.badge_outlined),
-            if (order.telefonoCliente != null && order.telefonoCliente!.isNotEmpty)
-              _buildRow('Teléfono', order.telefonoCliente!, icon: Icons.phone_outlined),
-            _buildRow('Clave Catastral', order.claveCatastral ?? 'S/N', icon: Icons.home_work_outlined),
-            if (order.cuentaContrato != null && order.cuentaContrato!.isNotEmpty)
-              _buildRow('Cuenta Contrato', order.cuentaContrato!, icon: Icons.numbers_outlined),
-            _buildRow('Dirección', order.direccion ?? 'Sin dirección registrada', icon: Icons.place_outlined),
+            _buildRow(
+              'Cliente / Usuario',
+              order.nombreCliente ?? 'No registrado',
+              icon: Icons.person_outline,
+            ),
+            if (order.identificacionCliente != null &&
+                order.identificacionCliente!.isNotEmpty)
+              _buildRow(
+                'Cédula / RUC',
+                order.identificacionCliente!,
+                icon: Icons.badge_outlined,
+              ),
+            if (order.telefonoCliente != null &&
+                order.telefonoCliente!.isNotEmpty)
+              _buildRow(
+                'Teléfono',
+                order.telefonoCliente!,
+                icon: Icons.phone_outlined,
+              ),
+            _buildRow(
+              'Clave Catastral',
+              order.claveCatastral ?? 'S/N',
+              icon: Icons.home_work_outlined,
+            ),
+            if (order.cuentaContrato != null &&
+                order.cuentaContrato!.isNotEmpty)
+              _buildRow(
+                'Cuenta Contrato',
+                order.cuentaContrato!,
+                icon: Icons.numbers_outlined,
+              ),
+            _buildRow(
+              'Dirección',
+              order.direccion ?? 'Sin dirección registrada',
+              icon: Icons.place_outlined,
+            ),
             if (order.barrio != null && order.barrio!.isNotEmpty)
-              _buildRow('Barrio / Sector', order.barrio!, icon: Icons.location_city_outlined),
+              _buildRow(
+                'Barrio / Sector',
+                order.barrio!,
+                icon: Icons.location_city_outlined,
+              ),
             if (order.numeroMedidor != null && order.numeroMedidor!.isNotEmpty)
-              _buildRow('Nº Medidor', order.numeroMedidor!, icon: Icons.speed_outlined),
+              _buildRow(
+                'Nº Medidor',
+                order.numeroMedidor!,
+                icon: Icons.speed_outlined,
+              ),
             if (order.descripcion != null && order.descripcion!.isNotEmpty) ...[
               const Divider(height: 16),
               const Text(
@@ -100,7 +151,11 @@ class WorkOrderInfoCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 order.descripcion!,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade800, height: 1.3),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade800,
+                  height: 1.3,
+                ),
               ),
             ],
             if (order.observaciones.isNotEmpty) ...[
@@ -112,7 +167,11 @@ class WorkOrderInfoCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 order.observaciones.map((o) => o.texto).join('\n'),
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade700, fontStyle: FontStyle.italic),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade700,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ],
           ],
@@ -135,13 +194,21 @@ class WorkOrderInfoCard extends StatelessWidget {
             width: 120,
             child: Text(
               label,
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black87),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
             ),
           ),
         ],

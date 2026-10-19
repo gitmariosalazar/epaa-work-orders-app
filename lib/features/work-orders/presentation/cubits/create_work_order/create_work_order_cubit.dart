@@ -1,5 +1,5 @@
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_entity.dart';
-import 'package:clean_architecture/features/work-orders/domain/usecases/create_work_order_use_case.dart';
+import 'package:clean_architecture/features/work-orders/domain/usecases/create_work_order_with_evidence_use_case.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
@@ -7,11 +7,12 @@ part 'create_work_order_state.dart';
 
 @injectable
 class CreateWorkOrderCubit extends Cubit<CreateWorkOrderState> {
-  final CreateWorkOrderUseCase _createWorkOrderUseCase;
+  final CreateWorkOrderWithEvidenceUseCase _createWorkOrderUseCase;
 
-  CreateWorkOrderCubit({required CreateWorkOrderUseCase createWorkOrderUseCase})
-    : _createWorkOrderUseCase = createWorkOrderUseCase,
-      super(CreateWorkOrderInitial());
+  CreateWorkOrderCubit({
+    required CreateWorkOrderWithEvidenceUseCase createWorkOrderUseCase,
+  }) : _createWorkOrderUseCase = createWorkOrderUseCase,
+       super(CreateWorkOrderInitial());
 
   Future<void> createWorkOrder(WorkOrderEntity order) async {
     emit(CreateWorkOrderLoading());
@@ -20,8 +21,13 @@ class CreateWorkOrderCubit extends Cubit<CreateWorkOrderState> {
       final result = await _createWorkOrderUseCase(order);
 
       result.when(
-        success: (createdOrder) {
-          emit(CreateWorkOrderSuccess(createdOrder));
+        success: (result) {
+          emit(
+            CreateWorkOrderSuccess(
+              result.order,
+              evidenceWarning: result.evidenceWarning,
+            ),
+          );
         },
         failure: (message, errorType) {
           emit(CreateWorkOrderError(message ?? 'Error al crear la orden'));

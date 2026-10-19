@@ -86,36 +86,39 @@ class IncidentCard extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 15),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: priorityColor.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 6,
-                                  height: 6,
-                                  decoration: BoxDecoration(
-                                    color: priorityColor,
-                                    shape: BoxShape.circle,
+                          Tooltip(
+                            message: 'Prioridad del reporte',
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: priorityColor.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 6,
+                                    height: 6,
+                                    decoration: BoxDecoration(
+                                      color: priorityColor,
+                                      shape: BoxShape.circle,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  incident.suggestedPriority.toUpperCase(),
-                                  style: TextStyle(
-                                    color: priorityColor,
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.w800,
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    incident.suggestedPriority.toUpperCase(),
+                                    style: TextStyle(
+                                      color: priorityColor,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w800,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -476,42 +479,38 @@ class IconIncidentType extends StatelessWidget {
   Widget build(BuildContext context) {
     IconData getIconData() {
       switch (categoryCode) {
-        case 'FUGAS':
-          // Fugas (Gotas, llaves goteando, agua escapando)
+        case 'AGUA_POTABLE':
+          // Fugas, roturas y suministro de agua potable
           return Icons.water_drop_outlined;
 
-        case 'INFRAESTRUCTURA':
-          // Infraestructura (La caja del medidor, la tapa, cemento, la estructura física)
-          return Icons.add_box_outlined;
-        // Una opción excelente y muy limpia es:
-        // return Icons.build_circle_outlined; // Representa mantenimiento/infraestructura
+        case 'ALCANTARILLADO':
+          // Red de desagüe, sumideros y alcantarillas
+          return Icons.waves_outlined;
 
-        case 'DAÑOS Y PERJUICIOS':
-          // Daños y Pérdidas (Medidor roto, destruido, vandalismo)
+        case 'INFRAESTRUCTURA':
+          // Cajas portamedidores, llaves de paso, visores
+          return Icons.build_circle_outlined;
+
+        case 'DAÑO':
+          // Destrucción, roturas físicas o robo de medidores
           return Icons.report_problem_outlined;
 
         case 'FRAUDE':
-          // Fraudes e Irregularidades (Medidor invertido, bypass, robo de agua)
-          // Usamos el ícono de "alerta de fraude/candado abierto/ojo espía"
+          // Manipulación deliberada, bypass o derivaciones clandestinas
           return Icons.gavel_outlined;
 
         case 'CONSUMO':
-          // Anomalías de Consumo (Saltos drásticos de consumo, medidor frenado)
-          // Idealmente un ícono que represente gráficos o medidores analógicos
+          // Discrepancias atípicas de consumo y lecturas
           return Icons.speed_outlined;
 
-        case 'RED MATRIZ':
-          // Red Matriz y Vía Pública (Tuberías principales en la calle)
-          return Icons.waves_outlined;
+        case 'RED_MATRIZ':
+          // Red de distribución pública y tuberías principales
+          return Icons.alt_route_outlined;
 
-        case 'ALCANTARILLADO':
-          // Alcantarillado (Sumideros, pozos de revisión, aguas servidas)
-          // Un ícono que simule rejillas o desagüe
-          return Icons.opacity_outlined;
+        case 'RUTA_LECTURA':
+          // Inspección en ruta reportada por lecturistas en campo
+          return Icons.assignment_outlined;
 
-        case 'OTRO':
-          // Otro (Casos imprevistos)
-          return Icons.help_outline_rounded;
         default:
           switch (incidentType) {
             case '1':
@@ -521,7 +520,7 @@ class IconIncidentType extends StatelessWidget {
             case '3':
               return Icons.plumbing;
             default:
-              return Icons.electrical_services_outlined;
+              return Icons.help_outline_rounded;
           }
       }
     }

@@ -10,7 +10,8 @@ class CreateWorkOrderLoading extends CreateWorkOrderState {}
 
 class CreateWorkOrderSuccess extends CreateWorkOrderState {
   final WorkOrderEntity createdOrder;
-  CreateWorkOrderSuccess(this.createdOrder);
+  final String? evidenceWarning;
+  CreateWorkOrderSuccess(this.createdOrder, {this.evidenceWarning});
 }
 
 class CreateWorkOrderError extends CreateWorkOrderState {

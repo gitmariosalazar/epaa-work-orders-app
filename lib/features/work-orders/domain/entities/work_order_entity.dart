@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class WorkOrderEntity {
   final String? workOrderId;
   final String? orderCode;
@@ -22,6 +24,8 @@ class WorkOrderEntity {
   final DateTime? completionDate;
   final String status;
 
+  final List<File>? attachments;
+
   WorkOrderEntity({
     this.workOrderId,
     this.orderCode,
@@ -45,5 +49,6 @@ class WorkOrderEntity {
     this.assignationDate,
     this.completionDate,
     this.status = 'PENDIENTE',
+    this.attachments,
   });
 }

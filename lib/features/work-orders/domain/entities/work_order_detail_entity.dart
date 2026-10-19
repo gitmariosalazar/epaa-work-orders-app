@@ -1,3 +1,4 @@
+import 'package:clean_architecture/shared/files/domain/utils/file_path_utils.dart';
 import 'package:equatable/equatable.dart';
 
 class AssignedWorkerEntity extends Equatable {
@@ -23,13 +24,13 @@ class AssignedWorkerEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        idAsignacion,
-        idTrabajador,
-        nombreTrabajador,
-        rol,
-        esResponsable,
-        fechaAsignacion,
-      ];
+    idAsignacion,
+    idTrabajador,
+    nombreTrabajador,
+    rol,
+    esResponsable,
+    fechaAsignacion,
+  ];
 }
 
 class UsedMaterialEntity extends Equatable {
@@ -53,14 +54,14 @@ class UsedMaterialEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        idDetalle,
-        idMaterial,
-        codigoMaterial,
-        nombreMaterial,
-        cantidad,
-        costoUnitario,
-        subtotal,
-      ];
+    idDetalle,
+    idMaterial,
+    codigoMaterial,
+    nombreMaterial,
+    cantidad,
+    costoUnitario,
+    subtotal,
+  ];
 }
 
 class AdditionalCostEntity extends Equatable {
@@ -82,12 +83,12 @@ class AdditionalCostEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        idCosto,
-        concepto,
-        cantidad,
-        costoUnitario,
-        total,
-      ];
+    idCosto,
+    concepto,
+    cantidad,
+    costoUnitario,
+    total,
+  ];
 }
 
 class EvidenceAttachmentEntity extends Equatable {
@@ -95,6 +96,7 @@ class EvidenceAttachmentEntity extends Equatable {
   final String nombreArchivo;
   final String url;
   final String tipoAdjunto;
+  final String? evidenceStep;
   final String? mimeType;
   final String fechaCarga;
 
@@ -103,22 +105,33 @@ class EvidenceAttachmentEntity extends Equatable {
     required this.nombreArchivo,
     required this.url,
     required this.tipoAdjunto,
+    this.evidenceStep,
     this.mimeType,
     required this.fechaCarga,
   });
+
+  /// Nombre real del archivo en storage (derivado de la URL del backend).
+  String get filePath =>
+      FilePathUtils.filenameFromUrl(url, fallback: nombreArchivo);
+
+  /// `true` si el adjunto es una imagen visualizable.
+  bool get isImage =>
+      FilePathUtils.isImage(filePath, mimeType: mimeType) ||
+      FilePathUtils.isImage(nombreArchivo, mimeType: mimeType);
 
   String get urlArchivo => url;
   String? get fechaSubida => fechaCarga;
 
   @override
   List<Object?> get props => [
-        idAdjunto,
-        nombreArchivo,
-        url,
-        tipoAdjunto,
-        mimeType,
-        fechaCarga,
-      ];
+    idAdjunto,
+    nombreArchivo,
+    url,
+    tipoAdjunto,
+    evidenceStep,
+    mimeType,
+    fechaCarga,
+  ];
 }
 
 class LogObservationEntity extends Equatable {
@@ -288,62 +301,62 @@ class WorkOrderDetailEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        idOrdenTrabajo,
-        codigoOrden,
-        numeroSecuencial,
-        version,
-        estado,
-        estadoLabel,
-        origen,
-        origenLabel,
-        codigoEntidadOrigen,
-        idEntidadOrigen,
-        tipoTrabajo,
-        tipoTrabajoDescripcion,
-        departamento,
-        prioridad,
-        slaHoras,
-        direccion,
-        ubicacionDetalles,
-        claveCatastral,
-        latitud,
-        longitud,
-        descripcion,
-        metadata,
-        fechaCreacion,
-        fechaAsignacion,
-        fechaInicioCampo,
-        fechaCompletada,
-        diasEnProceso,
-        horasTotalesProceso,
-        cumpleSla,
-        horasRestantesSla,
-        inspectorNombre,
-        nombreAsignador,
-        nombreCompletador,
-        creadorNombre,
-        idCliente,
-        clienteNombre,
-        clienteTelefono,
-        clienteEmail,
-        personalAsignado,
-        materiales,
-        costosAdicionales,
-        adjuntos,
-        observaciones,
-        costoTotalMateriales,
-        costoTotalAdicionales,
-        costoTotalOrden,
-        idInspeccion,
-        checklistAprobado,
-        observacionesChecklist,
-        idControl,
-        calidadAprobada,
-        comentariosCalidad,
-        idEncuesta,
-        calificacionSatisfaccion,
-        comentariosSatisfaccion,
-      ];
+    idOrdenTrabajo,
+    codigoOrden,
+    numeroSecuencial,
+    version,
+    estado,
+    estadoLabel,
+    origen,
+    origenLabel,
+    codigoEntidadOrigen,
+    idEntidadOrigen,
+    tipoTrabajo,
+    tipoTrabajoDescripcion,
+    departamento,
+    prioridad,
+    slaHoras,
+    direccion,
+    ubicacionDetalles,
+    claveCatastral,
+    latitud,
+    longitud,
+    descripcion,
+    metadata,
+    fechaCreacion,
+    fechaAsignacion,
+    fechaInicioCampo,
+    fechaCompletada,
+    diasEnProceso,
+    horasTotalesProceso,
+    cumpleSla,
+    horasRestantesSla,
+    inspectorNombre,
+    nombreAsignador,
+    nombreCompletador,
+    creadorNombre,
+    idCliente,
+    clienteNombre,
+    clienteTelefono,
+    clienteEmail,
+    personalAsignado,
+    materiales,
+    costosAdicionales,
+    adjuntos,
+    observaciones,
+    costoTotalMateriales,
+    costoTotalAdicionales,
+    costoTotalOrden,
+    idInspeccion,
+    checklistAprobado,
+    observacionesChecklist,
+    idControl,
+    calidadAprobada,
+    comentariosCalidad,
+    idEncuesta,
+    calificacionSatisfaccion,
+    comentariosSatisfaccion,
+  ];
 
   // Helper getters
   String? get nombreCliente => clienteNombre;

@@ -42,7 +42,8 @@ class AddWorkOrderAssignmentModel {
 
   factory AddWorkOrderAssignmentModel.fromJson(Map<String, dynamic> json) {
     return AddWorkOrderAssignmentModel(
-      workOrderId: (json['workOrderId'] ?? json['work_order_id'] ?? '').toString(),
+      workOrderId: (json['workOrderId'] ?? json['work_order_id'] ?? '')
+          .toString(),
       workerId: _toInt(json['workerId']),
       rolId: _toInt(json['rolId']),
     );

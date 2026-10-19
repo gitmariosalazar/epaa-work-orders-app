@@ -5,12 +5,14 @@ class AddWorkOrderAttachmentEntity extends Equatable {
   final String fileName;
   final String fileType;
   final String fileUrl;
+  final String? evidenceStageCode;
 
   const AddWorkOrderAttachmentEntity({
     required this.workOrderId,
     required this.fileName,
     required this.fileType,
     required this.fileUrl,
+    this.evidenceStageCode,
   });
 
   Map<String, dynamic> toJson() {
@@ -19,6 +21,7 @@ class AddWorkOrderAttachmentEntity extends Equatable {
       'fileName': fileName,
       'fileType': fileType,
       'fileUrl': fileUrl,
+      if (evidenceStageCode != null) 'evidenceStageCode': evidenceStageCode,
     };
   }
 

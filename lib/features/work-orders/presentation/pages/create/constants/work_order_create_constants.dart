@@ -52,7 +52,11 @@ abstract class WorkOrderCreateConstants {
   static const List<WorkOrderStepItem> steps = [
     WorkOrderStepItem(id: 1, label: 'Cliente', icon: Icons.person_rounded),
     WorkOrderStepItem(id: 2, label: 'Detalle OT', icon: Icons.build_rounded),
-    WorkOrderStepItem(id: 3, label: 'Confirmación', icon: Icons.task_alt_rounded),
+    WorkOrderStepItem(
+      id: 3,
+      label: 'Confirmación',
+      icon: Icons.task_alt_rounded,
+    ),
   ];
 
   static const List<WorkOrderOriginItem> origins = [
@@ -79,13 +83,41 @@ abstract class WorkOrderCreateConstants {
   ];
 
   static const List<WorkOrderTypeItem> workTypes = [
-    WorkOrderTypeItem(id: 1, label: 'Inspección de acometida', icon: Icons.search_rounded),
-    WorkOrderTypeItem(id: 2, label: 'Reparación de fuga', icon: Icons.plumbing_rounded),
-    WorkOrderTypeItem(id: 3, label: 'Instalación de medidor', icon: Icons.speed_rounded),
-    WorkOrderTypeItem(id: 4, label: 'Corte de servicio', icon: Icons.power_off_rounded),
-    WorkOrderTypeItem(id: 5, label: 'Reconexión de servicio', icon: Icons.power_rounded),
-    WorkOrderTypeItem(id: 6, label: 'Limpieza de red', icon: Icons.cleaning_services_rounded),
-    WorkOrderTypeItem(id: 7, label: 'Mantenimiento preventivo', icon: Icons.build_circle_rounded),
+    WorkOrderTypeItem(
+      id: 1,
+      label: 'Inspección de acometida',
+      icon: Icons.search_rounded,
+    ),
+    WorkOrderTypeItem(
+      id: 2,
+      label: 'Reparación de fuga',
+      icon: Icons.plumbing_rounded,
+    ),
+    WorkOrderTypeItem(
+      id: 3,
+      label: 'Instalación de medidor',
+      icon: Icons.speed_rounded,
+    ),
+    WorkOrderTypeItem(
+      id: 4,
+      label: 'Corte de servicio',
+      icon: Icons.power_off_rounded,
+    ),
+    WorkOrderTypeItem(
+      id: 5,
+      label: 'Reconexión de servicio',
+      icon: Icons.power_rounded,
+    ),
+    WorkOrderTypeItem(
+      id: 6,
+      label: 'Limpieza de red',
+      icon: Icons.cleaning_services_rounded,
+    ),
+    WorkOrderTypeItem(
+      id: 7,
+      label: 'Mantenimiento preventivo',
+      icon: Icons.build_circle_rounded,
+    ),
   ];
 
   static const List<WorkOrderPriorityItem> priorities = [
@@ -93,6 +125,10 @@ abstract class WorkOrderCreateConstants {
     WorkOrderPriorityItem(id: 2, label: '🟡 Media', color: Color(0xFFF59E0B)),
     WorkOrderPriorityItem(id: 3, label: '🟠 Alta', color: Color(0xFFF97316)),
     WorkOrderPriorityItem(id: 4, label: '🔴 Urgente', color: Color(0xFFEF4444)),
-    WorkOrderPriorityItem(id: 5, label: '⚡ Emergencia', color: Color(0xFF8B5CF6)),
+    WorkOrderPriorityItem(
+      id: 5,
+      label: '⚡ Emergencia',
+      color: Color(0xFF8B5CF6),
+    ),
   ];
 }

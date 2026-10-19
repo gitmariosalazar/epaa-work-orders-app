@@ -56,7 +56,10 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
   }
 
   void _handleNextStep() {
-    final validation = WorkOrderValidationHelper.validateStep(_currentStep, _form);
+    final validation = WorkOrderValidationHelper.validateStep(
+      _currentStep,
+      _form,
+    );
     if (!validation.isValid) {
       setState(() {
         _errors = validation.errors;
@@ -86,7 +89,10 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
     }
 
     // Para avanzar a un paso superior, validar el paso actual primero
-    final validation = WorkOrderValidationHelper.validateStep(_currentStep, _form);
+    final validation = WorkOrderValidationHelper.validateStep(
+      _currentStep,
+      _form,
+    );
     if (!validation.isValid) {
       setState(() {
         _errors = validation.errors;
@@ -102,7 +108,10 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
   }
 
   Future<void> _handleSubmit() async {
-    final validation = WorkOrderValidationHelper.validateStep(_currentStep, _form);
+    final validation = WorkOrderValidationHelper.validateStep(
+      _currentStep,
+      _form,
+    );
     if (!validation.isValid) {
       setState(() {
         _errors = validation.errors;
@@ -138,7 +147,9 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Row(
             children: [
               Container(
@@ -171,7 +182,9 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
               Text(
                 'Por favor complete o verifique los siguientes campos antes de continuar:',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8),
+                  color: theme.textTheme.bodyMedium?.color?.withValues(
+                    alpha: 0.8,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -193,7 +206,9 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
                         child: Text(
                           msg,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: isDark ? Colors.red.shade200 : Colors.red.shade800,
+                            color: isDark
+                                ? Colors.red.shade200
+                                : Colors.red.shade800,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -227,6 +242,17 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
 
     return BlocConsumer<CreateWorkOrderCubit, CreateWorkOrderState>(
       listener: (context, state) {
+        if (state is CreateWorkOrderSuccess && state.evidenceWarning != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Orden creada, pero las evidencias no se subieron: ${state.evidenceWarning}',
+              ),
+              backgroundColor: Colors.orange.shade800,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
         if (state is CreateWorkOrderError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -337,12 +363,14 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
     bool isDark,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 25.0),
       decoration: BoxDecoration(
         color: isDark ? theme.colorScheme.surface : Colors.white,
         border: Border(
           top: BorderSide(
-            color: isDark ? theme.dividerColor.withValues(alpha: 0.2) : Colors.grey.shade200,
+            color: isDark
+                ? theme.dividerColor.withValues(alpha: 0.2)
+                : Colors.grey.shade200,
           ),
         ),
         boxShadow: [
@@ -362,7 +390,10 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
               icon: const Icon(Icons.chevron_left_rounded, size: 20),
               label: const Text('Anterior'),
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -381,7 +412,10 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
               label: const Text('Continuar'),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -400,11 +434,16 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
                       ),
                     )
                   : const Icon(Icons.check_rounded, size: 20),
-              label: Text(isSubmitting ? 'Creando OT...' : 'Crear Orden de Trabajo'),
+              label: Text(
+                isSubmitting ? 'Creando OT...' : 'Crear Orden de Trabajo',
+              ),
               style: FilledButton.styleFrom(
                 backgroundColor: Colors.green.shade600,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),

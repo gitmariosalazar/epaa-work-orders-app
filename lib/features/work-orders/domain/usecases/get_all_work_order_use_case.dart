@@ -14,6 +14,13 @@ class GetAllWorkOrdersUseCase
   ); // incluso más corto con constructor sintáctico
 
   @override
-  FutureData<List<WorkOrderEntity>> call({int? limit, int? offset}) =>
-      _repository.getAllWorkOrders(limit: limit, offset: offset);
+  FutureData<List<WorkOrderEntity>> call({
+    String? searchValue,
+    int? limit,
+    int? offset,
+  }) => _repository.getAllWorkOrders(
+    searchValue: searchValue,
+    limit: limit,
+    offset: offset,
+  );
 }

@@ -45,7 +45,9 @@ class WorkOrderSurveyCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                if (!hasSurvey && onRegisterSurvey != null)
+                if (!hasSurvey &&
+                    onRegisterSurvey != null &&
+                    order.estado == 'COMPLETADA')
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.amber.shade700,

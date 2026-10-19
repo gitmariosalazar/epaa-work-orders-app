@@ -59,7 +59,8 @@ class AddMaterialWorkOrderModel {
 
   factory AddMaterialWorkOrderModel.fromJson(Map<String, dynamic> json) {
     return AddMaterialWorkOrderModel(
-      workOrderId: (json['workOrderId'] ?? json['work_order_id'] ?? '').toString(),
+      workOrderId: (json['workOrderId'] ?? json['work_order_id'] ?? '')
+          .toString(),
       materialId: _toInt(json['materialId'] ?? json['material_id']),
       quantity: _toDouble(json['quantity']),
       unitCost: _toDouble(json['unitCost'] ?? json['unit_cost']),

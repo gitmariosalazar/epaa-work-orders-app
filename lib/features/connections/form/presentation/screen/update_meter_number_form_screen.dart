@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:get_it/get_it.dart';
 import 'package:clean_architecture/components/button/widget_button.dart';
+import 'package:clean_architecture/components/widgets/attachment_source_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:image_picker/image_picker.dart';
@@ -65,6 +66,21 @@ class _UpdateMeterNumberFormScreenState
         ).showSnackBar(SnackBar(content: Text('Error al obtener imagen: $e')));
       }
     }
+  }
+
+  Future<void> _showImageSourcePicker() async {
+    if (_images.length >= 3) return;
+    final source = await AttachmentSourcePicker.show(
+      context,
+      allowFiles: false,
+      title: 'Adjuntar Evidencia Fotográfica',
+    );
+    if (!mounted || source == null) return;
+    await _pickImage(
+      source == AttachmentSource.camera
+          ? ImageSource.camera
+          : ImageSource.gallery,
+    );
   }
 
   void _removeImage(int index) {
@@ -389,30 +405,16 @@ class _UpdateMeterNumberFormScreenState
                             ),
                           ),
                         const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ActionButton(
-                                onPressed: _images.length >= 3 || _isSubmitting
-                                    ? null
-                                    : () => _pickImage(ImageSource.camera),
-                                icon: Icons.camera_alt_rounded,
-                                label: 'Tomar Foto',
-                                style: ActionButtonStyle.outlined,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: ActionButton(
-                                onPressed: _images.length >= 3 || _isSubmitting
-                                    ? null
-                                    : () => _pickImage(ImageSource.gallery),
-                                icon: Icons.photo_rounded,
-                                label: 'Galería',
-                                style: ActionButtonStyle.outlined,
-                              ),
-                            ),
-                          ],
+                        SizedBox(
+                          width: double.infinity,
+                          child: ActionButton(
+                            onPressed: _images.length >= 3 || _isSubmitting
+                                ? null
+                                : _showImageSourcePicker,
+                            icon: Icons.add_photo_alternate_outlined,
+                            label: 'Agregar foto',
+                            style: ActionButtonStyle.outlined,
+                          ),
                         ),
                         const SizedBox(height: 40),
                         SizedBox(

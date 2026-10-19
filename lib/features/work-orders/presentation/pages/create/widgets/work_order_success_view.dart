@@ -59,10 +59,15 @@ class WorkOrderSuccessView extends StatelessWidget {
 
               if (codigoOrden != null && codigoOrden!.isNotEmpty) ...[
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                        ? theme.colorScheme.surfaceContainerHighest.withValues(
+                            alpha: 0.4,
+                          )
                         : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
@@ -77,7 +82,9 @@ class WorkOrderSuccessView extends StatelessWidget {
                         'CÓDIGO DE LA OT',
                         style: theme.textTheme.labelSmall?.copyWith(
                           letterSpacing: 1.2,
-                          color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
+                          color: theme.textTheme.bodySmall?.color?.withValues(
+                            alpha: 0.7,
+                          ),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -103,7 +110,9 @@ class WorkOrderSuccessView extends StatelessWidget {
                   textAlign: TextAlign.center,
                   text: TextSpan(
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8),
+                      color: theme.textTheme.bodyMedium?.color?.withValues(
+                        alpha: 0.8,
+                      ),
                       height: 1.4,
                     ),
                     children: const [

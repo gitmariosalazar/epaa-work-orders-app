@@ -39,7 +39,9 @@ class _StepClientSelectionState extends State<StepClientSelection> {
     if (query.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Ingrese una cédula, RUC o clave catastral para buscar.'),
+          content: Text(
+            'Ingrese una cédula, RUC o clave catastral para buscar.',
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -212,7 +214,9 @@ class _StepClientSelectionState extends State<StepClientSelection> {
           // ── Search Card ──
           Card(
             elevation: 1,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -220,11 +224,18 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.person_search_rounded, color: cs.primary, size: 22),
+                      Icon(
+                        Icons.person_search_rounded,
+                        color: cs.primary,
+                        size: 22,
+                      ),
                       const SizedBox(width: 8),
                       const Text(
                         'Buscar por Cédula o Clave Catastral',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -258,7 +269,10 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                       FilledButton(
                         onPressed: _isSearching ? null : _handleSearch,
                         style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -274,7 +288,8 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                               )
                             : const Text('Buscar'),
                       ),
-                      if (_connections.isNotEmpty || _searchCtrl.text.isNotEmpty) ...[
+                      if (_connections.isNotEmpty ||
+                          _searchCtrl.text.isNotEmpty) ...[
                         const SizedBox(width: 4),
                         IconButton(
                           icon: const Icon(Icons.clear_rounded),
@@ -314,7 +329,11 @@ class _StepClientSelectionState extends State<StepClientSelection> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.error_outline_rounded, color: Colors.red.shade700, size: 20),
+                  Icon(
+                    Icons.error_outline_rounded,
+                    color: Colors.red.shade700,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -343,7 +362,10 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                 const SizedBox(width: 6),
                 Text(
                   'Acometidas encontradas (${_connections.length}) — Seleccione una:',
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -355,7 +377,8 @@ class _StepClientSelectionState extends State<StepClientSelection> {
               separatorBuilder: (_, _) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final conn = _connections[index];
-                final isSelected = widget.form.selectedConnection?.connectionId ==
+                final isSelected =
+                    widget.form.selectedConnection?.connectionId ==
                         conn.connectionId ||
                     (widget.form.cadastralKey == conn.connectionCadastralKey &&
                         conn.connectionCadastralKey.isNotEmpty);
@@ -371,7 +394,9 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                           : cs.surface,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: isSelected ? cs.primary : cs.outlineVariant.withValues(alpha: 0.6),
+                        color: isSelected
+                            ? cs.primary
+                            : cs.outlineVariant.withValues(alpha: 0.6),
                         width: isSelected ? 1.8 : 1,
                       ),
                     ),
@@ -432,7 +457,10 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                               const SizedBox(height: 4),
                               Text(
                                 conn.connectionAddress,
-                                style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: cs.onSurfaceVariant,
+                                ),
                               ),
                               const SizedBox(height: 4),
                               Row(
@@ -441,12 +469,18 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                                       conn.connectionMeterNumber!.isNotEmpty)
                                     Text(
                                       'Medidor: ${conn.connectionMeterNumber!}  •  ',
-                                      style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: cs.onSurfaceVariant,
+                                      ),
                                     ),
                                   if (conn.connectionRateName.isNotEmpty)
                                     Text(
                                       'Tarifa: ${conn.connectionRateName}',
-                                      style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: cs.onSurfaceVariant,
+                                      ),
                                     ),
                                 ],
                               ),
@@ -465,7 +499,9 @@ class _StepClientSelectionState extends State<StepClientSelection> {
           const SizedBox(height: 16),
           Card(
             elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -475,9 +511,14 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: hasClient ? Colors.blue.shade50 : cs.surfaceContainerHighest,
+                          color: hasClient
+                              ? Colors.blue.shade50
+                              : cs.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
@@ -487,7 +528,9 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                               width: 8,
                               height: 8,
                               decoration: BoxDecoration(
-                                color: hasClient ? Colors.blue.shade600 : Colors.grey,
+                                color: hasClient
+                                    ? Colors.blue.shade600
+                                    : Colors.grey,
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -497,7 +540,9 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: hasClient ? Colors.blue.shade800 : cs.onSurfaceVariant,
+                                color: hasClient
+                                    ? Colors.blue.shade800
+                                    : cs.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -507,9 +552,15 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                         OutlinedButton.icon(
                           onPressed: _openEditDialog,
                           icon: const Icon(Icons.edit, size: 14),
-                          label: const Text('Actualizar Datos', style: TextStyle(fontSize: 12)),
+                          label: const Text(
+                            'Actualizar Datos',
+                            style: TextStyle(fontSize: 12),
+                          ),
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
                             minimumSize: Size.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
@@ -521,13 +572,23 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                     children: [
                       CircleAvatar(
                         radius: 24,
-                        backgroundColor: hasClient ? cs.primary : cs.surfaceContainerHighest,
-                        foregroundColor: hasClient ? Colors.white : cs.onSurfaceVariant,
+                        backgroundColor: hasClient
+                            ? cs.primary
+                            : cs.surfaceContainerHighest,
+                        foregroundColor: hasClient
+                            ? Colors.white
+                            : cs.onSurfaceVariant,
                         child: Text(
                           hasClient && widget.form.clientName.trim().isNotEmpty
-                              ? widget.form.clientName.trim().substring(0, 1).toUpperCase()
+                              ? widget.form.clientName
+                                    .trim()
+                                    .substring(0, 1)
+                                    .toUpperCase()
                               : '?',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -536,7 +597,9 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              hasClient ? widget.form.clientName : 'Sin titular seleccionado',
+                              hasClient
+                                  ? widget.form.clientName
+                                  : 'Sin titular seleccionado',
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
@@ -549,7 +612,9 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                                   : 'Busque por cédula o clave catastral para seleccionar',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: cs.onSurfaceVariant.withValues(alpha: 0.8),
+                                color: cs.onSurfaceVariant.withValues(
+                                  alpha: 0.8,
+                                ),
                               ),
                             ),
                           ],
@@ -562,28 +627,36 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                     context,
                     Icons.badge_outlined,
                     'Cédula / RUC',
-                    widget.form.clientId.isNotEmpty ? widget.form.clientId : 'Sin identificación',
+                    widget.form.clientId.isNotEmpty
+                        ? widget.form.clientId
+                        : 'Sin identificación',
                   ),
                   const SizedBox(height: 8),
                   _buildTitularRow(
                     context,
                     Icons.phone_outlined,
                     'Teléfono',
-                    widget.form.clientPhone.isNotEmpty ? widget.form.clientPhone : 'Sin teléfono',
+                    widget.form.clientPhone.isNotEmpty
+                        ? widget.form.clientPhone
+                        : 'Sin teléfono',
                   ),
                   const SizedBox(height: 8),
                   _buildTitularRow(
                     context,
                     Icons.email_outlined,
                     'Correo Electrónico',
-                    widget.form.clientEmail.isNotEmpty ? widget.form.clientEmail : 'Sin correo',
+                    widget.form.clientEmail.isNotEmpty
+                        ? widget.form.clientEmail
+                        : 'Sin correo',
                   ),
                   const SizedBox(height: 8),
                   _buildTitularRow(
                     context,
                     Icons.business_outlined,
                     'Tipo de Persona',
-                    widget.form.tipoPersona == 'JURIDICA' ? 'Persona Jurídica' : 'Persona Natural',
+                    widget.form.tipoPersona == 'JURIDICA'
+                        ? 'Persona Jurídica'
+                        : 'Persona Natural',
                   ),
                   if (widget.form.cadastralKey.isNotEmpty) ...[
                     const SizedBox(height: 8),
@@ -603,7 +676,11 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.info_outline, color: Colors.blue.shade800, size: 18),
+                        Icon(
+                          Icons.info_outline,
+                          color: Colors.blue.shade800,
+                          size: 18,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(

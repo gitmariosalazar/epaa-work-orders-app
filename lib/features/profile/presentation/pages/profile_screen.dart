@@ -7,7 +7,8 @@ import 'package:clean_architecture/features/profile/presentation/components/chan
 import 'package:clean_architecture/features/profile/presentation/cubit/change_password_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
 import 'package:clean_architecture/core/services/session/session_service.dart';
 import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
@@ -159,7 +160,14 @@ class _ProfileHeroSliver extends StatelessWidget {
       foregroundColor: cs.onPrimary,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_new_rounded),
-        onPressed: () => context.pop(),
+        onPressed: () {
+          // Pestaña raíz del dashboard → vuelve a Inicio; si fue apilada, pop.
+          if (context.router.canPop()) {
+            context.router.maybePop();
+          } else {
+            context.read<DashboardCubit>().setIndex(0);
+          }
+        },
         tooltip: 'Volver',
       ),
       title: const Text(

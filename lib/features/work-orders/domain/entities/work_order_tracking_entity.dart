@@ -21,13 +21,13 @@ class TimelineMilestoneEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        estado,
-        estadoLabel,
-        estadoAnterior,
-        fecha,
-        comentario,
-        usuarioId,
-      ];
+    estado,
+    estadoLabel,
+    estadoAnterior,
+    fecha,
+    comentario,
+    usuarioId,
+  ];
 }
 
 class WorkOrderTrackingEntity extends Equatable {
@@ -53,13 +53,13 @@ class WorkOrderTrackingEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        idOrdenTrabajo,
-        codigoOrden,
-        numeroSecuencial,
-        origen,
-        idEntidadOrigen,
-        tipoTrabajo,
-        prioridad,
-        historial,
-      ];
+    idOrdenTrabajo,
+    codigoOrden,
+    numeroSecuencial,
+    origen,
+    idEntidadOrigen,
+    tipoTrabajo,
+    prioridad,
+    historial,
+  ];
 }

@@ -19,7 +19,14 @@ class WorkOrderWorkersCard extends StatelessWidget {
 
   bool get _isEditable {
     final status = order.estado.toUpperCase();
-    return ['PENDIENTE', 'ASIGNADA', 'PREPARACION', 'EN_PROCESO', 'EN_PROCESO_INSPECCION', 'EN_PROCESO_INSTALACION'].contains(status);
+    return [
+      'PENDIENTE',
+      'ASIGNADA',
+      'PREPARACION',
+      'EN_PROCESO',
+      'EN_PROCESO_INSPECCION',
+      'EN_PROCESO_INSTALACION',
+    ].contains(status);
   }
 
   Future<void> _openAddWorker(BuildContext context) async {
@@ -56,11 +63,18 @@ class WorkOrderWorkersCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.groups_outlined, color: AppColors.primary, size: 20),
+                    Icon(
+                      Icons.groups_outlined,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     const Text(
                       'Personal en Campo',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -68,14 +82,26 @@ class WorkOrderWorkersCard extends StatelessWidget {
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     onPressed: () => _openAddWorker(context),
-                    icon: const Icon(Icons.person_add_alt_1, size: 14, color: Colors.white),
-                    label: const Text('Agregar', style: TextStyle(fontSize: 11.5, color: Colors.white)),
+                    icon: const Icon(
+                      Icons.person_add_alt_1,
+                      size: 14,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      'Agregar',
+                      style: TextStyle(fontSize: 11.5, color: Colors.white),
+                    ),
                   ),
               ],
             ),
@@ -86,11 +112,18 @@ class WorkOrderWorkersCard extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Column(
                   children: [
-                    Icon(Icons.person_off_outlined, color: Colors.grey.shade400, size: 36),
+                    Icon(
+                      Icons.person_off_outlined,
+                      color: Colors.grey.shade400,
+                      size: 36,
+                    ),
                     const SizedBox(height: 6),
                     Text(
                       'No hay personal asignado a esta orden.',
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                   ],
                 ),
@@ -110,12 +143,18 @@ class WorkOrderWorkersCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: isLead ? Colors.amber.shade50 : Colors.blue.shade50,
+                          color: isLead
+                              ? Colors.amber.shade50
+                              : Colors.blue.shade50,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          isLead ? Icons.star_rounded : Icons.engineering_outlined,
-                          color: isLead ? Colors.amber.shade800 : Colors.blue.shade700,
+                          isLead
+                              ? Icons.star_rounded
+                              : Icons.engineering_outlined,
+                          color: isLead
+                              ? Colors.amber.shade800
+                              : Colors.blue.shade700,
                           size: 18,
                         ),
                       ),
@@ -125,24 +164,38 @@ class WorkOrderWorkersCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              w.nombreCompleto.isNotEmpty ? w.nombreCompleto : 'Trabajador ID: ${w.idTrabajador}',
-                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                              w.nombreCompleto.isNotEmpty
+                                  ? w.nombreCompleto
+                                  : 'Trabajador ID: ${w.idTrabajador}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
                             ),
                             const SizedBox(height: 2),
                             Row(
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: isLead ? Colors.amber.shade100 : Colors.grey.shade200,
+                                    color: isLead
+                                        ? Colors.amber.shade100
+                                        : Colors.grey.shade200,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
-                                    isLead ? 'Técnico Responsable' : (w.nombreRol ?? 'Personal de Apoyo'),
+                                    isLead
+                                        ? 'Técnico Responsable'
+                                        : (w.nombreRol ?? 'Personal de Apoyo'),
                                     style: TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,
-                                      color: isLead ? Colors.amber.shade900 : Colors.grey.shade700,
+                                      color: isLead
+                                          ? Colors.amber.shade900
+                                          : Colors.grey.shade700,
                                     ),
                                   ),
                                 ),
@@ -153,23 +206,40 @@ class WorkOrderWorkersCard extends StatelessWidget {
                       ),
                       if (_isEditable)
                         IconButton(
-                          icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent, size: 18),
+                          icon: const Icon(
+                            Icons.remove_circle_outline,
+                            color: Colors.redAccent,
+                            size: 18,
+                          ),
                           tooltip: 'Remover trabajador',
                           onPressed: () {
                             showDialog(
                               context: context,
                               builder: (ctx) => AlertDialog(
-                                title: const Text('Confirmar Remoción', style: TextStyle(fontSize: 15)),
-                                content: Text('¿Desea remover a ${w.nombreCompleto} de la orden?'),
+                                title: const Text(
+                                  'Confirmar Remoción',
+                                  style: TextStyle(fontSize: 15),
+                                ),
+                                content: Text(
+                                  '¿Desea remover a ${w.nombreCompleto} de la orden?',
+                                ),
                                 actions: [
-                                  TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx),
+                                    child: const Text('Cancelar'),
+                                  ),
                                   ElevatedButton(
-                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                    ),
                                     onPressed: () {
                                       Navigator.pop(ctx);
                                       onRemoveWorker(w.idTrabajador);
                                     },
-                                    child: const Text('Remover', style: TextStyle(color: Colors.white)),
+                                    child: const Text(
+                                      'Remover',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                                   ),
                                 ],
                               ),

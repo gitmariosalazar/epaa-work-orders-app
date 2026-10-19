@@ -82,8 +82,9 @@ class _ClientEditDialogState extends State<ClientEditDialog> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                validator: (val) =>
-                    (val == null || val.trim().isEmpty) ? 'El nombre es requerido' : null,
+                validator: (val) => (val == null || val.trim().isEmpty)
+                    ? 'El nombre es requerido'
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -121,7 +122,9 @@ class _ClientEditDialogState extends State<ClientEditDialog> {
         FilledButton(
           onPressed: _submit,
           style: FilledButton.styleFrom(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
           child: const Text('Guardar'),
         ),

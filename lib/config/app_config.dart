@@ -24,7 +24,9 @@ sealed class AppConfig {
 }
 
 String _normalizeBaseUrl(String? url, String fallback) {
-  final resolved = (url != null && url.trim().isNotEmpty) ? url.trim() : fallback;
+  final resolved = (url != null && url.trim().isNotEmpty)
+      ? url.trim()
+      : fallback;
   return resolved.endsWith('/') ? resolved : '$resolved/';
 }
 
@@ -35,7 +37,7 @@ class AppConfigProd extends AppConfig {
         appTitle: "Clean Architecture App",
         apiBaseUrl: _normalizeBaseUrl(
           dotenv.maybeGet("BASE_PRODUCTION"),
-          "https://dev.sigepaa-aa.com:8443/",
+          "https://dev.sigepaa-aa.com/",
         ),
         flavor: Flavor.production,
         apiKeyGoogleMaps: dotenv.maybeGet("GOOGLE_MAPS_API_KEY") ?? "",
@@ -49,7 +51,7 @@ class AppConfigStg extends AppConfig {
         appTitle: "Clean Architecture App Staging",
         apiBaseUrl: _normalizeBaseUrl(
           dotenv.maybeGet("BASE_STAGING"),
-          "https://dev.sigepaa-aa.com:8443/",
+          "https://apidev.sigepaa-aa.com/",
         ),
         flavor: Flavor.staging,
         apiKeyGoogleMaps: dotenv.maybeGet("GOOGLE_MAPS_API_KEY") ?? "",
@@ -63,7 +65,7 @@ class AppConfigDev extends AppConfig {
         appTitle: "Clean Architecture App Development",
         apiBaseUrl: _normalizeBaseUrl(
           dotenv.maybeGet("BASE_DEVELOPMENT"),
-          "https://dev.sigepaa-aa.com:8443/",
+          "https://dev.sigepaa-aa.com/",
         ),
         flavor: Flavor.development,
         apiKeyGoogleMaps: dotenv.maybeGet("GOOGLE_MAPS_API_KEY") ?? "",

@@ -1,5 +1,6 @@
 import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_detail_entity.dart';
+import 'package:clean_architecture/features/work-orders/domain/automation/work_order_automation_policy.dart';
 import 'package:flutter/material.dart';
 
 class WorkOrderPhaseActionCard extends StatelessWidget {
@@ -19,6 +20,9 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
   final VoidCallback onCompleteOrder;
   final VoidCallback onOpenSurvey;
 
+  /// Define qué pasos se ocultan porque se ejecutan automáticamente.
+  final WorkOrderAutomationPolicy automationPolicy;
+
   const WorkOrderPhaseActionCard({
     super.key,
     required this.order,
@@ -36,7 +40,12 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
     required this.onOpenQualityControl,
     required this.onCompleteOrder,
     required this.onOpenSurvey,
+    this.automationPolicy = const WorkOrderAutomationPolicy.manual(),
   });
+
+  bool get _autoFinish => automationPolicy.isAuto(AutoStep.finishExecution);
+  bool get _autoQualityControl =>
+      automationPolicy.isAuto(AutoStep.qualityControl);
 
   bool get isExecutionState {
     final s = order.estado.toUpperCase();
@@ -326,14 +335,16 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            onPressed: isActionLoading ? null : onFinishExecution,
-            icon: const Icon(
-              Icons.done_all_rounded,
+            onPressed: isActionLoading
+                ? null
+                : (_autoFinish ? onCompleteOrder : onFinishExecution),
+            icon: Icon(
+              _autoFinish ? Icons.task_alt : Icons.done_all_rounded,
               color: Colors.white,
               size: 18,
             ),
-            label: const Text(
-              'Finalizar Ejecución Técnica',
+            label: Text(
+              _autoFinish ? 'Completar Orden' : 'Finalizar Ejecución Técnica',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -354,28 +365,32 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
         spacing: 10,
         runSpacing: 10,
         children: [
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: themeColor,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+          if (!_autoQualityControl)
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: themeColor,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-            ),
-            onPressed: isActionLoading ? null : onOpenQualityControl,
-            icon: const Icon(
-              Icons.verified_user_outlined,
-              color: Colors.white,
-              size: 18,
-            ),
-            label: const Text(
-              'Emitir Control de Calidad',
-              style: TextStyle(
+              onPressed: isActionLoading ? null : onOpenQualityControl,
+              icon: const Icon(
+                Icons.verified_user_outlined,
                 color: Colors.white,
-                fontWeight: FontWeight.bold,
+                size: 18,
+              ),
+              label: const Text(
+                'Emitir Control de Calidad',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF047857),
