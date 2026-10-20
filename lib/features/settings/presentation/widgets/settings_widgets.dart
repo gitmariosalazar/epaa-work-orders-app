@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
-  const SectionHeader(this.title);
+  const SectionHeader(this.title, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class SectionHeader extends StatelessWidget {
 
 class SettingsCard extends StatelessWidget {
   final List<Widget> children;
-  const SettingsCard({required this.children});
+  const SettingsCard({super.key, required this.children});
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +65,7 @@ class SettingsTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   const SettingsTile({
+    super.key,
     required this.icon,
     required this.iconColor,
     required this.iconBg,
@@ -82,6 +83,7 @@ class SettingsTile extends StatelessWidget {
       onTap: onTap,
       leading: Container(
         padding: const EdgeInsets.all(8),
+        margin: const EdgeInsets.only(right: 10, left: 0),
         decoration: BoxDecoration(
           color: iconBg,
           borderRadius: BorderRadius.circular(10),
@@ -117,6 +119,7 @@ class SecurityItem extends StatelessWidget {
   final Color color;
   final String label;
   const SecurityItem({
+    super.key,
     required this.icon,
     required this.color,
     required this.label,

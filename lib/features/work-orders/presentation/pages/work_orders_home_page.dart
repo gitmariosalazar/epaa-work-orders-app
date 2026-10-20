@@ -10,6 +10,7 @@ import 'package:clean_architecture/features/work-orders/presentation/cubits/work
 import 'package:clean_architecture/features/work-orders/presentation/widgets/loading_work_orders.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/work_order_card.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
+import 'package:clean_architecture/shared_ui/ui/base/app_bar/base_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -228,26 +229,17 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
     final double bottomInset = MediaQuery.of(context).padding.bottom + 24;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Órdenes de Trabajo',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: theme.primaryColorDark,
-            fontSize: 16,
-          ),
-        ),
+      appBar: BaseAppBar(
+        title: 'Órdenes de Trabajo',
         actions: [
           IconButton(
-            color: theme.primaryColorDark,
             icon: const Icon(Icons.filter_list_rounded),
             onPressed: _showFilterDialog,
             tooltip: 'Filtros',
           ),
           IconButton(
             onPressed: () async {
-              final cubit = context
-                  .read<WorkOrdersCubit>(); // ← Referencia segura
+              final cubit = context.read<WorkOrdersCubit>();
 
               await context.router.push(const CreateWorkOrderRoute());
 
@@ -256,12 +248,10 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
               }
             },
             icon: const Icon(Icons.add_task),
-            color: theme.primaryColorDark,
             tooltip: 'Nueva Orden de Trabajo',
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            color: theme.primaryColorDark,
             onPressed: () =>
                 context.read<WorkOrdersCubit>().loadWorkOrders(refresh: true),
             tooltip: 'Recargar',
@@ -270,12 +260,20 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
       ),
       body: Column(
         children: [
-          AppSearchBar(
-            controller: _searchController,
-            hintText: 'Código de orden, cédula o clave catastral',
-            onSearch: () =>
-                context.read<WorkOrdersCubit>().search(_searchController.text),
-            onClear: () => context.read<WorkOrdersCubit>().search(null),
+          Tooltip(
+            message: 'Buscar por código de orden, cédula o clave catastral',
+            waitDuration: const Duration(
+              milliseconds: 500,
+            ), // Tiempo al pasar el mouse
+            showDuration: const Duration(seconds: 2),
+            child: AppSearchBar(
+              controller: _searchController,
+              hintText: 'Código de orden, cédula o clave catastral',
+              onSearch: () => context.read<WorkOrdersCubit>().search(
+                _searchController.text,
+              ),
+              onClear: () => context.read<WorkOrdersCubit>().search(null),
+            ),
           ),
           Expanded(child: _buildOrdersBody(context, theme, bottomInset)),
         ],

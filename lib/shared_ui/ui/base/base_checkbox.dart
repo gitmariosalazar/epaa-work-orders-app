@@ -24,11 +24,16 @@ class BaseCheckbox extends StatelessWidget {
       child: Checkbox(
         value: value,
         fillColor: WidgetStateColor.resolveWith(
-          (states) => value ? AppColors.hightLight : Colors.transparent,
+          (states) => value
+              ? Theme.of(context).colorScheme.primary
+              : Colors.transparent,
         ),
         side: value
             ? null
-            : const BorderSide(width: 1.2, color: AppColors.black),
+            : BorderSide(
+                width: 1.2,
+                color: Theme.of(context).colorScheme.primary,
+              ),
         onChanged: onChanged,
         visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

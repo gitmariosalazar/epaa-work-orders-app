@@ -6,6 +6,7 @@ import 'package:clean_architecture/features/products/domain/usecases/product_mat
 import 'package:clean_architecture/features/products/presentation/cubits/products/products_cubit.dart';
 import 'package:clean_architecture/features/products/presentation/cubits/products/products_state.dart';
 import 'package:clean_architecture/features/products/presentation/widgets/products_materials_card.dart';
+import 'package:clean_architecture/shared_ui/ui/base/app_bar/base_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -122,17 +123,19 @@ class _ProductsMaterialsViewState extends State<_ProductsMaterialsView> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Productos y Materiales'),
+      appBar: BaseAppBar(
+        title: 'Productos y Materiales',
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: _showFilterDialog,
+            tooltip: 'Filtros',
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () =>
                 context.read<ProductsMaterialsCubit>().loadProductsMaterials(),
+            tooltip: 'Recargar',
           ),
         ],
       ),

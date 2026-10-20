@@ -23,27 +23,38 @@ class WorkerRepositoryImpl implements WorkerRepository {
 
   @override
   FutureData<List<WorkerEntity>> getAllWorkers() async {
-    final result = await DataHandler.fetchWithFallback<List<WorkerModel>>(
-      _internetService.isConnected,
-      remoteCallback: _remoteDatasource.getAllWorkers,
-    );
+    try {
+      final result = await DataHandler.fetchWithFallback<List<WorkerModel>>(
+        _internetService.isConnected,
+        remoteCallback: _remoteDatasource.getAllWorkers,
+      );
 
-    return result.when(
-      success: (models) {
-        debugPrint('Models fetched: ${models[0].firstNames}');
-        final entities = models.map((model) => model.toEntity()).toList();
-        return SuccessState<List<WorkerEntity>>(data: entities);
-      },
-      failure: (message, errorType) {
-        return FailureState<List<WorkerEntity>>(
-          message: message,
-          errorType: errorType,
-        );
-      },
-      loading: () {
-        return LoadingState<List<WorkerEntity>>();
-      },
-    );
+      return result.when(
+        success: (models) {
+          if (models.isNotEmpty) {
+            debugPrint('Models fetched: ${models[0].firstNames} (total: ${models.length})');
+          } else {
+            debugPrint('Models fetched: 0 workers');
+          }
+          final entities = models.map((model) => model.toEntity()).toList();
+          return SuccessState<List<WorkerEntity>>(data: entities);
+        },
+        failure: (message, errorType) {
+          return FailureState<List<WorkerEntity>>(
+            message: message,
+            errorType: errorType,
+          );
+        },
+        loading: () {
+          return LoadingState<List<WorkerEntity>>();
+        },
+      );
+    } catch (e) {
+      return FailureState<List<WorkerEntity>>(
+        message: e.toString(),
+        errorType: ErrorType.unknown,
+      );
+    }
   }
 }
 

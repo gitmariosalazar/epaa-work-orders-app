@@ -444,12 +444,12 @@ class WorkOrderRepositoryImpl implements WorkOrderRepository {
 
   @override
   FutureData<WorkOrderTrackingEntity> getTrackingByNumeroOrden(
-    String numeroOrden,
+    String searchValue,
   ) async {
     final result = await DataHandler.fetchWithFallback<WorkOrderTrackingModel>(
       _internet.isConnected,
       remoteCallback: () =>
-          _remoteDataSource.getTrackingByNumeroOrden(numeroOrden),
+          _remoteDataSource.getTrackingByNumeroOrden(searchValue),
     );
     return result.when(
       success: (model) =>

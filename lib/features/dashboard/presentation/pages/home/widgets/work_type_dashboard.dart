@@ -2,6 +2,7 @@
 
 import 'package:auto_route/auto_route.dart';
 import 'package:clean_architecture/shared_ui/ui/base/base_scaffold.dart';
+import 'package:clean_architecture/shared_ui/ui/base/app_bar/base_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
@@ -164,14 +165,12 @@ class _DashboardWorkTypesPageState extends State<DashboardWorkTypesPage> {
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      appBar: AppBar(
-        title: const Text('Tipos de Trabajo'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: Theme.of(context).textTheme.titleLarge?.color,
+      appBar: BaseAppBar(
+        title: 'Tipos de Trabajo',
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
+            tooltip: 'Recargar',
             onPressed: () {
               setState(() {
                 searchQuery = '';

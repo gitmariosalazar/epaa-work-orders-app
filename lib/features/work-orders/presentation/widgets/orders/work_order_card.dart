@@ -1,8 +1,9 @@
-import 'package:clean_architecture/core/utils/map_utils.dart';
-// features/work-orders/presentation/widgets/work_order_card.dart
+// features/work-orders/presentation/widgets/orders/work_order_card.dart
 
 import 'package:auto_route/auto_route.dart';
+import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/constants/app_icons.dart';
+import 'package:clean_architecture/core/utils/map_utils.dart';
 import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_entity.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/change_status_dialog.dart';
@@ -39,7 +40,24 @@ class WorkOrderCard extends StatelessWidget {
     }
   }
 
-  Color _getPriorityColor(int priorityId) {
+  Color _getPriorityColor(int priorityId, {required bool isDark}) {
+    if (isDark) {
+      switch (priorityId) {
+        case 1:
+          return const Color(0xFF81C784); // Verde claro
+        case 2:
+          return const Color(0xFFAED581); // Verde lima suave
+        case 3:
+          return const Color(0xFFFFB74D); // Naranja brillante
+        case 4:
+          return const Color(0xFFEF5350); // Rojo brillante
+        case 5:
+          return const Color(0xFFFF6E6E); // Rojo coral luminoso
+        default:
+          return const Color(0xFFB0BEC5); // Gris azulado
+      }
+    }
+
     switch (priorityId) {
       case 1:
         return Colors.green;
@@ -64,22 +82,8 @@ class WorkOrderCard extends StatelessWidget {
   Color _getStatusColor(String status) => MapUtils.getStatusColor(status);
 
   // Tipo de trabajo + Icono personalizado
-  String _getWorkTypeText(int workTypeId) {
-    switch (workTypeId) {
-      case 1:
-        return 'ALCANTARILLADO';
-      case 2:
-        return 'AGUA POTABLE';
-      case 3:
-        return 'COMERCIALIZACION';
-      case 4:
-        return 'MANTENIMIENTO';
-      case 5:
-        return 'LABORATORIO';
-      default:
-        return 'DESCONOCIDO';
-    }
-  }
+  String _getWorkTypeText(int workTypeId) =>
+      MapUtils.getWorkTypeText(workTypeId);
 
   IconData _getWorkTypeIcon(int workTypeId) {
     switch (workTypeId) {
@@ -101,14 +105,44 @@ class WorkOrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final isUrgent = _isUrgent(order.priorityId);
+
+    final cardBackgroundColor = isDark
+        ? colorScheme.surfaceContainerHighest
+        : colorScheme.surface;
+
+    final cardBorderColor = isDark
+        ? colorScheme.outlineVariant
+        : colorScheme.outlineVariant.withValues(alpha: 0.35);
+
+    final workTypeColor = isDark ? const Color(0xFF81C784) : Colors.green;
+    final connectionIconColor =
+        isDark ? const Color(0xFF64B5F6) : Colors.lightBlue;
+
+    final locationButtonColor =
+        isDark ? const Color(0xFF81C784) : Colors.green;
+    final printButtonColor = isDark ? const Color(0xFF64B5F6) : Colors.blue;
+
+    final dateString = order.creationDate != null
+        ? order.creationDate!.toLocal().toString().split(' ')[0]
+        : 'N/A';
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      elevation: 2,
+      color: cardBackgroundColor,
+      elevation: isDark ? 0 : 2,
+      shadowColor: colorScheme.shadow.withValues(alpha: isDark ? 0.3 : 0.08),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(
+          color: cardBorderColor,
+          width: 1,
+        ),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
         onTap: () {
           context.router.push(WorkOrderDetailRoute(order: order));
         },
@@ -125,11 +159,11 @@ class WorkOrderCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'OT Nº: ${order.orderCode}',
+                          'OT Nº: ${order.orderCode ?? 'N/A'}',
                           style: TextStyle(
                             fontSize: context.isMobileSmall ? 12 : 14,
                             fontWeight: FontWeight.bold,
-                            color: theme.primaryColor,
+                            color: colorScheme.primary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -138,14 +172,17 @@ class WorkOrderCard extends StatelessWidget {
                             Icon(
                               _getWorkTypeIcon(order.workTypeId),
                               size: 16,
-                              color: Colors.green,
+                              color: workTypeColor,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               _getWorkTypeText(order.workTypeId),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
+                                color: isDark
+                                    ? colorScheme.onSurfaceVariant
+                                    : AppColors.textSecondary,
                               ),
                             ),
                           ],
@@ -160,12 +197,17 @@ class WorkOrderCard extends StatelessWidget {
                       _StatusChip(
                         text: _getStatusText(order.status),
                         color: _getStatusColor(order.status),
+                        isDark: isDark,
                       ),
                       const SizedBox(height: 4),
                       _PriorityChip(
                         text: _getPriorityText(order.priorityId),
-                        color: _getPriorityColor(order.priorityId),
+                        color: _getPriorityColor(
+                          order.priorityId,
+                          isDark: isDark,
+                        ),
                         isUrgent: isUrgent,
+                        isDark: isDark,
                       ),
                     ],
                   ),
@@ -175,7 +217,12 @@ class WorkOrderCard extends StatelessWidget {
               // Descripción
               Text(
                 order.description,
-                style: TextStyle(fontSize: context.isMobileSmall ? 11 : 13),
+                style: TextStyle(
+                  fontSize: context.isMobileSmall ? 11 : 13,
+                  color: isDark
+                      ? colorScheme.onSurface.withValues(alpha: 0.9)
+                      : AppColors.textPrimary,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -185,32 +232,45 @@ class WorkOrderCard extends StatelessWidget {
                 children: [
                   const Spacer(),
                   Text(
-                    'F. de creación: ${order.creationDate!.toLocal().toString().split(' ')[0]}',
-                    style: const TextStyle(fontSize: 11, color: Colors.grey),
+                    'F. de creación: $dateString',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: isDark
+                          ? colorScheme.onSurfaceVariant
+                          : Colors.grey[600],
+                    ),
                   ),
                 ],
               ),
               // Clave + Botones
               Row(
                 children: [
-                  Icon(AppIcons.connection, size: 14, color: Colors.lightBlue),
+                  Icon(
+                    AppIcons.connection,
+                    size: 14,
+                    color: connectionIconColor,
+                  ),
                   const SizedBox(width: 4),
                   Row(
                     children: [
                       Text(
                         'C.C:',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: Colors.black,
+                          color: isDark
+                              ? colorScheme.onSurfaceVariant
+                              : AppColors.textSecondary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(width: 5),
                       Text(
                         order.cadastralKey,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: Colors.black,
+                          color: isDark
+                              ? colorScheme.onSurface
+                              : AppColors.textPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -219,15 +279,14 @@ class WorkOrderCard extends StatelessWidget {
                   const Spacer(),
 
                   // Botones de acción
-                  // Location, Editar, Eliminar, Más opciones
                   IconButton(
-                    onPressed: () => {
-                      context.router.push(WorkOrderMapRoute(order: order)),
+                    onPressed: () {
+                      context.router.push(WorkOrderMapRoute(order: order));
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.location_on,
                       size: 14,
-                      color: Colors.green,
+                      color: locationButtonColor,
                     ),
                     padding: const EdgeInsets.all(6),
                     constraints: const BoxConstraints(
@@ -236,13 +295,17 @@ class WorkOrderCard extends StatelessWidget {
                     ),
                     style: IconButton.styleFrom(
                       shape: const CircleBorder(),
-                      side: const BorderSide(color: Colors.green),
+                      side: BorderSide(color: locationButtonColor),
                     ),
                     tooltip: 'Ver en el mapa',
                   ),
                   IconButton(
                     onPressed: onEdit,
-                    icon: const Icon(Icons.print, size: 14, color: Colors.blue),
+                    icon: Icon(
+                      Icons.print,
+                      size: 14,
+                      color: printButtonColor,
+                    ),
                     padding: const EdgeInsets.all(6),
                     constraints: const BoxConstraints(
                       minWidth: 28,
@@ -250,126 +313,114 @@ class WorkOrderCard extends StatelessWidget {
                     ),
                     style: IconButton.styleFrom(
                       shape: const CircleBorder(),
-                      side: const BorderSide(color: Colors.blue),
+                      side: BorderSide(color: printButtonColor),
                     ),
                     tooltip: 'Imprimir orden',
                   ),
-                  /*
-                  IconButton(
-                    onPressed: onEdit,
-                    icon: const Icon(Icons.edit, size: 14),
-                    padding: const EdgeInsets.all(6),
-                    constraints: const BoxConstraints(
-                      minWidth: 28,
-                      minHeight: 28,
-                    ),
-                    style: IconButton.styleFrom(
-                      shape: const CircleBorder(),
-                      side: const BorderSide(color: Colors.grey),
-                    ),
-                    tooltip: 'Editar',
-                  ),
-                  IconButton(
-                    onPressed: onDelete,
-                    icon: const Icon(Icons.delete, size: 14, color: Colors.red),
-                    padding: const EdgeInsets.all(6),
-                    constraints: const BoxConstraints(
-                      minWidth: 28,
-                      minHeight: 28,
-                    ),
-                    style: IconButton.styleFrom(
-                      shape: const CircleBorder(),
-                      side: const BorderSide(color: Colors.red),
-                    ),
-                    tooltip: 'Eliminar',
-                  ),
-                  */
                   PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_vert),
+                    icon: Icon(
+                      Icons.more_vert,
+                      color: isDark
+                          ? colorScheme.onSurfaceVariant
+                          : AppColors.fade,
+                    ),
+                    color: isDark
+                        ? colorScheme.surfaceContainerHighest
+                        : colorScheme.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(
+                        color: isDark
+                            ? colorScheme.outlineVariant
+                            : colorScheme.outlineVariant.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
                     ),
-                    offset: const Offset(
-                      0,
-                      40,
-                    ), // Para que aparezca debajo del botón
+                    offset: const Offset(0, 40),
                     itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'details',
+                      PopupMenuItem(
+                        value: 'manage',
                         child: Row(
                           children: [
-                            Icon(Icons.timeline_rounded, size: 16),
-                            SizedBox(width: 8),
+                            Icon(
+                              Icons.timeline_rounded,
+                              size: 16,
+                              color: colorScheme.primary,
+                            ),
+                            const SizedBox(width: 8),
                             Text(
                               "Gestionar proceso",
-                              style: TextStyle(fontSize: 13),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: isDark
+                                    ? colorScheme.onSurface
+                                    : AppColors.textPrimary,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'details',
                         child: Row(
                           children: [
-                            Icon(Icons.info_rounded, size: 18),
-                            SizedBox(width: 8),
+                            Icon(
+                              Icons.info_rounded,
+                              size: 18,
+                              color: isDark
+                                  ? colorScheme.onSurfaceVariant
+                                  : AppColors.fade,
+                            ),
+                            const SizedBox(width: 8),
                             Text(
                               "Ver detalles",
-                              style: TextStyle(fontSize: 13),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: isDark
+                                    ? colorScheme.onSurface
+                                    : AppColors.textPrimary,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'print',
                         child: Row(
                           children: [
-                            Icon(Icons.print, size: 18),
-                            SizedBox(width: 8),
+                            Icon(
+                              Icons.print,
+                              size: 18,
+                              color: isDark
+                                  ? colorScheme.onSurfaceVariant
+                                  : AppColors.fade,
+                            ),
+                            const SizedBox(width: 8),
                             Text(
                               "Imprimir orden",
-                              style: TextStyle(fontSize: 13),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: isDark
+                                    ? colorScheme.onSurface
+                                    : AppColors.textPrimary,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      /*
-                      const PopupMenuItem(
-                        value: 'status',
-                        child: Row(
-                          children: [
-                            Icon(Icons.swap_horiz, size: 18),
-                            SizedBox(width: 8),
-                            Text(
-                              "Cambiar estado",
-                              style: TextStyle(fontSize: 13),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit, size: 18),
-                            SizedBox(width: 8),
-                            Text(
-                              "Editar orden",
-                              style: TextStyle(fontSize: 13),
-                            ),
-                          ],
-                        ),
-                      ),
-                      */
                     ],
                     onSelected: (value) {
                       switch (value) {
+                        case 'manage':
                         case 'details':
                           context.router.push(
-                            WorkOrderDetailRoute(
-                              order: order,
-                            ), // ← Así sí funciona
+                            WorkOrderDetailRoute(order: order),
                           );
+                          break;
+                        case 'print':
+                          if (onEdit != null) {
+                            onEdit!();
+                          }
                           break;
                         case 'status':
                           showDialog(
@@ -378,14 +429,10 @@ class WorkOrderCard extends StatelessWidget {
                           );
                           break;
                         case 'edit':
-                          // Navegar a editar orden
                           if (onEdit != null) {
                             onEdit!();
                           }
                           break;
-                        // case 'cancel':
-                        //   _confirmCancelOrder(order);
-                        //   break;
                       }
                     },
                   ),
@@ -399,35 +446,39 @@ class WorkOrderCard extends StatelessWidget {
   }
 }
 
-// Chip personalizado con transparencia
+// Chip personalizado con transparencia adaptativa
 class _StatusChip extends StatelessWidget {
   final String text;
   final Color color;
+  final bool isDark;
 
-  const _StatusChip({super.key, required this.text, required this.color});
+  const _StatusChip({
+    required this.text,
+    required this.color,
+    this.isDark = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        // Fondo muy suave/transparente
-        color: color.withOpacity(
-          0.1,
-        ), // Muy tenue, puedes subir a 0.15 si quieres un poco más visible
+        color: color.withValues(
+          alpha: isDark ? 0.22 : 0.12,
+        ),
         borderRadius: BorderRadius.circular(12),
-        // Borde intenso con el color completo
         border: Border.all(
-          color: color,
-          width: 1.5, // Grosor visible pero elegante
+          color: color.withValues(alpha: isDark ? 0.85 : 1.0),
+          width: 1.5,
         ),
       ),
       child: Text(
         text,
         style: TextStyle(
           fontSize: 9,
-          color: color,
-          fontWeight: FontWeight.w500,
+          color:
+              isDark ? Color.lerp(color, Colors.white, 0.15) ?? color : color,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -438,12 +489,13 @@ class _PriorityChip extends StatelessWidget {
   final String text;
   final Color color;
   final bool isUrgent;
+  final bool isDark;
 
   const _PriorityChip({
-    super.key,
     required this.text,
     required this.color,
     required this.isUrgent,
+    this.isDark = false,
   });
 
   @override
@@ -451,31 +503,31 @@ class _PriorityChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        // Fondo muy suave/transparente
-        color: color.withOpacity(
-          isUrgent ? 0.2 : 0.1,
-        ), // Ajusta 0.1 y 0.2 según prefieras
+        color: color.withValues(
+          alpha: isDark
+              ? (isUrgent ? 0.30 : 0.18)
+              : (isUrgent ? 0.20 : 0.10),
+        ),
         borderRadius: BorderRadius.circular(20),
-        // Borde intenso con el color completo
         border: Border.all(
-          color: color,
-          width: isUrgent
-              ? 2.0
-              : 1.5, // Puedes hacer el borde más grueso en urgente
+          color: color.withValues(alpha: isDark ? 0.85 : 1.0),
+          width: isUrgent ? 2.0 : 1.5,
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (isUrgent) ...[
-            Icon(Icons.warning, size: 12, color: color),
+            Icon(Icons.warning_amber_rounded, size: 12, color: color),
             const SizedBox(width: 4),
           ],
           Text(
             text,
             style: TextStyle(
               fontSize: 9,
-              color: color,
+              color: isDark
+                  ? Color.lerp(color, Colors.white, 0.15) ?? color
+                  : color,
               fontWeight: FontWeight.bold,
             ),
           ),

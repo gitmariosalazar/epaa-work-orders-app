@@ -44,6 +44,10 @@ class WorkOrderInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Card(
       elevation: 2,
       margin: EdgeInsets.zero,
@@ -95,6 +99,7 @@ class WorkOrderInfoCard extends StatelessWidget {
             ),
             const Divider(height: 16),
             _buildRow(
+              context,
               'Cliente / Usuario',
               order.nombreCliente ?? 'No registrado',
               icon: Icons.person_outline,
@@ -102,6 +107,7 @@ class WorkOrderInfoCard extends StatelessWidget {
             if (order.identificacionCliente != null &&
                 order.identificacionCliente!.isNotEmpty)
               _buildRow(
+                context,
                 'Cédula / RUC',
                 order.identificacionCliente!,
                 icon: Icons.badge_outlined,
@@ -109,11 +115,13 @@ class WorkOrderInfoCard extends StatelessWidget {
             if (order.telefonoCliente != null &&
                 order.telefonoCliente!.isNotEmpty)
               _buildRow(
+                context,
                 'Teléfono',
                 order.telefonoCliente!,
                 icon: Icons.phone_outlined,
               ),
             _buildRow(
+              context,
               'Clave Catastral',
               order.claveCatastral ?? 'S/N',
               icon: Icons.home_work_outlined,
@@ -121,23 +129,27 @@ class WorkOrderInfoCard extends StatelessWidget {
             if (order.cuentaContrato != null &&
                 order.cuentaContrato!.isNotEmpty)
               _buildRow(
+                context,
                 'Cuenta Contrato',
                 order.cuentaContrato!,
                 icon: Icons.numbers_outlined,
               ),
             _buildRow(
+              context,
               'Dirección',
               order.direccion ?? 'Sin dirección registrada',
               icon: Icons.place_outlined,
             ),
             if (order.barrio != null && order.barrio!.isNotEmpty)
               _buildRow(
+                context,
                 'Barrio / Sector',
                 order.barrio!,
                 icon: Icons.location_city_outlined,
               ),
             if (order.numeroMedidor != null && order.numeroMedidor!.isNotEmpty)
               _buildRow(
+                context,
                 'Nº Medidor',
                 order.numeroMedidor!,
                 icon: Icons.speed_outlined,
@@ -153,7 +165,7 @@ class WorkOrderInfoCard extends StatelessWidget {
                 order.descripcion!,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade800,
+                  color: isDark ? cs.onSurface : Colors.grey.shade800,
                   height: 1.3,
                 ),
               ),
@@ -169,7 +181,7 @@ class WorkOrderInfoCard extends StatelessWidget {
                 order.observaciones.map((o) => o.texto).join('\n'),
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade700,
+                  color: isDark ? cs.onSurfaceVariant : Colors.grey.shade700,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -180,14 +192,22 @@ class WorkOrderInfoCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(String label, String value, {IconData? icon}) {
+  Widget _buildRow(BuildContext context, String label, String value, {IconData? icon}) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 14, color: Colors.grey.shade600),
+            Icon(
+              icon,
+              size: 14,
+              color: isDark ? cs.onSurfaceVariant : Colors.grey.shade600,
+            ),
             const SizedBox(width: 6),
           ],
           SizedBox(
@@ -196,7 +216,7 @@ class WorkOrderInfoCard extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.grey.shade600,
+                color: isDark ? cs.onSurfaceVariant : Colors.grey.shade600,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -204,10 +224,10 @@ class WorkOrderInfoCard extends StatelessWidget {
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: cs.onSurface,
               ),
             ),
           ),

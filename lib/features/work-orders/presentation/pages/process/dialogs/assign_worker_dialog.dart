@@ -56,6 +56,10 @@ class _AssignWorkerDialogState extends State<AssignWorkerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Row(
@@ -63,7 +67,7 @@ class _AssignWorkerDialogState extends State<AssignWorkerDialog> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: AppColors.primary.withValues(alpha: isDark ? 0.2 : 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -84,7 +88,10 @@ class _AssignWorkerDialogState extends State<AssignWorkerDialog> {
                 ),
                 Text(
                   'OT: ${widget.orderCode}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? cs.onSurfaceVariant : Colors.grey.shade600,
+                  ),
                 ),
               ],
             ),
@@ -121,7 +128,9 @@ class _AssignWorkerDialogState extends State<AssignWorkerDialog> {
                         'Toca para buscar técnico...',
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.grey.shade600,
+                          color: isDark
+                              ? cs.onSurfaceVariant
+                              : Colors.grey.shade600,
                         ),
                       )
                     : Column(
@@ -140,7 +149,9 @@ class _AssignWorkerDialogState extends State<AssignWorkerDialog> {
                               _selected!.positionName!,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey.shade600,
+                                color: isDark
+                                    ? cs.onSurfaceVariant
+                                    : Colors.grey.shade600,
                               ),
                             ),
                         ],
@@ -158,7 +169,12 @@ class _AssignWorkerDialogState extends State<AssignWorkerDialog> {
               maxLines: 3,
               decoration: InputDecoration(
                 hintText: 'Instrucciones u observaciones...',
-                hintStyle: const TextStyle(fontSize: 13),
+                hintStyle: TextStyle(
+                  fontSize: 13,
+                  color: isDark
+                      ? cs.onSurfaceVariant.withValues(alpha: 0.6)
+                      : Colors.grey.shade500,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),

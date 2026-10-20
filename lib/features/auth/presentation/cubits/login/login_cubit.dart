@@ -69,7 +69,7 @@ class LoginCubit extends BaseCubit<LoginFormState> {
         await _useCases.saveUserData(userData);
       }
 
-      replaceAllRoute(const HomeRoute());
+      replaceAllRoute(const TechnicianInitialRoute());
     }
 
     _isLoading = false;

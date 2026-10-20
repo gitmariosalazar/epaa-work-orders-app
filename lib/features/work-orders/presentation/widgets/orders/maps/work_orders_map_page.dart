@@ -384,6 +384,63 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
     if (_errorMessage != null) {
       return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: true,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 12.0),
+            child: Center(
+              child: Material(
+                color: Colors.white.withOpacity(0.15),
+                shape: const CircleBorder(),
+                clipBehavior: Clip.antiAlias,
+                child: IconButton(
+                  iconSize: 20,
+                  splashRadius: 22,
+                  constraints: const BoxConstraints(
+                    minWidth: 38,
+                    minHeight: 38,
+                  ),
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    color: Colors.white, // Color blanco garantizado
+                  ),
+                  tooltip: 'Atrás',
+                  onPressed: () => Navigator.of(context).maybePop(),
+                ),
+              ),
+            ),
+          ),
+          // Borde inferior sutilmente redondeado
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+          ),
+          // Fondo con degradado moderno
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.primary,
+                  AppColors.primary.withBlue(
+                    (AppColors.primary.blue + 35).clamp(0, 255),
+                  ), // Un tono ligeramente más vibrante
+                ],
+              ),
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(8),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.25),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+          ),
           title: const Text(
             'Mapa de Órdenes',
             style: TextStyle(
@@ -392,16 +449,43 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          centerTitle: true,
           actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              tooltip: 'Actualizar órdenes',
-              onPressed: () {
-                _loadOrders(refresh: true);
-              },
+            Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: Center(
+                child: Material(
+                  color: Colors.white.withOpacity(0.15),
+                  shape: const CircleBorder(),
+                  clipBehavior: Clip.antiAlias,
+                  child: IconButton(
+                    iconSize: 20,
+                    splashRadius: 22,
+                    constraints: const BoxConstraints(
+                      minWidth: 38,
+                      minHeight: 38,
+                    ),
+                    icon: _isLoadingOrders
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          )
+                        : const Icon(
+                            Icons.refresh_rounded,
+                            color: Colors.white,
+                          ),
+                    tooltip: 'Recargar orden',
+                    onPressed: _isLoadingOrders
+                        ? null
+                        : () => _loadOrders(refresh: true),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -417,31 +501,50 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
     return Scaffold(
       extendBody: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.blue,
+        elevation: 0,
         title: Text(
           'Mapa de Órdenes (${_displayedOrders.length}${_hasMore ? '+' : ''})',
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.blue,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: _isLoadingMore
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Icon(Icons.refresh),
-            onPressed: _isLoadingMore ? null : () => _loadOrders(refresh: true),
-            tooltip: 'Actualizar órdenes',
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: Center(
+              child: Material(
+                color: Colors.white.withOpacity(0.15),
+                shape: const CircleBorder(),
+                clipBehavior: Clip.antiAlias,
+                child: IconButton(
+                  iconSize: 20,
+                  splashRadius: 22,
+                  constraints: const BoxConstraints(
+                    minWidth: 38,
+                    minHeight: 38,
+                  ),
+                  icon: _isLoadingMore
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.refresh),
+                  onPressed: _isLoadingMore
+                      ? null
+                      : () => _loadOrders(refresh: true),
+                  tooltip: 'Actualizar órdenes',
+                ),
+              ),
+            ),
           ),
         ],
       ),

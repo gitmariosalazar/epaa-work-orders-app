@@ -97,10 +97,14 @@ class WorkOrderAttachmentsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     // 1. Agrupar por evidenceStep
     final Map<String, List<EvidenceAttachmentEntity>> grouped = {};
 
-    debugPrint('Evidencias adjuntas: ${order}');
+    debugPrint('Evidencias adjuntas: $order');
 
     for (final a in order.adjuntos) {
       final key = a.evidenceStep?.trim().isNotEmpty == true
@@ -197,7 +201,7 @@ class WorkOrderAttachmentsCard extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.folder_open_outlined,
-                      color: Colors.grey.shade400,
+                      color: isDark ? cs.outlineVariant : Colors.grey.shade400,
                       size: 36,
                     ),
                     const SizedBox(height: 6),
@@ -205,7 +209,7 @@ class WorkOrderAttachmentsCard extends StatelessWidget {
                       'No hay archivos o fotos de evidencia adjuntos.',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade600,
+                        color: isDark ? cs.onSurfaceVariant : Colors.grey.shade600,
                       ),
                     ),
                   ],
@@ -237,10 +241,10 @@ class WorkOrderAttachmentsCard extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             _stageLabel(step),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: Colors.black87,
+                              color: cs.onSurface,
                             ),
                           ),
                           const SizedBox(width: 6),
@@ -248,7 +252,7 @@ class WorkOrderAttachmentsCard extends StatelessWidget {
                             '(${items.length})',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey.shade600,
+                              color: isDark ? cs.onSurfaceVariant : Colors.grey.shade600,
                             ),
                           ),
                         ],
@@ -271,7 +275,7 @@ class WorkOrderAttachmentsCard extends StatelessWidget {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: attachments.length,
-                        separatorBuilder: (_, __) => const Divider(height: 10),
+                        separatorBuilder: (_, _) => const Divider(height: 10),
                         itemBuilder: (context, index) {
                           final att = attachments[index];
                           final isImg =
@@ -293,8 +297,12 @@ class WorkOrderAttachmentsCard extends StatelessWidget {
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: isImg
-                                    ? Colors.blue.shade50
-                                    : Colors.amber.shade50,
+                                    ? (isDark
+                                        ? cs.primary.withValues(alpha: 0.18)
+                                        : Colors.blue.shade50)
+                                    : (isDark
+                                        ? Colors.amber.withValues(alpha: 0.18)
+                                        : Colors.amber.shade50),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
@@ -302,8 +310,12 @@ class WorkOrderAttachmentsCard extends StatelessWidget {
                                     ? Icons.image_outlined
                                     : Icons.description_outlined,
                                 color: isImg
-                                    ? Colors.blue.shade700
-                                    : Colors.amber.shade800,
+                                    ? (isDark
+                                        ? cs.primary
+                                        : Colors.blue.shade700)
+                                    : (isDark
+                                        ? Colors.amber.shade400
+                                        : Colors.amber.shade800),
                                 size: 20,
                               ),
                             ),
@@ -317,22 +329,23 @@ class WorkOrderAttachmentsCard extends StatelessWidget {
                               ),
                             ),
                             subtitle: Text(
-                              att.fechaCarga, // ajusta el nombre del campo si es diferente
+                              att.fechaCarga,
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Colors.grey.shade600,
+                                color: isDark ? cs.onSurfaceVariant : Colors.grey.shade600,
                               ),
                             ),
                             trailing: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.open_in_new_rounded,
                                 size: 18,
+                                color: isDark ? cs.onSurfaceVariant : Colors.grey.shade700,
                               ),
                               tooltip: 'Abrir archivo',
                               onPressed: () => _openFileUrl(
                                 context,
                                 att.url,
-                              ), // o att.urlArchivo
+                              ),
                             ),
                           );
                         },

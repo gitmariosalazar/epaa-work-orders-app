@@ -17,11 +17,14 @@ class AppRouter extends RootStackRouter {
       initial: true,
       guards: const [AuthenticatedGuard()],
       children: [
-        // ← ¡PONLA PRIMERA!
         AutoRoute(
-          path: WORK_ORDERS_PATH, // "work-orders" (sin / inicial)
+          path: TECHNICIAN_INITIAL_PATH,
+          page: TechnicianInitialRoute.page,
+          initial: true,
+        ),
+        AutoRoute(
+          path: WORK_ORDERS_PATH,
           page: WorkOrdersHomeRoute.page,
-          initial: true, // ← Esta será la que se vea al abrir el dashboard
         ),
         AutoRoute(path: HOME_PATH, page: HomeRoute.page),
         AutoRoute(path: SETTING_PATH, page: SettingRoute.page),

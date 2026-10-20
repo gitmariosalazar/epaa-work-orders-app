@@ -61,7 +61,7 @@ class LoginForm extends StatelessWidget {
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
                   size: context.iconLarge,
-                  color: AppColors.black60,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),

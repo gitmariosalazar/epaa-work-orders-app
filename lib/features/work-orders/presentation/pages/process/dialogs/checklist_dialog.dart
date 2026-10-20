@@ -1,4 +1,3 @@
-import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class ChecklistDialog extends StatefulWidget {
@@ -27,6 +26,10 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Row(
@@ -34,12 +37,14 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.amber.shade100,
+              color: isDark
+                  ? Colors.amber.withValues(alpha: 0.15)
+                  : Colors.amber.shade100,
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.checklist,
-              color: Colors.amber.shade800,
+              color: isDark ? Colors.amber.shade400 : Colors.amber.shade800,
               size: 22,
             ),
           ),
@@ -55,7 +60,10 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
                 ),
                 Text(
                   widget.orderCode,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? cs.onSurfaceVariant : Colors.grey.shade600,
+                  ),
                 ),
               ],
             ),
@@ -82,10 +90,20 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: _passed
-                            ? Colors.green.shade50
-                            : Colors.grey.shade100,
+                            ? (isDark
+                                ? Colors.green.withValues(alpha: 0.15)
+                                : Colors.green.shade50)
+                            : (isDark
+                                ? cs.surfaceContainerHighest.withValues(
+                                    alpha: 0.3,
+                                  )
+                                : Colors.grey.shade100),
                         border: Border.all(
-                          color: _passed ? Colors.green : Colors.grey.shade300,
+                          color: _passed
+                              ? Colors.green
+                              : (isDark
+                                  ? theme.dividerColor.withValues(alpha: 0.2)
+                                  : Colors.grey.shade300),
                           width: _passed ? 2 : 1,
                         ),
                         borderRadius: BorderRadius.circular(10),
@@ -95,7 +113,11 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
                         children: [
                           Icon(
                             Icons.check_circle,
-                            color: _passed ? Colors.green : Colors.grey,
+                            color: _passed
+                                ? Colors.green
+                                : (isDark
+                                    ? cs.onSurfaceVariant
+                                    : Colors.grey),
                             size: 18,
                           ),
                           const SizedBox(width: 6),
@@ -106,8 +128,12 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
                                   ? FontWeight.bold
                                   : FontWeight.normal,
                               color: _passed
-                                  ? Colors.green.shade900
-                                  : Colors.grey.shade700,
+                                  ? (isDark
+                                      ? Colors.green.shade300
+                                      : Colors.green.shade900)
+                                  : (isDark
+                                      ? cs.onSurfaceVariant
+                                      : Colors.grey.shade700),
                               fontSize: 13,
                             ),
                           ),
@@ -125,10 +151,20 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: !_passed
-                            ? Colors.red.shade50
-                            : Colors.grey.shade100,
+                            ? (isDark
+                                ? Colors.red.withValues(alpha: 0.15)
+                                : Colors.red.shade50)
+                            : (isDark
+                                ? cs.surfaceContainerHighest.withValues(
+                                    alpha: 0.3,
+                                  )
+                                : Colors.grey.shade100),
                         border: Border.all(
-                          color: !_passed ? Colors.red : Colors.grey.shade300,
+                          color: !_passed
+                              ? Colors.red
+                              : (isDark
+                                  ? theme.dividerColor.withValues(alpha: 0.2)
+                                  : Colors.grey.shade300),
                           width: !_passed ? 2 : 1,
                         ),
                         borderRadius: BorderRadius.circular(10),
@@ -138,7 +174,11 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
                         children: [
                           Icon(
                             Icons.cancel,
-                            color: !_passed ? Colors.red : Colors.grey,
+                            color: !_passed
+                                ? Colors.red
+                                : (isDark
+                                    ? cs.onSurfaceVariant
+                                    : Colors.grey),
                             size: 18,
                           ),
                           const SizedBox(width: 6),
@@ -149,8 +189,12 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
                                   ? FontWeight.bold
                                   : FontWeight.normal,
                               color: !_passed
-                                  ? Colors.red.shade900
-                                  : Colors.grey.shade700,
+                                  ? (isDark
+                                      ? Colors.red.shade300
+                                      : Colors.red.shade900)
+                                  : (isDark
+                                      ? cs.onSurfaceVariant
+                                      : Colors.grey.shade700),
                               fontSize: 13,
                             ),
                           ),
@@ -173,7 +217,12 @@ class _ChecklistDialogState extends State<ChecklistDialog> {
               decoration: InputDecoration(
                 hintText:
                     'Detalle el estado de herramientas, permisos y condiciones...',
-                hintStyle: const TextStyle(fontSize: 13),
+                hintStyle: TextStyle(
+                  fontSize: 13,
+                  color: isDark
+                      ? cs.onSurfaceVariant.withValues(alpha: 0.6)
+                      : Colors.grey.shade500,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),

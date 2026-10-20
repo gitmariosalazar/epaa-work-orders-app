@@ -1,4 +1,3 @@
-import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class QualityControlDialog extends StatefulWidget {
@@ -27,6 +26,10 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Row(
@@ -34,12 +37,14 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.purple.shade100,
+              color: isDark
+                  ? Colors.purple.withValues(alpha: 0.15)
+                  : Colors.purple.shade100,
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.verified_outlined,
-              color: Colors.purple.shade800,
+              color: isDark ? Colors.purple.shade300 : Colors.purple.shade800,
               size: 22,
             ),
           ),
@@ -55,7 +60,10 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
                 ),
                 Text(
                   widget.orderCode,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? cs.onSurfaceVariant : Colors.grey.shade600,
+                  ),
                 ),
               ],
             ),
@@ -82,12 +90,20 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: _approved
-                            ? Colors.green.shade50
-                            : Colors.grey.shade100,
+                            ? (isDark
+                                ? Colors.green.withValues(alpha: 0.15)
+                                : Colors.green.shade50)
+                            : (isDark
+                                ? cs.surfaceContainerHighest.withValues(
+                                    alpha: 0.3,
+                                  )
+                                : Colors.grey.shade100),
                         border: Border.all(
                           color: _approved
                               ? Colors.green
-                              : Colors.grey.shade300,
+                              : (isDark
+                                  ? theme.dividerColor.withValues(alpha: 0.2)
+                                  : Colors.grey.shade300),
                           width: _approved ? 2 : 1,
                         ),
                         borderRadius: BorderRadius.circular(10),
@@ -97,7 +113,11 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
                         children: [
                           Icon(
                             Icons.check_circle_outline,
-                            color: _approved ? Colors.green : Colors.grey,
+                            color: _approved
+                                ? Colors.green
+                                : (isDark
+                                    ? cs.onSurfaceVariant
+                                    : Colors.grey),
                             size: 18,
                           ),
                           const SizedBox(width: 6),
@@ -108,8 +128,12 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
                                   ? FontWeight.bold
                                   : FontWeight.normal,
                               color: _approved
-                                  ? Colors.green.shade900
-                                  : Colors.grey.shade700,
+                                  ? (isDark
+                                      ? Colors.green.shade300
+                                      : Colors.green.shade900)
+                                  : (isDark
+                                      ? cs.onSurfaceVariant
+                                      : Colors.grey.shade700),
                               fontSize: 13,
                             ),
                           ),
@@ -127,10 +151,20 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: !_approved
-                            ? Colors.red.shade50
-                            : Colors.grey.shade100,
+                            ? (isDark
+                                ? Colors.red.withValues(alpha: 0.15)
+                                : Colors.red.shade50)
+                            : (isDark
+                                ? cs.surfaceContainerHighest.withValues(
+                                    alpha: 0.3,
+                                  )
+                                : Colors.grey.shade100),
                         border: Border.all(
-                          color: !_approved ? Colors.red : Colors.grey.shade300,
+                          color: !_approved
+                              ? Colors.red
+                              : (isDark
+                                  ? theme.dividerColor.withValues(alpha: 0.2)
+                                  : Colors.grey.shade300),
                           width: !_approved ? 2 : 1,
                         ),
                         borderRadius: BorderRadius.circular(10),
@@ -140,7 +174,11 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
                         children: [
                           Icon(
                             Icons.highlight_off,
-                            color: !_approved ? Colors.red : Colors.grey,
+                            color: !_approved
+                                ? Colors.red
+                                : (isDark
+                                    ? cs.onSurfaceVariant
+                                    : Colors.grey),
                             size: 18,
                           ),
                           const SizedBox(width: 6),
@@ -151,8 +189,12 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
                                   ? FontWeight.bold
                                   : FontWeight.normal,
                               color: !_approved
-                                  ? Colors.red.shade900
-                                  : Colors.grey.shade700,
+                                  ? (isDark
+                                      ? Colors.red.shade300
+                                      : Colors.red.shade900)
+                                  : (isDark
+                                      ? cs.onSurfaceVariant
+                                      : Colors.grey.shade700),
                               fontSize: 13,
                             ),
                           ),
@@ -175,7 +217,12 @@ class _QualityControlDialogState extends State<QualityControlDialog> {
               decoration: InputDecoration(
                 hintText:
                     'Detalle de la inspección técnica o motivos de rechazo...',
-                hintStyle: const TextStyle(fontSize: 13),
+                hintStyle: TextStyle(
+                  fontSize: 13,
+                  color: isDark
+                      ? cs.onSurfaceVariant.withValues(alpha: 0.6)
+                      : Colors.grey.shade500,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),

@@ -9,15 +9,15 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i27;
+import 'package:auto_route/auto_route.dart' as _i28;
 import 'package:clean_architecture/features/auth/presentation/pages/login/login_page.dart'
     as _i9;
 import 'package:clean_architecture/features/connections/domain/entities/connection.dart'
-    as _i29;
+    as _i30;
 import 'package:clean_architecture/features/connections/form/presentation/screen/update_location_form.dart'
-    as _i18;
-import 'package:clean_architecture/features/connections/form/presentation/screen/update_meter_number_form_screen.dart'
     as _i19;
+import 'package:clean_architecture/features/connections/form/presentation/screen/update_meter_number_form_screen.dart'
+    as _i20;
 import 'package:clean_architecture/features/connections/search/presentation/info/pages/search_connection_page.dart'
     as _i14;
 import 'package:clean_architecture/features/connections/search/presentation/manually/pages/manually_screen.dart'
@@ -27,7 +27,7 @@ import 'package:clean_architecture/features/connections/search/presentation/scan
 import 'package:clean_architecture/features/dashboard/presentation/pages/dashboard/dashboard_page.dart'
     as _i3;
 import 'package:clean_architecture/features/dashboard/presentation/pages/dashboard/work_orders_dashboard_page.dart'
-    as _i23;
+    as _i24;
 import 'package:clean_architecture/features/dashboard/presentation/pages/home/home_page.dart'
     as _i7;
 import 'package:clean_architecture/features/dashboard/presentation/pages/home/widgets/priority_dashboard.dart'
@@ -38,6 +38,8 @@ import 'package:clean_architecture/features/dashboard/presentation/pages/home/wi
     as _i6;
 import 'package:clean_architecture/features/dashboard/presentation/pages/setting/setting_page.dart'
     as _i15;
+import 'package:clean_architecture/features/dashboard/presentation/pages/technician/technician_initial_page.dart'
+    as _i18;
 import 'package:clean_architecture/features/incidents/presentation/page/create_incident_form.dart'
     as _i1;
 import 'package:clean_architecture/features/incidents/presentation/page/incident_history_page.dart'
@@ -51,30 +53,30 @@ import 'package:clean_architecture/features/products/presentation/pages/products
 import 'package:clean_architecture/features/profile/presentation/pages/profile_page.dart'
     as _i12;
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_entity.dart'
-    as _i30;
+    as _i31;
 import 'package:clean_architecture/features/work-orders/presentation/pages/create_work_order_page.dart'
     as _i2;
 import 'package:clean_architecture/features/work-orders/presentation/pages/process/work_order_process_page.dart'
-    as _i22;
+    as _i23;
 import 'package:clean_architecture/features/work-orders/presentation/pages/work_orders_home_page.dart'
-    as _i24;
-import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/maps/work_order_map_page.dart'
-    as _i21;
-import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/maps/work_orders_map_page.dart'
     as _i25;
-import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/work_order_detail_page.dart'
-    as _i20;
-import 'package:clean_architecture/features/workers/presentation/pages/workers_home_page.dart'
+import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/maps/work_order_map_page.dart'
+    as _i22;
+import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/maps/work_orders_map_page.dart'
     as _i26;
-import 'package:flutter/material.dart' as _i28;
+import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/work_order_detail_page.dart'
+    as _i21;
+import 'package:clean_architecture/features/workers/presentation/pages/workers_home_page.dart'
+    as _i27;
+import 'package:flutter/material.dart' as _i29;
 
 /// generated route for
 /// [_i1.CreateIncidentForm]
-class CreateIncidentForm extends _i27.PageRouteInfo<CreateIncidentFormArgs> {
+class CreateIncidentForm extends _i28.PageRouteInfo<CreateIncidentFormArgs> {
   CreateIncidentForm({
-    _i28.Key? key,
+    _i29.Key? key,
     String connectionId = '',
-    List<_i27.PageRouteInfo>? children,
+    List<_i28.PageRouteInfo>? children,
   }) : super(
          CreateIncidentForm.name,
          args: CreateIncidentFormArgs(key: key, connectionId: connectionId),
@@ -83,13 +85,13 @@ class CreateIncidentForm extends _i27.PageRouteInfo<CreateIncidentFormArgs> {
 
   static const String name = 'CreateIncidentForm';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<CreateIncidentFormArgs>(
         orElse: () => const CreateIncidentFormArgs(),
       );
-      return _i27.WrappedRoute(
+      return _i28.WrappedRoute(
         child: _i1.CreateIncidentForm(
           key: args.key,
           connectionId: args.connectionId,
@@ -102,7 +104,7 @@ class CreateIncidentForm extends _i27.PageRouteInfo<CreateIncidentFormArgs> {
 class CreateIncidentFormArgs {
   const CreateIncidentFormArgs({this.key, this.connectionId = ''});
 
-  final _i28.Key? key;
+  final _i29.Key? key;
 
   final String connectionId;
 
@@ -124,13 +126,13 @@ class CreateIncidentFormArgs {
 
 /// generated route for
 /// [_i2.CreateWorkOrderPage]
-class CreateWorkOrderRoute extends _i27.PageRouteInfo<void> {
-  const CreateWorkOrderRoute({List<_i27.PageRouteInfo>? children})
+class CreateWorkOrderRoute extends _i28.PageRouteInfo<void> {
+  const CreateWorkOrderRoute({List<_i28.PageRouteInfo>? children})
     : super(CreateWorkOrderRoute.name, initialChildren: children);
 
   static const String name = 'CreateWorkOrderRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       return const _i2.CreateWorkOrderPage();
@@ -140,13 +142,13 @@ class CreateWorkOrderRoute extends _i27.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.DashboardPage]
-class DashboardRoute extends _i27.PageRouteInfo<void> {
-  const DashboardRoute({List<_i27.PageRouteInfo>? children})
+class DashboardRoute extends _i28.PageRouteInfo<void> {
+  const DashboardRoute({List<_i28.PageRouteInfo>? children})
     : super(DashboardRoute.name, initialChildren: children);
 
   static const String name = 'DashboardRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       return const _i3.DashboardPage();
@@ -156,13 +158,13 @@ class DashboardRoute extends _i27.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i4.DashboardPrioritiesPage]
-class DashboardPrioritiesRoute extends _i27.PageRouteInfo<void> {
-  const DashboardPrioritiesRoute({List<_i27.PageRouteInfo>? children})
+class DashboardPrioritiesRoute extends _i28.PageRouteInfo<void> {
+  const DashboardPrioritiesRoute({List<_i28.PageRouteInfo>? children})
     : super(DashboardPrioritiesRoute.name, initialChildren: children);
 
   static const String name = 'DashboardPrioritiesRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       return const _i4.DashboardPrioritiesPage();
@@ -172,13 +174,13 @@ class DashboardPrioritiesRoute extends _i27.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i5.DashboardWorkStatusPage]
-class DashboardWorkStatusRoute extends _i27.PageRouteInfo<void> {
-  const DashboardWorkStatusRoute({List<_i27.PageRouteInfo>? children})
+class DashboardWorkStatusRoute extends _i28.PageRouteInfo<void> {
+  const DashboardWorkStatusRoute({List<_i28.PageRouteInfo>? children})
     : super(DashboardWorkStatusRoute.name, initialChildren: children);
 
   static const String name = 'DashboardWorkStatusRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       return const _i5.DashboardWorkStatusPage();
@@ -188,13 +190,13 @@ class DashboardWorkStatusRoute extends _i27.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i6.DashboardWorkTypesPage]
-class DashboardWorkTypesRoute extends _i27.PageRouteInfo<void> {
-  const DashboardWorkTypesRoute({List<_i27.PageRouteInfo>? children})
+class DashboardWorkTypesRoute extends _i28.PageRouteInfo<void> {
+  const DashboardWorkTypesRoute({List<_i28.PageRouteInfo>? children})
     : super(DashboardWorkTypesRoute.name, initialChildren: children);
 
   static const String name = 'DashboardWorkTypesRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       return const _i6.DashboardWorkTypesPage();
@@ -204,13 +206,13 @@ class DashboardWorkTypesRoute extends _i27.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i7.HomePage]
-class HomeRoute extends _i27.PageRouteInfo<void> {
-  const HomeRoute({List<_i27.PageRouteInfo>? children})
+class HomeRoute extends _i28.PageRouteInfo<void> {
+  const HomeRoute({List<_i28.PageRouteInfo>? children})
     : super(HomeRoute.name, initialChildren: children);
 
   static const String name = 'HomeRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       return const _i7.HomePage();
@@ -220,29 +222,29 @@ class HomeRoute extends _i27.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i8.IncidentHistoryPage]
-class IncidentHistoryRoute extends _i27.PageRouteInfo<void> {
-  const IncidentHistoryRoute({List<_i27.PageRouteInfo>? children})
+class IncidentHistoryRoute extends _i28.PageRouteInfo<void> {
+  const IncidentHistoryRoute({List<_i28.PageRouteInfo>? children})
     : super(IncidentHistoryRoute.name, initialChildren: children);
 
   static const String name = 'IncidentHistoryRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
-      return _i27.WrappedRoute(child: const _i8.IncidentHistoryPage());
+      return _i28.WrappedRoute(child: const _i8.IncidentHistoryPage());
     },
   );
 }
 
 /// generated route for
 /// [_i9.LoginPage]
-class LoginRoute extends _i27.PageRouteInfo<void> {
-  const LoginRoute({List<_i27.PageRouteInfo>? children})
+class LoginRoute extends _i28.PageRouteInfo<void> {
+  const LoginRoute({List<_i28.PageRouteInfo>? children})
     : super(LoginRoute.name, initialChildren: children);
 
   static const String name = 'LoginRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       return const _i9.LoginPage();
@@ -253,9 +255,9 @@ class LoginRoute extends _i27.PageRouteInfo<void> {
 /// generated route for
 /// [_i10.ManualEntryConnectionWithPropertiesScreen]
 class ManualEntryConnectionWithPropertiesScreen
-    extends _i27.PageRouteInfo<void> {
+    extends _i28.PageRouteInfo<void> {
   const ManualEntryConnectionWithPropertiesScreen({
-    List<_i27.PageRouteInfo>? children,
+    List<_i28.PageRouteInfo>? children,
   }) : super(
          ManualEntryConnectionWithPropertiesScreen.name,
          initialChildren: children,
@@ -263,10 +265,10 @@ class ManualEntryConnectionWithPropertiesScreen
 
   static const String name = 'ManualEntryConnectionWithPropertiesScreen';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
-      return _i27.WrappedRoute(
+      return _i28.WrappedRoute(
         child: const _i10.ManualEntryConnectionWithPropertiesScreen(),
       );
     },
@@ -275,13 +277,13 @@ class ManualEntryConnectionWithPropertiesScreen
 
 /// generated route for
 /// [_i11.ProductsMaterialsHomePage]
-class ProductsMaterialsHomeRoute extends _i27.PageRouteInfo<void> {
-  const ProductsMaterialsHomeRoute({List<_i27.PageRouteInfo>? children})
+class ProductsMaterialsHomeRoute extends _i28.PageRouteInfo<void> {
+  const ProductsMaterialsHomeRoute({List<_i28.PageRouteInfo>? children})
     : super(ProductsMaterialsHomeRoute.name, initialChildren: children);
 
   static const String name = 'ProductsMaterialsHomeRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       return const _i11.ProductsMaterialsHomePage();
@@ -291,13 +293,13 @@ class ProductsMaterialsHomeRoute extends _i27.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i12.ProfilePage]
-class ProfileRoute extends _i27.PageRouteInfo<void> {
-  const ProfileRoute({List<_i27.PageRouteInfo>? children})
+class ProfileRoute extends _i28.PageRouteInfo<void> {
+  const ProfileRoute({List<_i28.PageRouteInfo>? children})
     : super(ProfileRoute.name, initialChildren: children);
 
   static const String name = 'ProfileRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       return const _i12.ProfilePage();
@@ -307,16 +309,16 @@ class ProfileRoute extends _i27.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i13.PropertyScanPage]
-class PropertyScanRoute extends _i27.PageRouteInfo<void> {
-  const PropertyScanRoute({List<_i27.PageRouteInfo>? children})
+class PropertyScanRoute extends _i28.PageRouteInfo<void> {
+  const PropertyScanRoute({List<_i28.PageRouteInfo>? children})
     : super(PropertyScanRoute.name, initialChildren: children);
 
   static const String name = 'PropertyScanRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
-      return _i27.WrappedRoute(child: const _i13.PropertyScanPage());
+      return _i28.WrappedRoute(child: const _i13.PropertyScanPage());
     },
   );
 }
@@ -324,11 +326,11 @@ class PropertyScanRoute extends _i27.PageRouteInfo<void> {
 /// generated route for
 /// [_i14.SearchConnectionPage]
 class SearchConnectionRoute
-    extends _i27.PageRouteInfo<SearchConnectionRouteArgs> {
+    extends _i28.PageRouteInfo<SearchConnectionRouteArgs> {
   SearchConnectionRoute({
-    _i28.Key? key,
+    _i29.Key? key,
     String mode = 'update-form',
-    List<_i27.PageRouteInfo>? children,
+    List<_i28.PageRouteInfo>? children,
   }) : super(
          SearchConnectionRoute.name,
          args: SearchConnectionRouteArgs(key: key, mode: mode),
@@ -337,13 +339,13 @@ class SearchConnectionRoute
 
   static const String name = 'SearchConnectionRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SearchConnectionRouteArgs>(
         orElse: () => const SearchConnectionRouteArgs(),
       );
-      return _i27.WrappedRoute(
+      return _i28.WrappedRoute(
         child: _i14.SearchConnectionPage(key: args.key, mode: args.mode),
       );
     },
@@ -353,7 +355,7 @@ class SearchConnectionRoute
 class SearchConnectionRouteArgs {
   const SearchConnectionRouteArgs({this.key, this.mode = 'update-form'});
 
-  final _i28.Key? key;
+  final _i29.Key? key;
 
   final String mode;
 
@@ -375,13 +377,13 @@ class SearchConnectionRouteArgs {
 
 /// generated route for
 /// [_i15.SettingPage]
-class SettingRoute extends _i27.PageRouteInfo<void> {
-  const SettingRoute({List<_i27.PageRouteInfo>? children})
+class SettingRoute extends _i28.PageRouteInfo<void> {
+  const SettingRoute({List<_i28.PageRouteInfo>? children})
     : super(SettingRoute.name, initialChildren: children);
 
   static const String name = 'SettingRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       return const _i15.SettingPage();
@@ -392,13 +394,13 @@ class SettingRoute extends _i27.PageRouteInfo<void> {
 /// generated route for
 /// [_i16.SolveAndChangeMeterIncidentScreen]
 class SolveAndChangeMeterIncidentScreen
-    extends _i27.PageRouteInfo<SolveAndChangeMeterIncidentScreenArgs> {
+    extends _i28.PageRouteInfo<SolveAndChangeMeterIncidentScreenArgs> {
   SolveAndChangeMeterIncidentScreen({
-    _i28.Key? key,
+    _i29.Key? key,
     required String incidentId,
     required String incidentCode,
     String? connectionId,
-    List<_i27.PageRouteInfo>? children,
+    List<_i28.PageRouteInfo>? children,
   }) : super(
          SolveAndChangeMeterIncidentScreen.name,
          args: SolveAndChangeMeterIncidentScreenArgs(
@@ -412,11 +414,11 @@ class SolveAndChangeMeterIncidentScreen
 
   static const String name = 'SolveAndChangeMeterIncidentScreen';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SolveAndChangeMeterIncidentScreenArgs>();
-      return _i27.WrappedRoute(
+      return _i28.WrappedRoute(
         child: _i16.SolveAndChangeMeterIncidentScreen(
           key: args.key,
           incidentId: args.incidentId,
@@ -436,7 +438,7 @@ class SolveAndChangeMeterIncidentScreenArgs {
     this.connectionId,
   });
 
-  final _i28.Key? key;
+  final _i29.Key? key;
 
   final String incidentId;
 
@@ -469,12 +471,12 @@ class SolveAndChangeMeterIncidentScreenArgs {
 
 /// generated route for
 /// [_i17.SolveIncidentScreen]
-class SolveIncidentScreen extends _i27.PageRouteInfo<SolveIncidentScreenArgs> {
+class SolveIncidentScreen extends _i28.PageRouteInfo<SolveIncidentScreenArgs> {
   SolveIncidentScreen({
-    _i28.Key? key,
+    _i29.Key? key,
     required String incidentId,
     required String incidentCode,
-    List<_i27.PageRouteInfo>? children,
+    List<_i28.PageRouteInfo>? children,
   }) : super(
          SolveIncidentScreen.name,
          args: SolveIncidentScreenArgs(
@@ -487,11 +489,11 @@ class SolveIncidentScreen extends _i27.PageRouteInfo<SolveIncidentScreenArgs> {
 
   static const String name = 'SolveIncidentScreen';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SolveIncidentScreenArgs>();
-      return _i27.WrappedRoute(
+      return _i28.WrappedRoute(
         child: _i17.SolveIncidentScreen(
           key: args.key,
           incidentId: args.incidentId,
@@ -509,7 +511,7 @@ class SolveIncidentScreenArgs {
     required this.incidentCode,
   });
 
-  final _i28.Key? key;
+  final _i29.Key? key;
 
   final String incidentId;
 
@@ -535,13 +537,29 @@ class SolveIncidentScreenArgs {
 }
 
 /// generated route for
-/// [_i18.UpdateLocationFormScreen]
+/// [_i18.TechnicianInitialPage]
+class TechnicianInitialRoute extends _i28.PageRouteInfo<void> {
+  const TechnicianInitialRoute({List<_i28.PageRouteInfo>? children})
+    : super(TechnicianInitialRoute.name, initialChildren: children);
+
+  static const String name = 'TechnicianInitialRoute';
+
+  static _i28.PageInfo page = _i28.PageInfo(
+    name,
+    builder: (data) {
+      return const _i18.TechnicianInitialPage();
+    },
+  );
+}
+
+/// generated route for
+/// [_i19.UpdateLocationFormScreen]
 class UpdateLocationFormScreen
-    extends _i27.PageRouteInfo<UpdateLocationFormScreenArgs> {
+    extends _i28.PageRouteInfo<UpdateLocationFormScreenArgs> {
   UpdateLocationFormScreen({
-    _i28.Key? key,
-    required _i29.ConnectionWithPropertiesEntity connection,
-    List<_i27.PageRouteInfo>? children,
+    _i29.Key? key,
+    required _i30.ConnectionWithPropertiesEntity connection,
+    List<_i28.PageRouteInfo>? children,
   }) : super(
          UpdateLocationFormScreen.name,
          args: UpdateLocationFormScreenArgs(key: key, connection: connection),
@@ -550,11 +568,11 @@ class UpdateLocationFormScreen
 
   static const String name = 'UpdateLocationFormScreen';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<UpdateLocationFormScreenArgs>();
-      return _i18.UpdateLocationFormScreen(
+      return _i19.UpdateLocationFormScreen(
         key: args.key,
         connection: args.connection,
       );
@@ -565,9 +583,9 @@ class UpdateLocationFormScreen
 class UpdateLocationFormScreenArgs {
   const UpdateLocationFormScreenArgs({this.key, required this.connection});
 
-  final _i28.Key? key;
+  final _i29.Key? key;
 
-  final _i29.ConnectionWithPropertiesEntity connection;
+  final _i30.ConnectionWithPropertiesEntity connection;
 
   @override
   String toString() {
@@ -586,13 +604,13 @@ class UpdateLocationFormScreenArgs {
 }
 
 /// generated route for
-/// [_i19.UpdateMeterNumberFormScreen]
+/// [_i20.UpdateMeterNumberFormScreen]
 class UpdateMeterNumberFormScreen
-    extends _i27.PageRouteInfo<UpdateMeterNumberFormScreenArgs> {
+    extends _i28.PageRouteInfo<UpdateMeterNumberFormScreenArgs> {
   UpdateMeterNumberFormScreen({
-    _i28.Key? key,
-    required _i29.ConnectionWithPropertiesEntity connection,
-    List<_i27.PageRouteInfo>? children,
+    _i29.Key? key,
+    required _i30.ConnectionWithPropertiesEntity connection,
+    List<_i28.PageRouteInfo>? children,
   }) : super(
          UpdateMeterNumberFormScreen.name,
          args: UpdateMeterNumberFormScreenArgs(
@@ -604,11 +622,11 @@ class UpdateMeterNumberFormScreen
 
   static const String name = 'UpdateMeterNumberFormScreen';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<UpdateMeterNumberFormScreenArgs>();
-      return _i19.UpdateMeterNumberFormScreen(
+      return _i20.UpdateMeterNumberFormScreen(
         key: args.key,
         connection: args.connection,
       );
@@ -619,9 +637,9 @@ class UpdateMeterNumberFormScreen
 class UpdateMeterNumberFormScreenArgs {
   const UpdateMeterNumberFormScreenArgs({this.key, required this.connection});
 
-  final _i28.Key? key;
+  final _i29.Key? key;
 
-  final _i29.ConnectionWithPropertiesEntity connection;
+  final _i30.ConnectionWithPropertiesEntity connection;
 
   @override
   String toString() {
@@ -640,13 +658,13 @@ class UpdateMeterNumberFormScreenArgs {
 }
 
 /// generated route for
-/// [_i20.WorkOrderDetailPage]
+/// [_i21.WorkOrderDetailPage]
 class WorkOrderDetailRoute
-    extends _i27.PageRouteInfo<WorkOrderDetailRouteArgs> {
+    extends _i28.PageRouteInfo<WorkOrderDetailRouteArgs> {
   WorkOrderDetailRoute({
-    _i28.Key? key,
-    required _i30.WorkOrderEntity order,
-    List<_i27.PageRouteInfo>? children,
+    _i29.Key? key,
+    required _i31.WorkOrderEntity order,
+    List<_i28.PageRouteInfo>? children,
   }) : super(
          WorkOrderDetailRoute.name,
          args: WorkOrderDetailRouteArgs(key: key, order: order),
@@ -655,11 +673,11 @@ class WorkOrderDetailRoute
 
   static const String name = 'WorkOrderDetailRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<WorkOrderDetailRouteArgs>();
-      return _i20.WorkOrderDetailPage(key: args.key, order: args.order);
+      return _i21.WorkOrderDetailPage(key: args.key, order: args.order);
     },
   );
 }
@@ -667,9 +685,9 @@ class WorkOrderDetailRoute
 class WorkOrderDetailRouteArgs {
   const WorkOrderDetailRouteArgs({this.key, required this.order});
 
-  final _i28.Key? key;
+  final _i29.Key? key;
 
-  final _i30.WorkOrderEntity order;
+  final _i31.WorkOrderEntity order;
 
   @override
   String toString() {
@@ -688,12 +706,12 @@ class WorkOrderDetailRouteArgs {
 }
 
 /// generated route for
-/// [_i21.WorkOrderMapPage]
-class WorkOrderMapRoute extends _i27.PageRouteInfo<WorkOrderMapRouteArgs> {
+/// [_i22.WorkOrderMapPage]
+class WorkOrderMapRoute extends _i28.PageRouteInfo<WorkOrderMapRouteArgs> {
   WorkOrderMapRoute({
-    _i28.Key? key,
-    required _i30.WorkOrderEntity order,
-    List<_i27.PageRouteInfo>? children,
+    _i29.Key? key,
+    required _i31.WorkOrderEntity order,
+    List<_i28.PageRouteInfo>? children,
   }) : super(
          WorkOrderMapRoute.name,
          args: WorkOrderMapRouteArgs(key: key, order: order),
@@ -702,11 +720,11 @@ class WorkOrderMapRoute extends _i27.PageRouteInfo<WorkOrderMapRouteArgs> {
 
   static const String name = 'WorkOrderMapRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<WorkOrderMapRouteArgs>();
-      return _i21.WorkOrderMapPage(key: args.key, order: args.order);
+      return _i22.WorkOrderMapPage(key: args.key, order: args.order);
     },
   );
 }
@@ -714,9 +732,9 @@ class WorkOrderMapRoute extends _i27.PageRouteInfo<WorkOrderMapRouteArgs> {
 class WorkOrderMapRouteArgs {
   const WorkOrderMapRouteArgs({this.key, required this.order});
 
-  final _i28.Key? key;
+  final _i29.Key? key;
 
-  final _i30.WorkOrderEntity order;
+  final _i31.WorkOrderEntity order;
 
   @override
   String toString() {
@@ -735,13 +753,13 @@ class WorkOrderMapRouteArgs {
 }
 
 /// generated route for
-/// [_i22.WorkOrderProcessPage]
+/// [_i23.WorkOrderProcessPage]
 class WorkOrderProcessRoute
-    extends _i27.PageRouteInfo<WorkOrderProcessRouteArgs> {
+    extends _i28.PageRouteInfo<WorkOrderProcessRouteArgs> {
   WorkOrderProcessRoute({
-    _i28.Key? key,
+    _i29.Key? key,
     String? initialOrderCode,
-    List<_i27.PageRouteInfo>? children,
+    List<_i28.PageRouteInfo>? children,
   }) : super(
          WorkOrderProcessRoute.name,
          args: WorkOrderProcessRouteArgs(
@@ -753,13 +771,13 @@ class WorkOrderProcessRoute
 
   static const String name = 'WorkOrderProcessRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<WorkOrderProcessRouteArgs>(
         orElse: () => const WorkOrderProcessRouteArgs(),
       );
-      return _i22.WorkOrderProcessPage(
+      return _i23.WorkOrderProcessPage(
         key: args.key,
         initialOrderCode: args.initialOrderCode,
       );
@@ -770,7 +788,7 @@ class WorkOrderProcessRoute
 class WorkOrderProcessRouteArgs {
   const WorkOrderProcessRouteArgs({this.key, this.initialOrderCode});
 
-  final _i28.Key? key;
+  final _i29.Key? key;
 
   final String? initialOrderCode;
 
@@ -791,65 +809,65 @@ class WorkOrderProcessRouteArgs {
 }
 
 /// generated route for
-/// [_i23.WorkOrdersDashboardPage]
-class WorkOrdersDashboardRoute extends _i27.PageRouteInfo<void> {
-  const WorkOrdersDashboardRoute({List<_i27.PageRouteInfo>? children})
+/// [_i24.WorkOrdersDashboardPage]
+class WorkOrdersDashboardRoute extends _i28.PageRouteInfo<void> {
+  const WorkOrdersDashboardRoute({List<_i28.PageRouteInfo>? children})
     : super(WorkOrdersDashboardRoute.name, initialChildren: children);
 
   static const String name = 'WorkOrdersDashboardRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
-      return const _i23.WorkOrdersDashboardPage();
+      return const _i24.WorkOrdersDashboardPage();
     },
   );
 }
 
 /// generated route for
-/// [_i24.WorkOrdersHomePage]
-class WorkOrdersHomeRoute extends _i27.PageRouteInfo<void> {
-  const WorkOrdersHomeRoute({List<_i27.PageRouteInfo>? children})
+/// [_i25.WorkOrdersHomePage]
+class WorkOrdersHomeRoute extends _i28.PageRouteInfo<void> {
+  const WorkOrdersHomeRoute({List<_i28.PageRouteInfo>? children})
     : super(WorkOrdersHomeRoute.name, initialChildren: children);
 
   static const String name = 'WorkOrdersHomeRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
-      return const _i24.WorkOrdersHomePage();
+      return const _i25.WorkOrdersHomePage();
     },
   );
 }
 
 /// generated route for
-/// [_i25.WorkOrdersMapPage]
-class WorkOrdersMapRoute extends _i27.PageRouteInfo<void> {
-  const WorkOrdersMapRoute({List<_i27.PageRouteInfo>? children})
+/// [_i26.WorkOrdersMapPage]
+class WorkOrdersMapRoute extends _i28.PageRouteInfo<void> {
+  const WorkOrdersMapRoute({List<_i28.PageRouteInfo>? children})
     : super(WorkOrdersMapRoute.name, initialChildren: children);
 
   static const String name = 'WorkOrdersMapRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
-      return const _i25.WorkOrdersMapPage();
+      return const _i26.WorkOrdersMapPage();
     },
   );
 }
 
 /// generated route for
-/// [_i26.WorkersHomePage]
-class WorkersHomeRoute extends _i27.PageRouteInfo<void> {
-  const WorkersHomeRoute({List<_i27.PageRouteInfo>? children})
+/// [_i27.WorkersHomePage]
+class WorkersHomeRoute extends _i28.PageRouteInfo<void> {
+  const WorkersHomeRoute({List<_i28.PageRouteInfo>? children})
     : super(WorkersHomeRoute.name, initialChildren: children);
 
   static const String name = 'WorkersHomeRoute';
 
-  static _i27.PageInfo page = _i27.PageInfo(
+  static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
-      return const _i26.WorkersHomePage();
+      return const _i27.WorkersHomePage();
     },
   );
 }

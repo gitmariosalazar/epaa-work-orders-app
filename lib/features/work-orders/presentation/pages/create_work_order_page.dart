@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/services/session/session_service.dart';
 import 'package:clean_architecture/features/work-orders/presentation/cubits/create_work_order/create_work_order_cubit.dart';
+import 'package:clean_architecture/shared_ui/ui/base/app_bar/base_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -272,8 +273,8 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
         // Pantalla de éxito
         if (state is CreateWorkOrderSuccess) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Nueva Orden de Trabajo'),
+            appBar: const BaseAppBar(
+              title: 'Nueva Orden de Trabajo',
               centerTitle: true,
             ),
             body: WorkOrderSuccessView(
@@ -289,20 +290,16 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
         final isSubmitting = state is CreateWorkOrderLoading;
 
         return Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                if (_currentStep > 1) {
-                  _handlePrevStep();
-                } else {
-                  context.router.maybePop();
-                }
-              },
-            ),
-            title: const Text('Nueva Orden de Trabajo'),
+          appBar: BaseAppBar(
+            title: 'Nueva Orden de Trabajo',
             centerTitle: true,
-            elevation: 0,
+            onLeadingPressed: () {
+              if (_currentStep > 1) {
+                _handlePrevStep();
+              } else {
+                context.router.maybePop();
+              }
+            },
           ),
           body: SafeArea(
             child: Column(

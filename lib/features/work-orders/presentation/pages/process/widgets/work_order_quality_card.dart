@@ -16,6 +16,9 @@ class WorkOrderQualityCard extends StatelessWidget {
     final qc = order.controlCalidad;
     final hasQc = qc != null;
     final isApproved = qc?.aprobado ?? false;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Card(
       elevation: 2,
@@ -35,9 +38,9 @@ class WorkOrderQualityCard extends StatelessWidget {
                       Icons.shield_outlined,
                       color: hasQc
                           ? (isApproved
-                                ? Colors.green.shade700
-                                : Colors.red.shade700)
-                          : Colors.purple.shade700,
+                                ? (isDark ? Colors.green.shade400 : Colors.green.shade700)
+                                : (isDark ? Colors.red.shade400 : Colors.red.shade700))
+                          : (isDark ? Colors.purple.shade300 : Colors.purple.shade700),
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -58,13 +61,21 @@ class WorkOrderQualityCard extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: isApproved
-                          ? Colors.green.shade50
-                          : Colors.red.shade50,
+                          ? (isDark
+                              ? Colors.green.withValues(alpha: 0.15)
+                              : Colors.green.shade50)
+                          : (isDark
+                              ? Colors.red.withValues(alpha: 0.15)
+                              : Colors.red.shade50),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: isApproved
-                            ? Colors.green.shade400
-                            : Colors.red.shade400,
+                            ? (isDark
+                                ? Colors.green.withValues(alpha: 0.4)
+                                : Colors.green.shade400)
+                            : (isDark
+                                ? Colors.red.withValues(alpha: 0.4)
+                                : Colors.red.shade400),
                       ),
                     ),
                     child: Row(
@@ -74,8 +85,12 @@ class WorkOrderQualityCard extends StatelessWidget {
                           isApproved ? Icons.check_circle : Icons.cancel,
                           size: 13,
                           color: isApproved
-                              ? Colors.green.shade800
-                              : Colors.red.shade800,
+                              ? (isDark
+                                  ? Colors.green.shade300
+                                  : Colors.green.shade800)
+                              : (isDark
+                                  ? Colors.red.shade300
+                                  : Colors.red.shade800),
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -84,8 +99,12 @@ class WorkOrderQualityCard extends StatelessWidget {
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
                             color: isApproved
-                                ? Colors.green.shade900
-                                : Colors.red.shade900,
+                                ? (isDark
+                                    ? Colors.green.shade300
+                                    : Colors.green.shade900)
+                                : (isDark
+                                    ? Colors.red.shade300
+                                    : Colors.red.shade900),
                           ),
                         ),
                       ],
@@ -129,7 +148,7 @@ class WorkOrderQualityCard extends StatelessWidget {
                   'El control de calidad no ha sido registrado aún.',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade600,
+                    color: isDark ? cs.onSurfaceVariant : Colors.grey.shade600,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
@@ -181,12 +200,17 @@ class WorkOrderQualityCard extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
+                    color: isDark
+                        ? cs.surfaceContainerHighest.withValues(alpha: 0.3)
+                        : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     qc.comentarios!,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade800),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? cs.onSurface : Colors.grey.shade800,
+                    ),
                   ),
                 ),
               ],

@@ -419,7 +419,7 @@ class WorkOrdersRemoteDataSourceImpl implements WorkOrdersRemoteDataSource {
     >(
       request: () => _apiService.get(
         ApiEndpoints.getTrackingByNumeroOrden,
-        queryParameters: {'numeroOrden': id},
+        queryParameters: {'searchValue': id},
       ),
       fromJson: (json) => WorkOrderTrackingModel.fromJson(json),
       isStandardResponse: true,

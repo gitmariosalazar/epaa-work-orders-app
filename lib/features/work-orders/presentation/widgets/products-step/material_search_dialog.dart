@@ -1,6 +1,5 @@
 // lib/features/work-orders/presentation/widgets/material_search_dialog.dart
 
-import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/features/products/domain/entities/product_material_entity.dart';
 import 'package:clean_architecture/features/products/domain/usecases/product_material_use_case.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/products-step/step_select_materials.dart';
@@ -128,6 +127,23 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
     });
   }
 
+  void _incrementQuantity() {
+    final current = int.tryParse(_quantityController.text.trim()) ?? 1;
+    final maxStock = selectedMaterial?.currentStock;
+    if (maxStock != null && current >= maxStock) return;
+    setState(() {
+      _quantityController.text = (current + 1).toString();
+    });
+  }
+
+  void _decrementQuantity() {
+    final current = int.tryParse(_quantityController.text.trim()) ?? 1;
+    if (current <= 1) return;
+    setState(() {
+      _quantityController.text = (current - 1).toString();
+    });
+  }
+
   void _addMaterial() {
     if (selectedMaterial == null) return;
 
@@ -139,19 +155,26 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.error_outline, color: Colors.white, size: 20),
+              Icon(
+                Icons.error_outline_rounded,
+                color: Theme.of(context).colorScheme.onError,
+                size: 20,
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   qty <= 0
                       ? "Ingrese una cantidad válida mayor a 0"
                       : "La cantidad excede el stock disponible (${selectedMaterial!.currentStock})",
-                  style: const TextStyle(fontSize: 13),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Theme.of(context).colorScheme.onError,
+                  ),
                 ),
               ),
             ],
           ),
-          backgroundColor: Colors.red.shade700,
+          backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -172,13 +195,26 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
 
+    final currentQty = int.tryParse(_quantityController.text.trim()) ?? 1;
+    final canIncrement =
+        selectedMaterial == null || currentQty < selectedMaterial!.currentStock;
+    final canDecrement = currentQty > 1;
+
     return Dialog(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? cs.surfaceContainerHighest : Colors.white,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      elevation: 10,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(
+          color: isDark ? cs.outlineVariant : const Color(0xFFE2E8F0),
+          width: 1,
+        ),
+      ),
+      elevation: isDark ? 8 : 12,
       clipBehavior: Clip.antiAlias,
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -187,26 +223,37 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
         ),
         child: Column(
           children: [
-            // Header con degradado suave
+            // ── Header con icono distintivo y botón cerrar ──────────────────
             Container(
               padding: const EdgeInsets.fromLTRB(20, 18, 16, 16),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: isDark ? cs.surfaceContainerHighest : Colors.white,
                 border: Border(
-                  bottom: BorderSide(color: Colors.grey.shade200, width: 1),
+                  bottom: BorderSide(
+                    color: isDark ? cs.outlineVariant : const Color(0xFFE2E8F0),
+                    width: 1,
+                  ),
                 ),
               ),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.12),
+                      color: cs.primary.withValues(alpha: isDark ? 0.22 : 0.12),
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: cs.primary.withValues(
+                          alpha: isDark ? 0.45 : 0.25,
+                        ),
+                        width: 1,
+                      ),
                     ),
+                    alignment: Alignment.center,
                     child: Icon(
                       Icons.inventory_2_rounded,
-                      color: AppColors.primary,
+                      color: isDark ? const Color(0xFF38BDF8) : cs.primary,
                       size: 22,
                     ),
                   ),
@@ -215,21 +262,21 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           "Agregar Material",
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
                             letterSpacing: -0.3,
-                            color: Color(0xFF1E293B),
+                            color: cs.onSurface,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          "Selecciona un ítem y define la cantidad",
+                          "Selecciona un ítem del inventario y define la cantidad",
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey.shade600,
+                            color: cs.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -238,16 +285,17 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                   IconButton(
                     icon: Icon(
                       Icons.close_rounded,
-                      color: Colors.grey.shade600,
+                      color: cs.onSurfaceVariant,
+                      size: 22,
                     ),
-                    splashRadius: 20,
+                    tooltip: 'Cerrar',
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
               ),
             ),
 
-            // Contenido Principal
+            // ── Contenido Principal ─────────────────────────────────────────
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -259,27 +307,36 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                     // Campo de Búsqueda
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF8FAFC),
+                        color: isDark
+                            ? cs.surfaceContainerHigh
+                            : const Color(0xFFF8FAFC),
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Colors.grey.shade300),
+                        border: Border.all(
+                          color: isDark
+                              ? cs.outlineVariant
+                              : const Color(0xFFE2E8F0),
+                        ),
                       ),
                       child: TextField(
                         controller: _searchController,
                         autofocus: false,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13.5,
-                          color: Color(0xFF0F172A),
+                          color: cs.onSurface,
+                          fontWeight: FontWeight.w500,
                         ),
                         decoration: InputDecoration(
                           hintText: "Buscar por nombre o código SKU...",
                           hintStyle: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey.shade400,
+                            color: cs.onSurfaceVariant.withValues(alpha: 0.7),
                           ),
                           prefixIcon: Icon(
                             Icons.search_rounded,
-                            size: 22,
-                            color: Colors.grey.shade600,
+                            size: 20,
+                            color: isDark
+                                ? const Color(0xFF38BDF8)
+                                : cs.primary,
                           ),
                           suffixIcon: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -290,25 +347,30 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                     Icons.clear_rounded,
                                     size: 18,
                                   ),
-                                  splashRadius: 18,
-                                  color: Colors.grey.shade500,
+                                  color: cs.onSurfaceVariant,
                                   onPressed: () {
                                     _searchController.clear();
                                     _onSearchPressed();
                                   },
                                 ),
                               Container(
-                                margin: const EdgeInsets.only(right: 6),
+                                margin: const EdgeInsets.only(
+                                  right: 6,
+                                  left: 4,
+                                  top: 4,
+                                  bottom: 4,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary,
+                                  color: cs.primary,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: IconButton(
                                   constraints: const BoxConstraints(
-                                    minWidth: 36,
-                                    minHeight: 36,
+                                    minWidth: 32,
+                                    minHeight: 32,
                                   ),
                                   padding: EdgeInsets.zero,
+                                  tooltip: 'Buscar',
                                   icon: const Icon(
                                     Icons.arrow_forward_rounded,
                                     size: 18,
@@ -331,74 +393,134 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
 
                     const SizedBox(height: 10),
 
-                    // Selector de Cantidad estilizado
+                    // Selector de Cantidad con Stepper (+ / -) y unidad
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 14,
-                        vertical: 4,
+                        vertical: 8, // ↑ más padding vertical
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF8FAFC),
+                        color: isDark
+                            ? cs.surfaceContainerHigh
+                            : const Color(0xFFF8FAFC),
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Colors.grey.shade300),
+                        border: Border.all(
+                          color: isDark
+                              ? cs.outlineVariant
+                              : const Color(0xFFE2E8F0),
+                        ),
                       ),
                       child: Row(
                         children: [
                           Icon(
                             Icons.format_list_numbered_rounded,
-                            size: 20,
-                            color: Colors.grey.shade600,
+                            size: 22,
+                            color: isDark
+                                ? const Color(0xFF38BDF8)
+                                : cs.primary,
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 12),
                           Expanded(
-                            child: TextField(
-                              controller: _quantityController,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              style: const TextStyle(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F172A),
-                              ),
-                              decoration: const InputDecoration(
-                                labelText: "Cantidad a utilizar",
-                                labelStyle: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF64748B),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Cantidad a utilizar",
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: cs.onSurfaceVariant,
+                                  ),
                                 ),
-                                border: InputBorder.none,
-                                isDense: true,
-                              ),
+                                const SizedBox(
+                                  height: 2,
+                                ), // pequeño espacio extra
+                                TextField(
+                                  controller: _quantityController,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    height: 1.3,
+                                    color: cs.onSurface,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    isDense: false,
+                                    contentPadding: EdgeInsets.only(
+                                      left:
+                                          8, // ← aquí controlas cuánto se mueve a la derecha
+                                      top: 6,
+                                      bottom: 6,
+                                    ),
+                                  ),
+                                  onChanged: (_) => setState(() {}),
+                                ),
+                              ],
                             ),
                           ),
-                          if (selectedMaterial != null)
+
+                          const SizedBox(width: 10),
+
+                          // Botones de incremento / decremento
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _StepperButton(
+                                icon: Icons.add_rounded,
+                                enabled: canIncrement,
+                                onTap: _incrementQuantity,
+                              ),
+                              const SizedBox(height: 6),
+                              _StepperButton(
+                                icon: Icons.remove_rounded,
+                                enabled: canDecrement,
+                                onTap: _decrementQuantity,
+                              ),
+                            ],
+                          ),
+
+                          // Badge de Unidad de Medida
+                          if (selectedMaterial != null) ...[
+                            const SizedBox(width: 10),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
+                                horizontal: 10,
+                                vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.blueGrey.shade50,
+                                color: cs.primary.withValues(
+                                  alpha: isDark ? 0.22 : 0.10,
+                                ),
                                 borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: cs.primary.withValues(
+                                    alpha: isDark ? 0.45 : 0.25,
+                                  ),
+                                ),
                               ),
                               child: Text(
                                 selectedMaterial!.unitOfMeasure,
                                 style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.blueGrey.shade700,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: isDark
+                                      ? const Color(0xFF38BDF8)
+                                      : cs.primary,
                                 ),
                               ),
                             ),
+                          ],
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 10),
 
-                    // Tarjeta de Material Seleccionado
+                    // Tarjeta de Material Seleccionado (Banner destacado)
                     if (selectedMaterial != null)
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 250),
@@ -406,16 +528,20 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFEFF6FF),
+                          color: cs.primary.withValues(
+                            alpha: isDark ? 0.18 : 0.06,
+                          ),
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: Colors.blue.shade300,
-                            width: 1.2,
+                            color: cs.primary.withValues(
+                              alpha: isDark ? 0.6 : 0.4,
+                            ),
+                            width: 1.4,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.blue.shade100.withValues(
-                                alpha: 0.4,
+                              color: cs.primary.withValues(
+                                alpha: isDark ? 0.15 : 0.08,
                               ),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
@@ -425,11 +551,13 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.only(top: 2),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
                               child: Icon(
                                 Icons.check_circle_rounded,
-                                color: Colors.blue,
+                                color: isDark
+                                    ? const Color(0xFF38BDF8)
+                                    : cs.primary,
                                 size: 20,
                               ),
                             ),
@@ -446,30 +574,66 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                           vertical: 2,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: Colors.blue.shade100,
+                                          color: isDark
+                                              ? cs.surfaceContainerHighest
+                                              : Colors.white,
                                           borderRadius: BorderRadius.circular(
                                             6,
+                                          ),
+                                          border: Border.all(
+                                            color: cs.primary.withValues(
+                                              alpha: 0.3,
+                                            ),
                                           ),
                                         ),
                                         child: Text(
                                           selectedMaterial!.itemCode,
                                           style: TextStyle(
-                                            fontSize: 10,
+                                            fontSize: 10.5,
                                             fontWeight: FontWeight.w700,
-                                            color: Colors.blue.shade900,
+                                            fontFamily: 'monospace',
+                                            color: isDark
+                                                ? const Color(0xFF38BDF8)
+                                                : cs.primary,
                                           ),
                                         ),
                                       ),
                                       const Spacer(),
-                                      Text(
-                                        "Stock: ${selectedMaterial!.currentStock}",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
                                           color:
                                               selectedMaterial!.currentStock > 0
-                                              ? const Color(0xFF15803D)
-                                              : Colors.red.shade700,
+                                              ? (isDark
+                                                    ? const Color(0xFF064E3B)
+                                                    : const Color(0xFFDCFCE7))
+                                              : (isDark
+                                                    ? const Color(0xFF7F1D1D)
+                                                    : const Color(0xFFFEE2E2)),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          "Stock: ${selectedMaterial!.currentStock}",
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                selectedMaterial!.currentStock >
+                                                    0
+                                                ? (isDark
+                                                      ? const Color(0xFF4ADE80)
+                                                      : const Color(0xFF166534))
+                                                : (isDark
+                                                      ? const Color(0xFFF87171)
+                                                      : const Color(
+                                                          0xFF991B1B,
+                                                        )),
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -477,10 +641,10 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                   const SizedBox(height: 4),
                                   Text(
                                     selectedMaterial!.itemName,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12.5,
-                                      color: Color(0xFF1E293B),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      color: cs.onSurface,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -490,8 +654,8 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                             ),
                             IconButton(
                               icon: const Icon(Icons.close_rounded, size: 18),
-                              splashRadius: 16,
-                              color: Colors.grey.shade500,
+                              tooltip: 'Deseleccionar',
+                              color: cs.onSurfaceVariant,
                               onPressed: () {
                                 setState(() {
                                   selectedMaterial = null;
@@ -514,17 +678,17 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                           Icon(
                             Icons.list_alt_rounded,
                             size: 15,
-                            color: Colors.grey.shade500,
+                            color: cs.onSurfaceVariant,
                           ),
                           const SizedBox(width: 6),
                           Text(
                             _isLoading
-                                ? "Buscando existencias..."
+                                ? "Buscando existencias en bodega..."
                                 : "Resultados: ${_materials.length} materiales",
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade600,
+                              color: cs.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -541,15 +705,15 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                   CircularProgressIndicator(
                                     strokeWidth: 3,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      AppColors.primary,
+                                      cs.primary,
                                     ),
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
                                     "Cargando inventario...",
                                     style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600,
+                                      fontSize: 12.5,
+                                      color: cs.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -565,7 +729,7 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                     Icon(
                                       Icons.cloud_off_rounded,
                                       size: 42,
-                                      color: Colors.red.shade300,
+                                      color: cs.error,
                                     ),
                                     const SizedBox(height: 10),
                                     Text(
@@ -573,7 +737,7 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 13,
-                                        color: Colors.grey.shade700,
+                                        color: cs.onSurface,
                                       ),
                                     ),
                                     const SizedBox(height: 12),
@@ -605,7 +769,9 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                   Icon(
                                     Icons.inventory_outlined,
                                     size: 46,
-                                    color: Colors.grey.shade300,
+                                    color: cs.onSurfaceVariant.withValues(
+                                      alpha: 0.6,
+                                    ),
                                   ),
                                   const SizedBox(height: 10),
                                   Text(
@@ -613,15 +779,15 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                     style: TextStyle(
                                       fontSize: 13.5,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.grey.shade600,
+                                      color: cs.onSurface,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    "Intenta con otro término o SKU",
+                                    "Intenta con otro término o código SKU",
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: Colors.grey.shade400,
+                                      color: cs.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -632,7 +798,7 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                               physics: const BouncingScrollPhysics(),
                               itemCount:
                                   _materials.length + (_isLoadingMore ? 1 : 0),
-                              separatorBuilder: (_, __) =>
+                              separatorBuilder: (_, _) =>
                                   const SizedBox(height: 6),
                               itemBuilder: (context, index) {
                                 if (index == _materials.length) {
@@ -658,7 +824,7 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                 final hasStock = item.currentStock > 0;
 
                                 return InkWell(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(14),
                                   onTap: () => _onMaterialSelected(item),
                                   child: AnimatedContainer(
                                     duration: const Duration(milliseconds: 200),
@@ -668,39 +834,59 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                     ),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? AppColors.primary.withValues(
-                                              alpha: 0.06,
+                                          ? cs.primary.withValues(
+                                              alpha: isDark ? 0.20 : 0.08,
                                             )
-                                          : Colors.white,
-                                      borderRadius: BorderRadius.circular(12),
+                                          : (isDark
+                                                ? cs.surfaceContainerHigh
+                                                : Colors.white),
+                                      borderRadius: BorderRadius.circular(14),
                                       border: Border.all(
                                         color: isSelected
-                                            ? AppColors.primary
-                                            : Colors.grey.shade200,
-                                        width: isSelected ? 1.5 : 1,
+                                            ? cs.primary
+                                            : (isDark
+                                                  ? cs.outlineVariant
+                                                  : const Color(0xFFE2E8F0)),
+                                        width: isSelected ? 1.6 : 1,
                                       ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: isDark
+                                                ? 0.15
+                                                : (isSelected ? 0.06 : 0.02),
+                                          ),
+                                          blurRadius: isSelected ? 6 : 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
                                     ),
                                     child: Row(
                                       children: [
+                                        // Icono de material / selección
                                         Container(
                                           width: 38,
                                           height: 38,
                                           decoration: BoxDecoration(
                                             color: isSelected
-                                                ? AppColors.primary.withValues(
-                                                    alpha: 0.15,
-                                                  )
-                                                : Colors.grey.shade100,
+                                                ? cs.primary
+                                                : cs.primary.withValues(
+                                                    alpha: isDark ? 0.20 : 0.08,
+                                                  ),
                                             borderRadius: BorderRadius.circular(
                                               10,
                                             ),
                                           ),
                                           child: Icon(
-                                            Icons.widgets_outlined,
+                                            isSelected
+                                                ? Icons.check_rounded
+                                                : Icons.widgets_outlined,
                                             size: 20,
                                             color: isSelected
-                                                ? AppColors.primary
-                                                : Colors.grey.shade600,
+                                                ? Colors.white
+                                                : (isDark
+                                                      ? const Color(0xFF38BDF8)
+                                                      : cs.primary),
                                           ),
                                         ),
                                         const SizedBox(width: 12),
@@ -718,16 +904,21 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                                           vertical: 1.5,
                                                         ),
                                                     decoration: BoxDecoration(
-                                                      color:
-                                                          Colors.grey.shade100,
+                                                      color: isDark
+                                                          ? cs.surfaceContainerHighest
+                                                          : const Color(
+                                                              0xFFF1F5F9,
+                                                            ),
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                             6,
                                                           ),
                                                       border: Border.all(
-                                                        color: Colors
-                                                            .grey
-                                                            .shade300,
+                                                        color: isDark
+                                                            ? cs.outlineVariant
+                                                            : const Color(
+                                                                0xFFE2E8F0,
+                                                              ),
                                                       ),
                                                     ),
                                                     child: Text(
@@ -735,10 +926,13 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                                       style: TextStyle(
                                                         fontSize: 10,
                                                         fontWeight:
-                                                            FontWeight.w600,
-                                                        color: Colors
-                                                            .grey
-                                                            .shade700,
+                                                            FontWeight.w700,
+                                                        fontFamily: 'monospace',
+                                                        color: isDark
+                                                            ? const Color(
+                                                                0xFF38BDF8,
+                                                              )
+                                                            : cs.primary,
                                                       ),
                                                     ),
                                                   ),
@@ -747,8 +941,10 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                                     item.unitOfMeasure,
                                                     style: TextStyle(
                                                       fontSize: 11,
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                       color:
-                                                          Colors.grey.shade500,
+                                                          cs.onSurfaceVariant,
                                                     ),
                                                   ),
                                                 ],
@@ -761,9 +957,7 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                                   fontWeight: isSelected
                                                       ? FontWeight.w700
                                                       : FontWeight.w500,
-                                                  color: const Color(
-                                                    0xFF1E293B,
-                                                  ),
+                                                  color: cs.onSurface,
                                                 ),
                                                 maxLines: 2,
                                                 overflow: TextOverflow.ellipsis,
@@ -780,20 +974,33 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                               "Stock",
                                               style: TextStyle(
                                                 fontSize: 10,
-                                                color: Colors.grey.shade500,
+                                                fontWeight: FontWeight.w500,
+                                                color: cs.onSurfaceVariant,
                                               ),
                                             ),
                                             const SizedBox(height: 2),
                                             Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                    horizontal: 7,
+                                                    horizontal: 8,
                                                     vertical: 2,
                                                   ),
                                               decoration: BoxDecoration(
                                                 color: hasStock
-                                                    ? const Color(0xFFDCFCE7)
-                                                    : const Color(0xFFFEE2E2),
+                                                    ? (isDark
+                                                          ? const Color(
+                                                              0xFF064E3B,
+                                                            )
+                                                          : const Color(
+                                                              0xFFDCFCE7,
+                                                            ))
+                                                    : (isDark
+                                                          ? const Color(
+                                                              0xFF7F1D1D,
+                                                            )
+                                                          : const Color(
+                                                              0xFFFEE2E2,
+                                                            )),
                                                 borderRadius:
                                                     BorderRadius.circular(6),
                                               ),
@@ -803,8 +1010,20 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                                                   fontSize: 11,
                                                   fontWeight: FontWeight.bold,
                                                   color: hasStock
-                                                      ? const Color(0xFF166534)
-                                                      : const Color(0xFF991B1B),
+                                                      ? (isDark
+                                                            ? const Color(
+                                                                0xFF4ADE80,
+                                                              )
+                                                            : const Color(
+                                                                0xFF166534,
+                                                              ))
+                                                      : (isDark
+                                                            ? const Color(
+                                                                0xFFF87171,
+                                                              )
+                                                            : const Color(
+                                                                0xFF991B1B,
+                                                              )),
                                                 ),
                                               ),
                                             ),
@@ -822,13 +1041,16 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
               ),
             ),
 
-            // Footer / Acciones
+            // ── Footer / Acciones ───────────────────────────────────────────
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: isDark ? cs.surfaceContainerHighest : Colors.white,
                 border: Border(
-                  top: BorderSide(color: Colors.grey.shade200, width: 1),
+                  top: BorderSide(
+                    color: isDark ? cs.outlineVariant : const Color(0xFFE2E8F0),
+                    width: 1,
+                  ),
                 ),
               ),
               child: Row(
@@ -850,7 +1072,7 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade700,
+                        color: cs.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -865,9 +1087,9 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
+                      backgroundColor: cs.primary,
+                      foregroundColor: cs.onPrimary,
+                      elevation: 1,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,
                         vertical: 12,
@@ -875,8 +1097,12 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      disabledBackgroundColor: Colors.grey.shade300,
-                      disabledForegroundColor: Colors.grey.shade500,
+                      disabledBackgroundColor: isDark
+                          ? cs.surfaceContainerHigh
+                          : const Color(0xFFE2E8F0),
+                      disabledForegroundColor: cs.onSurfaceVariant.withValues(
+                        alpha: 0.6,
+                      ),
                     ),
                     onPressed: selectedMaterial == null ? null : _addMaterial,
                   ),
@@ -896,5 +1122,53 @@ class _MaterialSearchDialogState extends State<MaterialSearchDialog> {
     _quantityController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+}
+
+class _StepperButton extends StatelessWidget {
+  final IconData icon;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  const _StepperButton({
+    required this.icon,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Material(
+      color: enabled
+          ? (isDark ? cs.surfaceContainerHighest : Colors.white)
+          : (isDark ? cs.surfaceContainerLow : const Color(0xFFE2E8F0)),
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        onTap: enabled ? onTap : null,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isDark ? cs.outlineVariant : const Color(0xFFE2E8F0),
+            ),
+          ),
+          alignment: Alignment.center,
+          child: Icon(
+            icon,
+            size: 16,
+            color: enabled
+                ? cs.onSurface
+                : cs.onSurfaceVariant.withValues(alpha: 0.4),
+          ),
+        ),
+      ),
+    );
   }
 }

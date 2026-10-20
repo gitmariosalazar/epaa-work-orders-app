@@ -16,3 +16,15 @@ ThemeData lightTheme = ThemeData(
   checkboxTheme: checkBoxThemeData,
   listTileTheme: listTileThemeData,
 );
+
+ThemeData darkTheme = ThemeData(
+  brightness: Brightness.dark,
+  primaryColor: AppColors.primary,
+  colorScheme: darkColorScheme,
+  fontFamily: "Poppins",
+  scaffoldBackgroundColor: const Color(0xFF060D19),
+  appBarTheme: darkAppBarTheme,
+  inputDecorationTheme: darkInputDecorationTheme,
+  checkboxTheme: checkBoxThemeData,
+  listTileTheme: darkListTileThemeData,
+);

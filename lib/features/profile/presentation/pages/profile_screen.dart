@@ -156,8 +156,9 @@ class _ProfileHeroSliver extends StatelessWidget {
       expandedHeight: bannerH,
       pinned: true,
       stretch: true,
-      backgroundColor: cs.primary,
-      foregroundColor: cs.onPrimary,
+      backgroundColor: cs.surface,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_new_rounded),
         onPressed: () {

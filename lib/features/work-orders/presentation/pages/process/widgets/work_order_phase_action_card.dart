@@ -77,6 +77,9 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final estado = order.estado.toUpperCase();
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     String phaseBadge = 'Fase del Proceso';
     String title = 'Acción Requerida';
@@ -265,9 +268,15 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark
+                  ? cs.surfaceContainerHighest.withValues(alpha: 0.3)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.grey.shade300),
+              border: Border.all(
+                color: isDark
+                    ? theme.dividerColor.withValues(alpha: 0.2)
+                    : Colors.grey.shade300,
+              ),
             ),
             child: Row(
               children: [
@@ -291,7 +300,9 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           color: executionSubStep == 0
                               ? Colors.white
-                              : Colors.grey.shade700,
+                              : (isDark
+                                  ? cs.onSurfaceVariant
+                                  : Colors.grey.shade700),
                         ),
                       ),
                     ),
@@ -317,7 +328,9 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           color: executionSubStep == 1
                               ? Colors.white
-                              : Colors.grey.shade700,
+                              : (isDark
+                                  ? cs.onSurfaceVariant
+                                  : Colors.grey.shade700),
                         ),
                       ),
                     ),
@@ -444,21 +457,31 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
       actionButtons = Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.green.shade50,
+          color: isDark
+              ? Colors.green.withValues(alpha: 0.15)
+              : Colors.green.shade50,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.green.shade300),
+          border: Border.all(
+            color: isDark
+                ? Colors.green.withValues(alpha: 0.4)
+                : Colors.green.shade300,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.check_circle, color: Colors.green.shade700, size: 16),
+            Icon(
+              Icons.check_circle,
+              color: isDark ? Colors.green.shade400 : Colors.green.shade700,
+              size: 16,
+            ),
             const SizedBox(width: 8),
             Text(
               'Ciclo de Vida Completado',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
-                color: Colors.green.shade800,
+                color: isDark ? Colors.green.shade300 : Colors.green.shade800,
               ),
             ),
           ],
@@ -471,13 +494,19 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: themeColor.withOpacity(0.3), width: 1.5),
+        side: BorderSide(
+          color: themeColor.withValues(alpha: isDark ? 0.4 : 0.3),
+          width: 1.5,
+        ),
       ),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
-            colors: [themeColor.withOpacity(0.06), Colors.white],
+            colors: [
+              themeColor.withValues(alpha: isDark ? 0.12 : 0.06),
+              isDark ? cs.surface : Colors.white,
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -491,7 +520,7 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: themeColor.withOpacity(0.12),
+                    color: themeColor.withValues(alpha: isDark ? 0.2 : 0.12),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(phaseIcon, color: themeColor, size: 22),
@@ -507,7 +536,9 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
                           vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: themeColor.withOpacity(0.12),
+                          color: themeColor.withValues(
+                            alpha: isDark ? 0.2 : 0.12,
+                          ),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -522,10 +553,10 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: cs.onSurface,
                         ),
                       ),
                     ],
@@ -538,7 +569,7 @@ class WorkOrderPhaseActionCard extends StatelessWidget {
               description,
               style: TextStyle(
                 fontSize: 12.5,
-                color: Colors.grey.shade700,
+                color: isDark ? cs.onSurfaceVariant : Colors.grey.shade700,
                 height: 1.35,
               ),
             ),

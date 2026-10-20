@@ -37,6 +37,7 @@ class _StepClientSelectionState extends State<StepClientSelection> {
   Future<void> _handleSearch() async {
     final query = _searchCtrl.text.trim();
     if (query.isEmpty) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -47,6 +48,9 @@ class _StepClientSelectionState extends State<StepClientSelection> {
       );
       return;
     }
+
+    // Ocultar teclado para evitar conflictos de viewInsets
+    FocusScope.of(context).unfocus();
 
     setState(() {
       _isSearching = true;
@@ -68,18 +72,20 @@ class _StepClientSelectionState extends State<StepClientSelection> {
       });
 
       if (results.isNotEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Se encontraron ${results.length} acometida(s).'),
-            backgroundColor: Colors.green.shade700,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-
-        // Si solo hay 1 resultado, seleccionarla automáticamente
         if (results.length == 1) {
+          // Si solo hay 1 resultado, seleccionarla automáticamente
+          // _selectConnection se encarga de actualizar y mostrar la confirmación
           _selectConnection(results.first);
+        } else {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Se encontraron ${results.length} acometidas. Seleccione una.'),
+              backgroundColor: Colors.green.shade700,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+            ),
+          );
         }
       }
     } catch (e) {
@@ -171,6 +177,7 @@ class _StepClientSelectionState extends State<StepClientSelection> {
       ),
     );
 
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Acometida ${conn.connectionCadastralKey} seleccionada.'),
@@ -203,11 +210,13 @@ class _StepClientSelectionState extends State<StepClientSelection> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final hasClient = widget.form.clientName.trim().isNotEmpty;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -215,10 +224,10 @@ class _StepClientSelectionState extends State<StepClientSelection> {
           Card(
             elevation: 1,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -239,7 +248,7 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
                       Expanded(
@@ -319,19 +328,25 @@ class _StepClientSelectionState extends State<StepClientSelection> {
           if (widget.errors?['clientId'] != null ||
               widget.errors?['clientName'] != null ||
               widget.errors?['cadastralKey'] != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.red.shade50,
+                color: isDark
+                    ? cs.errorContainer.withValues(alpha: 0.3)
+                    : Colors.red.shade50,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.red.shade200),
+                border: Border.all(
+                  color: isDark
+                      ? cs.error.withValues(alpha: 0.5)
+                      : Colors.red.shade200,
+                ),
               ),
               child: Row(
                 children: [
                   Icon(
                     Icons.error_outline_rounded,
-                    color: Colors.red.shade700,
+                    color: isDark ? cs.error : Colors.red.shade700,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -343,7 +358,7 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                           '',
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors.red.shade800,
+                        color: isDark ? cs.error : Colors.red.shade800,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -355,7 +370,7 @@ class _StepClientSelectionState extends State<StepClientSelection> {
 
           // ── Connections List Table (si hay resultados) ──
           if (_connections.isNotEmpty) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Icon(Icons.location_on_rounded, size: 18, color: cs.primary),
@@ -430,13 +445,21 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                                       ),
                                       decoration: BoxDecoration(
                                         color: conn.connectionStatus == true
-                                            ? Colors.green.shade50
-                                            : Colors.red.shade50,
+                                            ? (isDark
+                                                ? Colors.green.withValues(alpha: 0.15)
+                                                : Colors.green.shade50)
+                                            : (isDark
+                                                ? Colors.red.withValues(alpha: 0.15)
+                                                : Colors.red.shade50),
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
                                           color: conn.connectionStatus == true
-                                              ? Colors.green.shade300
-                                              : Colors.red.shade300,
+                                              ? (isDark
+                                                  ? Colors.green.withValues(alpha: 0.4)
+                                                  : Colors.green.shade300)
+                                              : (isDark
+                                                  ? Colors.red.withValues(alpha: 0.4)
+                                                  : Colors.red.shade300),
                                         ),
                                       ),
                                       child: Text(
@@ -447,8 +470,12 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                                           fontSize: 11,
                                           fontWeight: FontWeight.bold,
                                           color: conn.connectionStatus == true
-                                              ? Colors.green.shade800
-                                              : Colors.red.shade800,
+                                              ? (isDark
+                                                  ? Colors.green.shade300
+                                                  : Colors.green.shade800)
+                                              : (isDark
+                                                  ? Colors.red.shade300
+                                                  : Colors.red.shade800),
                                         ),
                                       ),
                                     ),
@@ -500,10 +527,10 @@ class _StepClientSelectionState extends State<StepClientSelection> {
           Card(
             elevation: 2,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -517,7 +544,9 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                         ),
                         decoration: BoxDecoration(
                           color: hasClient
-                              ? Colors.blue.shade50
+                              ? (isDark
+                                  ? cs.primaryContainer.withValues(alpha: 0.35)
+                                  : Colors.blue.shade50)
                               : cs.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -529,8 +558,10 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                               height: 8,
                               decoration: BoxDecoration(
                                 color: hasClient
-                                    ? Colors.blue.shade600
-                                    : Colors.grey,
+                                    ? (isDark
+                                        ? cs.primary
+                                        : Colors.blue.shade600)
+                                    : (isDark ? cs.outline : Colors.grey),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -541,7 +572,9 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: hasClient
-                                    ? Colors.blue.shade800
+                                    ? (isDark
+                                        ? cs.onPrimaryContainer
+                                        : Colors.blue.shade800)
                                     : cs.onSurfaceVariant,
                               ),
                             ),
@@ -671,14 +704,18 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
+                      color: isDark
+                          ? cs.primaryContainer.withValues(alpha: 0.25)
+                          : Colors.blue.shade50,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(
                       children: [
                         Icon(
                           Icons.info_outline,
-                          color: Colors.blue.shade800,
+                          color: isDark
+                              ? cs.primary
+                              : Colors.blue.shade800,
                           size: 18,
                         ),
                         const SizedBox(width: 8),
@@ -687,7 +724,9 @@ class _StepClientSelectionState extends State<StepClientSelection> {
                             'Busque por Cédula, RUC o Clave Catastral para vincular la acometida y titular automáticamente.',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.blue.shade900,
+                              color: isDark
+                                  ? cs.onPrimaryContainer
+                                  : Colors.blue.shade900,
                             ),
                           ),
                         ),

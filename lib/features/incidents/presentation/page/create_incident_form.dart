@@ -696,10 +696,12 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
       appBar: AppBar(
         title: const Text(
           'Reportar Incidencia',
-          style: TextStyle(fontWeight: FontWeight.w700),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: false,
         elevation: 0,
+        backgroundColor: Theme.of(context).colorScheme.onPrimaryFixedVariant,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
       ),
       body: BlocConsumer<IncidentCubit, IncidentState>(
         listener: (context, state) {
@@ -740,37 +742,37 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
           return Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(10),
               children: [
                 // 1. Código de Conexión
                 _buildConnectionIdField(context, colors),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
 
                 // 1.5. Datos del Usuario (Solo si es Invitado)
                 if (_isGuest) ...[
                   _buildGuestSection(context, colors),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 10),
                 ],
 
                 // 2. Foto de Evidencia (Obligatorio)
                 _buildPhotoSection(context),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
 
                 // 3. Tipo de Incidencia (Dropdown)
                 _buildCategoryDropdown(context, colors),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
 
                 // 4. Descripción (Obligatorio)
                 _buildDescriptionField(context, colors),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
 
                 // 4.5. Dirección de Referencia (Obligatorio)
                 _buildReferenceAddressField(context, colors),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
 
                 // 4.75. Geolocalización (GPS)
                 _buildGpsSection(context, colors),
-                const SizedBox(height: 32),
+                const SizedBox(height: 10),
 
                 // 5. Botones de Acción (Cancelar y Enviar)
                 _buildActionButtons(context, colors),
@@ -1492,72 +1494,83 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
   }
 
   Widget _buildActionButtons(BuildContext context, ColorScheme colors) {
-    return Row(
-      children: [
-        Expanded(
-          child: SizedBox(
-            height: 52,
-            child: OutlinedButton.icon(
-              onPressed: _isSubmitting
-                  ? null
-                  : () {
-                      if (context.router.canPop()) {
-                        context.router.maybePop();
-                      } else {
-                        context.router.replaceNamed('/dashboard');
-                      }
-                    },
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: Colors.red),
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+    return Container(
+      // Margin exterior: separa arriba y añade espacio abajo considerando la barra de navegación del dispositivo
+      margin: EdgeInsets.only(
+        top: 16,
+        bottom: 32 + MediaQuery.paddingOf(context).bottom,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: SizedBox(
+              height: 48,
+              child: OutlinedButton.icon(
+                onPressed: _isSubmitting
+                    ? null
+                    : () {
+                        if (context.router.canPop()) {
+                          context.router.maybePop();
+                        } else {
+                          context.router.replaceNamed('/dashboard');
+                        }
+                      },
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  side: const BorderSide(color: Colors.red),
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-              ),
-              icon: const Icon(Icons.cancel_rounded, size: 18),
-              label: const Text(
-                'Cancelar',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                icon: const Icon(Icons.cancel_rounded, size: 18),
+                label: const Text(
+                  'Cancelar',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: SizedBox(
-            height: 52,
-            child: ElevatedButton.icon(
-              onPressed: _isSubmitting ? null : _submit,
-              icon: _isSubmitting
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : const Icon(Icons.send_rounded, size: 18),
-              label: Text(
-                _isSubmitting ? 'Registrando...' : 'Registrar',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+          const SizedBox(width: 16),
+          Expanded(
+            child: SizedBox(
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: _isSubmitting ? null : _submit,
+                icon: _isSubmitting
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Icon(Icons.send_rounded, size: 18),
+                label: Text(
+                  _isSubmitting ? 'Registrando...' : 'Registrar',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.primary,
-                foregroundColor: colors.onPrimary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onPrimary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
                 ),
-                elevation: 0,
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

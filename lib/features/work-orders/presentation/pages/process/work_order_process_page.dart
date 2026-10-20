@@ -96,9 +96,13 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
         },
         builder: (context, state) {
           final order = state.order;
+          final theme = Theme.of(context);
+          final isDark = theme.brightness == Brightness.dark;
 
           return Scaffold(
-            backgroundColor: const Color(0xFFF8FAFC),
+            backgroundColor: isDark
+                ? theme.scaffoldBackgroundColor
+                : const Color(0xFFF8FAFC),
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               foregroundColor: Colors.white,
@@ -108,7 +112,7 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                 padding: const EdgeInsets.only(left: 12.0),
                 child: Center(
                   child: Material(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     shape: const CircleBorder(),
                     clipBehavior: Clip.antiAlias,
                     child: IconButton(
@@ -138,14 +142,12 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
               // Fondo con degradado moderno
               flexibleSpace: Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
                       AppColors.primary,
-                      AppColors.primary.withBlue(
-                        (AppColors.primary.blue + 35).clamp(0, 255),
-                      ), // Un tono ligeramente más vibrante
+                      Color(0xFF0033BC), // Un tono ligeramente más vibrante
                     ],
                   ),
                   borderRadius: const BorderRadius.vertical(
@@ -153,7 +155,7 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.25),
+                      color: AppColors.primary.withValues(alpha: 0.25),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -169,7 +171,7 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                       fontSize: 11,
                       letterSpacing: 1.2,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white.withOpacity(0.85),
+                      color: Colors.white.withValues(alpha: 0.85),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -190,7 +192,7 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                     padding: const EdgeInsets.only(right: 12.0),
                     child: Center(
                       child: Material(
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white.withValues(alpha: 0.15),
                         shape: const CircleBorder(),
                         clipBehavior: Clip.antiAlias,
                         child: IconButton(
@@ -317,7 +319,7 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
                     else if (state.isAutoProcessing)
                       const _AutoProcessingView()
                     else if (order == null)
-                      _buildEmptyState()
+                      _buildEmptyState(theme, isDark)
                     else ...[
                       // 1. Stepper visual
                       WorkOrderProcessStepper(
@@ -516,7 +518,7 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(ThemeData theme, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
       alignment: Alignment.center,
@@ -525,7 +527,9 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
+              color: isDark
+                  ? theme.colorScheme.primary.withValues(alpha: 0.15)
+                  : Colors.blue.shade50,
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -535,9 +539,11 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Busque una Orden de Trabajo',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -545,7 +551,9 @@ class _WorkOrderProcessPageState extends State<WorkOrderProcessPage> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey.shade600,
+              color: isDark
+                  ? theme.colorScheme.onSurfaceVariant
+                  : Colors.grey.shade600,
               height: 1.4,
             ),
           ),
@@ -561,6 +569,9 @@ class _AutoProcessingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
@@ -578,7 +589,10 @@ class _AutoProcessingView extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             'Esto tomará solo unos segundos',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            style: TextStyle(
+              fontSize: 12,
+              color: cs.onSurfaceVariant,
+            ),
           ),
         ],
       ),

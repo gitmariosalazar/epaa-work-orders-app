@@ -35,7 +35,7 @@ class DashboardPage extends StatelessWidget {
               if (isDesktopLargeScreen) DashboardDrawer(),
               Flexible(
                 child: Container(
-                  color: AppColors.surface,
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   child: Stack(
                     children: [
                       Padding(

@@ -48,6 +48,9 @@ class WorkOrderWorkersCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final workers = order.trabajadoresAsignados;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Card(
       elevation: 2,
@@ -114,7 +117,7 @@ class WorkOrderWorkersCard extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.person_off_outlined,
-                      color: Colors.grey.shade400,
+                      color: isDark ? cs.outlineVariant : Colors.grey.shade400,
                       size: 36,
                     ),
                     const SizedBox(height: 6),
@@ -122,7 +125,7 @@ class WorkOrderWorkersCard extends StatelessWidget {
                       'No hay personal asignado a esta orden.',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade600,
+                        color: isDark ? cs.onSurfaceVariant : Colors.grey.shade600,
                       ),
                     ),
                   ],
@@ -144,8 +147,12 @@ class WorkOrderWorkersCard extends StatelessWidget {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: isLead
-                              ? Colors.amber.shade50
-                              : Colors.blue.shade50,
+                              ? (isDark
+                                  ? Colors.amber.withValues(alpha: 0.18)
+                                  : Colors.amber.shade50)
+                              : (isDark
+                                  ? cs.primary.withValues(alpha: 0.18)
+                                  : Colors.blue.shade50),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -153,8 +160,12 @@ class WorkOrderWorkersCard extends StatelessWidget {
                               ? Icons.star_rounded
                               : Icons.engineering_outlined,
                           color: isLead
-                              ? Colors.amber.shade800
-                              : Colors.blue.shade700,
+                              ? (isDark
+                                  ? Colors.amber.shade400
+                                  : Colors.amber.shade800)
+                              : (isDark
+                                  ? cs.primary
+                                  : Colors.blue.shade700),
                           size: 18,
                         ),
                       ),
@@ -182,8 +193,12 @@ class WorkOrderWorkersCard extends StatelessWidget {
                                   ),
                                   decoration: BoxDecoration(
                                     color: isLead
-                                        ? Colors.amber.shade100
-                                        : Colors.grey.shade200,
+                                        ? (isDark
+                                            ? Colors.amber.withValues(alpha: 0.25)
+                                            : Colors.amber.shade100)
+                                        : (isDark
+                                            ? cs.surfaceContainerHighest
+                                            : Colors.grey.shade200),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
@@ -194,8 +209,12 @@ class WorkOrderWorkersCard extends StatelessWidget {
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,
                                       color: isLead
-                                          ? Colors.amber.shade900
-                                          : Colors.grey.shade700,
+                                          ? (isDark
+                                              ? Colors.amber.shade300
+                                              : Colors.amber.shade900)
+                                          : (isDark
+                                              ? cs.onSurfaceVariant
+                                              : Colors.grey.shade700),
                                     ),
                                   ),
                                 ),

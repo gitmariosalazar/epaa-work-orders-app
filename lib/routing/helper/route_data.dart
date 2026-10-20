@@ -11,6 +11,9 @@ const String CHANGE_PASSWORD_PATH = "ChangePassword";
 const String DASHBOARD_ROUTE = "DashboardRoute";
 const String DASHBOARD_PATH = "/dashboard/home";
 
+const String TECHNICIAN_INITIAL_ROUTE = "TechnicianInitialRoute";
+const String TECHNICIAN_INITIAL_PATH = "inicio";
+
 const String HOME_ROUTE = "HomeRoute";
 const String HOME_PATH = "home";
 

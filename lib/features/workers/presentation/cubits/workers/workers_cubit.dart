@@ -15,8 +15,11 @@ class WorkersCubit extends Cubit<WorkersState> {
     try {
       final result = await getAllWorkersUseCase();
 
+      if (isClosed) return;
+
       result.when(
         success: (entities) {
+          if (isClosed) return;
           if (entities.isEmpty) {
             emit(WorkersEmpty());
           } else {
@@ -24,19 +27,23 @@ class WorkersCubit extends Cubit<WorkersState> {
           }
         },
         failure: (message, errorType) {
+          if (isClosed) return;
           emit(WorkersError(message ?? 'Error del servidor'));
         },
         loading: () {
           // No debería llegar aquí, pero por seguridad
-          if (state is! WorkersLoading) if (isClosed) return;
-          emit(WorkersLoading());
+          if (state is! WorkersLoading && !isClosed) {
+            emit(WorkersLoading());
+          }
         },
       );
     } catch (e, stackTrace) {
       // Captura cualquier error inesperado (red, parsing, timeout, etc.)
       print('WorkersCubit ERROR: $e');
       print(stackTrace);
-      emit(WorkersError('Error de conexión o inesperado. Intenta de nuevo.'));
+      if (!isClosed) {
+        emit(WorkersError('Error de conexión o inesperado. Intenta de nuevo.'));
+      }
     }
   }
 }

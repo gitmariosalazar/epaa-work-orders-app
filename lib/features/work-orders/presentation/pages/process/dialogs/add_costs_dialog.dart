@@ -43,8 +43,12 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Dialog(
-      backgroundColor: Colors.white,
+      backgroundColor: cs.surface,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       elevation: 10,
@@ -58,9 +62,16 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
             Container(
               padding: const EdgeInsets.fromLTRB(20, 18, 16, 16),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: isDark
+                    ? cs.surfaceContainerHighest.withValues(alpha: 0.3)
+                    : Colors.grey.shade50,
                 border: Border(
-                  bottom: BorderSide(color: Colors.grey.shade200, width: 1),
+                  bottom: BorderSide(
+                    color: isDark
+                        ? theme.dividerColor.withValues(alpha: 0.2)
+                        : Colors.grey.shade200,
+                    width: 1,
+                  ),
                 ),
               ),
               child: Row(
@@ -82,13 +93,13 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Agregar Costo Adicional',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             letterSpacing: -0.3,
-                            color: Color(0xFF1E293B),
+                            color: cs.onSurface,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -98,7 +109,7 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                               'Orden: ',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey.shade500,
+                                color: cs.onSurfaceVariant,
                               ),
                             ),
                             Container(
@@ -107,15 +118,17 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                                 vertical: 1.5,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
+                                color: isDark
+                                    ? cs.surfaceContainerHighest
+                                    : Colors.grey.shade200,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
                                 widget.orderCode,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF334155),
+                                  color: cs.onSurface,
                                 ),
                               ),
                             ),
@@ -127,7 +140,7 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                   IconButton(
                     icon: Icon(
                       Icons.close_rounded,
-                      color: Colors.grey.shade600,
+                      color: cs.onSurfaceVariant,
                     ),
                     splashRadius: 20,
                     onPressed: () => Navigator.pop(context),
@@ -151,20 +164,20 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Concepto / Descripción
-                      const Text(
+                      Text(
                         'Concepto / Descripción',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 12.5,
-                          color: Color(0xFF334155),
+                          color: cs.onSurface,
                         ),
                       ),
                       const SizedBox(height: 6),
                       TextFormField(
                         controller: _conceptController,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13.5,
-                          color: Color(0xFF0F172A),
+                          color: cs.onSurface,
                         ),
                         validator: (val) {
                           if (val == null || val.trim().isEmpty) {
@@ -176,26 +189,40 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                           hintText: 'Ej. Transporte, Alquiler de Bomba...',
                           hintStyle: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey.shade400,
+                            color: isDark
+                                ? cs.onSurfaceVariant.withValues(alpha: 0.6)
+                                : Colors.grey.shade400,
                           ),
                           prefixIcon: Icon(
                             Icons.edit_note_rounded,
                             size: 22,
-                            color: Colors.grey.shade600,
+                            color: cs.onSurfaceVariant,
                           ),
                           filled: true,
-                          fillColor: const Color(0xFFF8FAFC),
+                          fillColor: isDark
+                              ? cs.surfaceContainerHighest.withValues(
+                                  alpha: 0.2,
+                                )
+                              : const Color(0xFFF8FAFC),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 14,
                             vertical: 12,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade300),
+                            borderSide: BorderSide(
+                              color: isDark
+                                  ? theme.dividerColor.withValues(alpha: 0.2)
+                                  : Colors.grey.shade300,
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade300),
+                            borderSide: BorderSide(
+                              color: isDark
+                                  ? theme.dividerColor.withValues(alpha: 0.2)
+                                  : Colors.grey.shade300,
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -218,12 +245,12 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Cantidad',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 12.5,
-                                    color: Color(0xFF334155),
+                                    color: cs.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: 6),
@@ -238,10 +265,10 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                                       RegExp(r'^\d*\.?\d*'),
                                     ),
                                   ],
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13.5,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF0F172A),
+                                    color: cs.onSurface,
                                   ),
                                   onChanged: (_) => setState(() {}),
                                   validator: (val) {
@@ -255,10 +282,14 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                                     prefixIcon: Icon(
                                       Icons.format_list_numbered_rounded,
                                       size: 18,
-                                      color: Colors.grey.shade600,
+                                      color: cs.onSurfaceVariant,
                                     ),
                                     filled: true,
-                                    fillColor: const Color(0xFFF8FAFC),
+                                    fillColor: isDark
+                                        ? cs.surfaceContainerHighest.withValues(
+                                            alpha: 0.2,
+                                          )
+                                        : const Color(0xFFF8FAFC),
                                     contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 12,
                                       vertical: 12,
@@ -266,13 +297,21 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                       borderSide: BorderSide(
-                                        color: Colors.grey.shade300,
+                                        color: isDark
+                                            ? theme.dividerColor.withValues(
+                                                alpha: 0.2,
+                                              )
+                                            : Colors.grey.shade300,
                                       ),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                       borderSide: BorderSide(
-                                        color: Colors.grey.shade300,
+                                        color: isDark
+                                            ? theme.dividerColor.withValues(
+                                                alpha: 0.2,
+                                              )
+                                            : Colors.grey.shade300,
                                       ),
                                     ),
                                     focusedBorder: OutlineInputBorder(
@@ -295,12 +334,12 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Costo Unitario',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 12.5,
-                                    color: Color(0xFF334155),
+                                    color: cs.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: 6),
@@ -315,10 +354,10 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                                       RegExp(r'^\d*\.?\d*'),
                                     ),
                                   ],
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13.5,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF0F172A),
+                                    color: cs.onSurface,
                                   ),
                                   onChanged: (_) => setState(() {}),
                                   validator: (val) {
@@ -337,12 +376,16 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                                         style: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.grey.shade700,
+                                          color: cs.onSurfaceVariant,
                                         ),
                                       ),
                                     ),
                                     filled: true,
-                                    fillColor: const Color(0xFFF8FAFC),
+                                    fillColor: isDark
+                                        ? cs.surfaceContainerHighest.withValues(
+                                            alpha: 0.2,
+                                          )
+                                        : const Color(0xFFF8FAFC),
                                     contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 12,
                                       vertical: 12,
@@ -350,13 +393,21 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                       borderSide: BorderSide(
-                                        color: Colors.grey.shade300,
+                                        color: isDark
+                                            ? theme.dividerColor.withValues(
+                                                alpha: 0.2,
+                                              )
+                                            : Colors.grey.shade300,
                                       ),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                       borderSide: BorderSide(
-                                        color: Colors.grey.shade300,
+                                        color: isDark
+                                            ? theme.dividerColor.withValues(
+                                                alpha: 0.2,
+                                              )
+                                            : Colors.grey.shade300,
                                       ),
                                     ),
                                     focusedBorder: OutlineInputBorder(
@@ -384,17 +435,20 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                           vertical: 14,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFEFF6FF),
+                          color: isDark
+                              ? cs.primaryContainer.withValues(alpha: 0.3)
+                              : const Color(0xFFEFF6FF),
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: Colors.blue.shade200,
+                            color: isDark
+                                ? cs.primary.withValues(alpha: 0.4)
+                                : Colors.blue.shade200,
                             width: 1.2,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.blue.shade100.withValues(
-                                alpha: 0.35,
-                              ),
+                              color: (isDark ? Colors.black : Colors.blue.shade100)
+                                  .withValues(alpha: isDark ? 0.2 : 0.35),
                               blurRadius: 6,
                               offset: const Offset(0, 2),
                             ),
@@ -408,22 +462,26 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                                 Container(
                                   padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                    color: Colors.blue.shade100,
+                                    color: isDark
+                                        ? cs.primary.withValues(alpha: 0.2)
+                                        : Colors.blue.shade100,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Icon(
                                     Icons.calculate_outlined,
                                     size: 18,
-                                    color: Colors.blue.shade900,
+                                    color: isDark
+                                        ? cs.primary
+                                        : Colors.blue.shade900,
                                   ),
                                 ),
                                 const SizedBox(width: 10),
-                                const Text(
+                                Text(
                                   'Subtotal Estimado',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 13,
-                                    color: Color(0xFF1E293B),
+                                    color: cs.onSurface,
                                   ),
                                 ),
                               ],
@@ -450,9 +508,16 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: isDark
+                    ? cs.surfaceContainerHighest.withValues(alpha: 0.3)
+                    : Colors.grey.shade50,
                 border: Border(
-                  top: BorderSide(color: Colors.grey.shade200, width: 1),
+                  top: BorderSide(
+                    color: isDark
+                        ? theme.dividerColor.withValues(alpha: 0.2)
+                        : Colors.grey.shade200,
+                    width: 1,
+                  ),
                 ),
               ),
               child: Row(
@@ -474,7 +539,9 @@ class _AddCostsDialogState extends State<AddCostsDialog> {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade700,
+                        color: isDark
+                            ? cs.onSurfaceVariant
+                            : Colors.grey.shade700,
                       ),
                     ),
                   ),

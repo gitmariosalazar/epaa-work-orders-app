@@ -2,13 +2,17 @@
 //
 //  - Presentación pura: lee la sesión vía [SessionService] (DIP, inyectado
 //    con GetIt) y delega el cierre de sesión al servicio.
+//  - Control de tema reactivo vía [ThemeCubit] (Clean Architecture + SOLID).
 //  - Cada widget privado/compartido tiene una sola responsabilidad (SRP).
 import 'package:auto_route/auto_route.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
 import 'package:clean_architecture/core/services/session/session_service.dart';
 import 'package:clean_architecture/features/settings/presentation/widgets/settings_widgets.dart';
+import 'package:clean_architecture/features/theme/presentation/cubits/theme_cubit.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
+import 'package:clean_architecture/shared_ui/ui/base/app_bar/base_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -30,18 +34,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final user = _session.isLoggedIn ? _session.userData.user : null;
+    final isDark = context.watch<ThemeCubit>().isDark;
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
       backgroundColor: cs.surface,
-      appBar: AppBar(
-        title: const Text('Configuración'),
-        elevation: 0,
-        centerTitle: false,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(color: cs.outlineVariant, height: 1),
-        ),
+      appBar: const BaseAppBar(
+        title: 'Configuración',
+        showBottomBorder: true,
       ),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 40),
@@ -55,8 +55,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
               SwitchListTile(
                 secondary: Container(
                   padding: const EdgeInsets.all(8),
+                  margin: const EdgeInsets.only(right: 10, left: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1565C0).withValues(alpha: 0.10),
+                    color: isDark
+                        ? const Color(0xFFF59E0B).withValues(alpha: 0.15)
+                        : const Color(0xFF1A2035).withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                    size: 20,
+                    color: isDark
+                        ? const Color(0xFFF59E0B)
+                        : const Color(0xFF1A2035),
+                  ),
+                ),
+                title: Text(
+                  isDark ? 'Modo oscuro' : 'Modo claro',
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                subtitle: Text(
+                  isDark ? 'Interfaz en tono oscuro' : 'Interfaz en tono claro',
+                  style: const TextStyle(fontSize: 12),
+                ),
+                value: isDark,
+                onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
+                // Track activo: ámbar en dark, azul marino en light
+                activeTrackColor: isDark
+                    ? const Color(0xFFF59E0B)
+                    : const Color(0xFF1A2035),
+                // Thumb SIEMPRE blanco — máximo contraste sobre cualquier track
+                activeThumbColor: Colors.white,
+                // Track inactivo: neutro sutil
+                inactiveTrackColor: isDark
+                    ? Colors.white.withValues(alpha: 0.15)
+                    : Colors.black.withValues(alpha: 0.15),
+                inactiveThumbColor: Colors.white,
+              ),
+              const Divider(height: 1, indent: 56),
+              SwitchListTile(
+                secondary: Container(
+                  padding: const EdgeInsets.all(8),
+                  margin: const EdgeInsets.only(right: 10, left: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(
+                      0xFF1565C0,
+                    ).withValues(alpha: isDark ? 0.20 : 0.10),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
@@ -77,12 +121,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onChanged: (v) => setState(() => _notifications = v),
                 activeTrackColor: const Color(0xFF1565C0),
                 activeThumbColor: Colors.white,
-                inactiveTrackColor: Colors.black.withValues(alpha: 0.15),
+                inactiveTrackColor: isDark
+                    ? Colors.white.withValues(alpha: 0.15)
+                    : Colors.black.withValues(alpha: 0.15),
                 inactiveThumbColor: Colors.white,
               ),
               const Divider(height: 1, indent: 56),
               SettingsTile(
                 icon: Icons.security_rounded,
+
                 iconColor: const Color(0xFF2E7D32),
                 iconBg: const Color(0xFFE8F5E9),
                 title: 'Estado de seguridad',
@@ -291,8 +338,9 @@ class _ProfileBanner extends StatelessWidget {
     final isSuperAdmin = user.roles.any(
       (r) => r.toUpperCase() == 'SUPER ADMINISTRADOR',
     );
-    final dotColor =
-        isSuperAdmin ? const Color(0xFFFFC107) : const Color(0xFF1EB980);
+    final dotColor = isSuperAdmin
+        ? const Color(0xFFFFC107)
+        : const Color(0xFF1EB980);
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 20, 16, 4),

@@ -1,4 +1,3 @@
-import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class SatisfactionSurveyDialog extends StatefulWidget {
@@ -28,6 +27,10 @@ class _SatisfactionSurveyDialogState extends State<SatisfactionSurveyDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Row(
@@ -35,10 +38,16 @@ class _SatisfactionSurveyDialogState extends State<SatisfactionSurveyDialog> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.amber.shade100,
+              color: isDark
+                  ? Colors.amber.withValues(alpha: 0.15)
+                  : Colors.amber.shade100,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.star, color: Colors.amber.shade800, size: 22),
+            child: Icon(
+              Icons.star,
+              color: isDark ? Colors.amber.shade400 : Colors.amber.shade800,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -52,7 +61,10 @@ class _SatisfactionSurveyDialogState extends State<SatisfactionSurveyDialog> {
                 ),
                 Text(
                   widget.orderCode,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? cs.onSurfaceVariant : Colors.grey.shade600,
+                  ),
                 ),
               ],
             ),
@@ -80,7 +92,11 @@ class _SatisfactionSurveyDialogState extends State<SatisfactionSurveyDialog> {
                     isSelected
                         ? Icons.star_rounded
                         : Icons.star_outline_rounded,
-                    color: isSelected ? Colors.amber : Colors.grey.shade400,
+                    color: isSelected
+                        ? Colors.amber
+                        : (isDark
+                            ? cs.outlineVariant
+                            : Colors.grey.shade400),
                   ),
                   onPressed: () {
                     setState(() {
@@ -95,7 +111,7 @@ class _SatisfactionSurveyDialogState extends State<SatisfactionSurveyDialog> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
-                color: Colors.amber.shade900,
+                color: isDark ? Colors.amber.shade300 : Colors.amber.shade900,
               ),
             ),
             const SizedBox(height: 16),
@@ -112,7 +128,12 @@ class _SatisfactionSurveyDialogState extends State<SatisfactionSurveyDialog> {
               maxLines: 3,
               decoration: InputDecoration(
                 hintText: 'Opinión del usuario sobre el trabajo realizado...',
-                hintStyle: const TextStyle(fontSize: 13),
+                hintStyle: TextStyle(
+                  fontSize: 13,
+                  color: isDark
+                      ? cs.onSurfaceVariant.withValues(alpha: 0.6)
+                      : Colors.grey.shade500,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),

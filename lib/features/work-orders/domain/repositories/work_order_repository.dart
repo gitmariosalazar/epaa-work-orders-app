@@ -43,7 +43,7 @@ abstract interface class WorkOrderRepository {
   FutureData<void> registerSatisfactionSurvey(dynamic request);
   FutureData<WorkOrderDetailEntity> getDetalleByNumeroOrden(String numeroOrden);
   FutureData<WorkOrderTrackingEntity> getTrackingByNumeroOrden(
-    String numeroOrden,
+    String searchValue,
   );
   FutureData<List<WorkOrderEntity>> getOrdenesBySolicitudId(String solicitudId);
   FutureData<void> addWorkerToWorkOrder(dynamic request);

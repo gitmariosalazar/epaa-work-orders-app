@@ -32,8 +32,9 @@ class WorkOrderProcessStepper extends StatelessWidget {
     final upper = status.trim().toUpperCase();
     if (upper == 'NOTIFICADA') return 0;
     if (upper == 'PENDIENTE') return 1;
-    if (['ASIGNADA', 'PREPARACION', 'REVISION_RECHAZADA'].contains(upper))
+    if (['ASIGNADA', 'PREPARACION', 'REVISION_RECHAZADA'].contains(upper)) {
       return 2;
+    }
     if ([
       'EN_PROCESO',
       'EN_PROCESO_INSPECCION',
@@ -45,29 +46,37 @@ class WorkOrderProcessStepper extends StatelessWidget {
       'EJECUTADA',
       'INSPECCION_EJECUTADA',
       'INSTALACION_EJECUTADA',
-    ].contains(upper))
+    ].contains(upper)) {
       return 5;
+    }
     if ([
       'COMPLETADA',
       'INSPECCION_COMPLETADA',
       'INSTALACION_COMPLETADA',
-    ].contains(upper))
+    ].contains(upper)) {
       return 6;
+    }
     return 0;
   }
 
   @override
   Widget build(BuildContext context) {
     final activeIndex = currentStepIndex;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? cs.surface : Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: isDark
+            ? Border.all(color: theme.dividerColor.withValues(alpha: 0.2))
+            : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -87,17 +96,25 @@ class WorkOrderProcessStepper extends StatelessWidget {
             Color textColor;
 
             if (isCompleted) {
-              iconBgColor = Colors.green.shade500;
+              iconBgColor = Colors.green.shade600;
               iconColor = Colors.white;
-              textColor = Colors.green.shade800;
+              textColor = isDark
+                  ? Colors.green.shade300
+                  : Colors.green.shade800;
             } else if (isCurrent) {
               iconBgColor = AppColors.primary;
               iconColor = Colors.white;
               textColor = AppColors.primary;
             } else {
-              iconBgColor = Colors.grey.shade100;
-              iconColor = Colors.grey.shade500;
-              textColor = Colors.grey.shade600;
+              iconBgColor = isDark
+                  ? cs.surfaceContainerHighest
+                  : Colors.grey.shade100;
+              iconColor = isDark
+                  ? cs.onSurfaceVariant.withValues(alpha: 0.6)
+                  : Colors.grey.shade500;
+              textColor = isDark
+                  ? cs.onSurfaceVariant
+                  : Colors.grey.shade600;
             }
 
             return Row(
@@ -115,7 +132,9 @@ class WorkOrderProcessStepper extends StatelessWidget {
                         boxShadow: isCurrent
                             ? [
                                 BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.35),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.35,
+                                  ),
                                   blurRadius: 8,
                                   offset: const Offset(0, 3),
                                 ),
@@ -153,8 +172,10 @@ class WorkOrderProcessStepper extends StatelessWidget {
                     height: 2,
                     margin: const EdgeInsets.only(bottom: 20),
                     color: index < activeIndex
-                        ? Colors.green.shade400
-                        : Colors.grey.shade300,
+                        ? Colors.green.shade500
+                        : (isDark
+                            ? theme.dividerColor.withValues(alpha: 0.3)
+                            : Colors.grey.shade300),
                   ),
               ],
             );

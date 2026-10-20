@@ -6,6 +6,7 @@ import 'package:clean_architecture/features/workers/domain/usecases/get_all_work
 import 'package:clean_architecture/features/workers/presentation/cubits/workers/workers_cubit.dart';
 import 'package:clean_architecture/features/workers/presentation/cubits/workers/workers_state.dart';
 import 'package:clean_architecture/features/workers/presentation/widgets/workers_list.dart';
+import 'package:clean_architecture/shared_ui/ui/base/app_bar/base_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -114,16 +115,18 @@ class _WorkersHomeViewState extends State<_WorkersHomeView> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Trabajadores'),
+      appBar: BaseAppBar(
+        title: 'Trabajadores',
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: _showFilterDialog,
+            tooltip: 'Filtros',
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => context.read<WorkersCubit>().loadWorkers(),
+            tooltip: 'Recargar',
           ),
         ],
       ),

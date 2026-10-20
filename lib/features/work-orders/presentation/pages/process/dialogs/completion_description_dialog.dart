@@ -71,7 +71,7 @@ class _CompletionDescriptionDialogState
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.12),
+                color: Colors.black.withValues(alpha: 0.12),
                 blurRadius: 24,
                 offset: const Offset(0, 12),
               ),
@@ -87,8 +87,8 @@ class _CompletionDescriptionDialogState
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      primary.withOpacity(0.12),
-                      primary.withOpacity(0.04),
+                      primary.withValues(alpha: 0.12),
+                      primary.withValues(alpha: 0.04),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -102,7 +102,7 @@ class _CompletionDescriptionDialogState
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: primary.withOpacity(0.15),
+                        color: primary.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Icon(
@@ -130,7 +130,7 @@ class _CompletionDescriptionDialogState
                             'Describe lo realizado y adjunta evidencias',
                             style: TextStyle(
                               fontSize: 13,
-                              color: onSurface.withOpacity(0.65),
+                              color: onSurface.withValues(alpha: 0.65),
                             ),
                           ),
                         ],
@@ -140,7 +140,7 @@ class _CompletionDescriptionDialogState
                       onPressed: () => Navigator.of(context).pop(),
                       icon: Icon(
                         Icons.close_rounded,
-                        color: onSurface.withOpacity(0.5),
+                        color: onSurface.withValues(alpha: 0.5),
                       ),
                       tooltip: 'Cerrar',
                     ),
@@ -170,7 +170,7 @@ class _CompletionDescriptionDialogState
                               style: TextStyle(
                                 fontSize: 13.5,
                                 fontWeight: FontWeight.w600,
-                                color: onSurface.withOpacity(0.85),
+                                color: onSurface.withValues(alpha: 0.85),
                               ),
                             ),
                           ],
@@ -186,12 +186,12 @@ class _CompletionDescriptionDialogState
                             hintText:
                                 'Describe las tareas realizadas, materiales usados y el resultado final...',
                             hintStyle: TextStyle(
-                              color: onSurface.withOpacity(0.4),
+                              color: onSurface.withValues(alpha: 0.4),
                               fontSize: 14,
                             ),
                             filled: true,
                             fillColor: theme.colorScheme.surfaceContainerHighest
-                                .withOpacity(0.45),
+                                .withValues(alpha: 0.45),
                             contentPadding: const EdgeInsets.all(16),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
@@ -200,7 +200,7 @@ class _CompletionDescriptionDialogState
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
                               borderSide: BorderSide(
-                                color: theme.dividerColor.withOpacity(0.4),
+                                color: theme.dividerColor.withValues(alpha: 0.4),
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
@@ -247,7 +247,7 @@ class _CompletionDescriptionDialogState
                               style: TextStyle(
                                 fontSize: 13.5,
                                 fontWeight: FontWeight.w600,
-                                color: onSurface.withOpacity(0.85),
+                                color: onSurface.withValues(alpha: 0.85),
                               ),
                             ),
                             const Spacer(),
@@ -258,7 +258,7 @@ class _CompletionDescriptionDialogState
                                   vertical: 3,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: primary.withOpacity(0.12),
+                                  color: primary.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
@@ -277,7 +277,7 @@ class _CompletionDescriptionDialogState
                           'Fotos, documentos o archivos que respalden el trabajo',
                           style: TextStyle(
                             fontSize: 12.5,
-                            color: onSurface.withOpacity(0.55),
+                            color: onSurface.withValues(alpha: 0.55),
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -286,10 +286,10 @@ class _CompletionDescriptionDialogState
                         Container(
                           decoration: BoxDecoration(
                             color: theme.colorScheme.surfaceContainerHighest
-                                .withOpacity(0.3),
+                                .withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: theme.dividerColor.withOpacity(0.35),
+                              color: theme.dividerColor.withValues(alpha: 0.35),
                             ),
                           ),
                           padding: const EdgeInsets.all(12),
@@ -313,8 +313,8 @@ class _CompletionDescriptionDialogState
               Container(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 18),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest.withOpacity(
-                    0.25,
+                  color: theme.colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.25,
                   ),
                   borderRadius: const BorderRadius.vertical(
                     bottom: Radius.circular(24),
@@ -331,14 +331,14 @@ class _CompletionDescriptionDialogState
                             borderRadius: BorderRadius.circular(12),
                           ),
                           side: BorderSide(
-                            color: theme.dividerColor.withOpacity(0.6),
+                            color: theme.dividerColor.withValues(alpha: 0.6),
                           ),
                         ),
                         child: Text(
                           'Cancelar',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: onSurface.withOpacity(0.75),
+                            color: onSurface.withValues(alpha: 0.75),
                           ),
                         ),
                       ),

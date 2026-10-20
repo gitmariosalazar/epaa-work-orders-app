@@ -195,6 +195,18 @@ import 'package:clean_architecture/features/reading/presentation/manually/blocs/
     as _i797;
 import 'package:clean_architecture/features/reading/presentation/scan/bloc/reading_scan_bloc.dart'
     as _i185;
+import 'package:clean_architecture/features/theme/data/datasources/theme_local_datasource.dart'
+    as _i441;
+import 'package:clean_architecture/features/theme/data/repositories/theme_repository_impl.dart'
+    as _i898;
+import 'package:clean_architecture/features/theme/domain/repositories/theme_repository.dart'
+    as _i383;
+import 'package:clean_architecture/features/theme/domain/usecases/get_theme_mode_use_case.dart'
+    as _i616;
+import 'package:clean_architecture/features/theme/domain/usecases/save_theme_mode_use_case.dart'
+    as _i487;
+import 'package:clean_architecture/features/theme/presentation/cubits/theme_cubit.dart'
+    as _i431;
 import 'package:clean_architecture/features/users/data/datasources/user_remote_datasource.dart'
     as _i890;
 import 'package:clean_architecture/features/users/data/repositories/user_repository_impl.dart'
@@ -383,6 +395,11 @@ extension GetItInjectableX on _i174.GetIt {
         localDatabase: gh<_i87.LocalDatabaseService>(),
       ),
     );
+    gh.lazySingleton<_i441.ThemeLocalDataSource>(
+      () => _i441.ThemeLocalDataSourceImpl(
+        localDatabaseService: gh<_i87.LocalDatabaseService>(),
+      ),
+    );
     gh.lazySingleton<_i390.CreateIncidentUseCase>(
       () => _i390.CreateIncidentUseCase(gh<_i878.IncidentRepository>()),
     );
@@ -410,6 +427,17 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i474.SocketIOWebSocketService(gh<_i497.SessionService>()),
       dispose: (i) => i.dispose(),
     );
+    gh.lazySingleton<_i383.ThemeRepository>(
+      () => _i898.ThemeRepositoryImpl(
+        localDataSource: gh<_i441.ThemeLocalDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i616.GetThemeModeUseCase>(
+      () => _i616.GetThemeModeUseCase(repository: gh<_i383.ThemeRepository>()),
+    );
+    gh.lazySingleton<_i487.SaveThemeModeUseCase>(
+      () => _i487.SaveThemeModeUseCase(repository: gh<_i383.ThemeRepository>()),
+    );
     gh.lazySingleton<_i145.TokenRefresher>(
       () => _i145.TokenRefresherImpl(gh<_i37.AppConfig>()),
     );
@@ -426,6 +454,12 @@ extension GetItInjectableX on _i174.GetIt {
         findIncidentsUseCase: gh<_i948.FindIncidentsUseCase>(),
         findIncidentCategoriesUseCase:
             gh<_i115.FindIncidentCategoriesUseCase>(),
+      ),
+    );
+    gh.lazySingleton<_i431.ThemeCubit>(
+      () => _i431.ThemeCubit(
+        getThemeModeUseCase: gh<_i616.GetThemeModeUseCase>(),
+        saveThemeModeUseCase: gh<_i487.SaveThemeModeUseCase>(),
       ),
     );
     gh.lazySingleton<_i885.ApiService>(

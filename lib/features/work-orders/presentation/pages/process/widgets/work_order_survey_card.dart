@@ -13,6 +13,10 @@ class WorkOrderSurveyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     final survey = order.encuestaSatisfaccion;
     final hasSurvey = survey != null;
 
@@ -32,16 +36,21 @@ class WorkOrderSurveyCard extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.star_rounded,
-                      color: Colors.amber.shade800,
+                      color: isDark
+                          ? Colors.amber.shade400
+                          : Colors.amber.shade800,
                       size: 22,
                     ),
                     const SizedBox(width: 8),
-                    const Text(
+                    Text(
                       'Encuesta de Satisfacción',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ) ??
+                          const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ],
                 ),
@@ -79,7 +88,7 @@ class WorkOrderSurveyCard extends StatelessWidget {
                   'Encuesta de satisfacción pendiente.',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade600,
+                    color: cs.onSurfaceVariant,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
@@ -94,7 +103,11 @@ class WorkOrderSurveyCard extends StatelessWidget {
                         isFilled
                             ? Icons.star_rounded
                             : Icons.star_outline_rounded,
-                        color: isFilled ? Colors.amber : Colors.grey.shade300,
+                        color: isFilled
+                            ? (isDark ? Colors.amber.shade400 : Colors.amber)
+                            : (isDark
+                                ? cs.outlineVariant
+                                : Colors.grey.shade300),
                         size: 24,
                       );
                     }),
@@ -105,7 +118,9 @@ class WorkOrderSurveyCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.amber.shade900,
+                      color: isDark
+                          ? Colors.amber.shade300
+                          : Colors.amber.shade900,
                     ),
                   ),
                 ],
@@ -115,7 +130,10 @@ class WorkOrderSurveyCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   'Fecha: ${survey.fechaEncuesta}',
-                  style: TextStyle(fontSize: 11.5, color: Colors.grey.shade600),
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    color: cs.onSurfaceVariant,
+                  ),
                 ),
               ],
               if (survey.comentarios != null &&
@@ -125,15 +143,21 @@ class WorkOrderSurveyCard extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.amber.shade50.withOpacity(0.5),
+                    color: isDark
+                        ? Colors.amber.withValues(alpha: 0.12)
+                        : Colors.amber.shade50.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.amber.shade200),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.amber.withValues(alpha: 0.3)
+                          : Colors.amber.shade200,
+                    ),
                   ),
                   child: Text(
                     '"${survey.comentarios}"',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey.shade800,
+                      color: cs.onSurface,
                       fontStyle: FontStyle.italic,
                     ),
                   ),

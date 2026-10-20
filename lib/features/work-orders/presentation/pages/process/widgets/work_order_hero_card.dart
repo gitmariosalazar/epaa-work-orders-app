@@ -55,6 +55,8 @@ class WorkOrderHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final statusColor = _getStatusColor(order.estado);
     final priorityColor = _getPriorityColor(order.prioridad);
 
@@ -76,7 +78,9 @@ class WorkOrderHeroCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(
+                            alpha: isDark ? 0.2 : 0.1,
+                          ),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -98,10 +102,10 @@ class WorkOrderHeroCard extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.copy_rounded,
                           size: 16,
-                          color: Colors.grey,
+                          color: isDark ? theme.colorScheme.onSurfaceVariant : Colors.grey,
                         ),
                         tooltip: 'Copiar código',
                         onPressed: () {
@@ -123,9 +127,11 @@ class WorkOrderHeroCard extends StatelessWidget {
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.12),
+                    color: statusColor.withValues(alpha: isDark ? 0.2 : 0.12),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: statusColor.withOpacity(0.4)),
+                    border: Border.all(
+                      color: statusColor.withValues(alpha: isDark ? 0.5 : 0.4),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -142,7 +148,9 @@ class WorkOrderHeroCard extends StatelessWidget {
                       Text(
                         order.estado.replaceAll('_', ' '),
                         style: TextStyle(
-                          color: statusColor,
+                          color: isDark && statusColor == const Color(0xFF2563EB)
+                              ? Colors.blue.shade300
+                              : statusColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 11,
                         ),
@@ -158,28 +166,32 @@ class WorkOrderHeroCard extends StatelessWidget {
               runSpacing: 8,
               children: [
                 _buildInfoChip(
+                  context,
                   icon: Icons.priority_high_rounded,
                   label: 'Prioridad: ${order.prioridad}',
                   color: priorityColor,
                 ),
                 _buildInfoChip(
+                  context,
                   icon: Icons.category_outlined,
                   label: order.tipoTrabajo,
-                  color: Colors.blueGrey,
+                  color: isDark ? Colors.blueGrey.shade200 : Colors.blueGrey,
                 ),
                 if (order.idEntidadOrigen != null &&
                     order.idEntidadOrigen!.isNotEmpty)
                   _buildInfoChip(
+                    context,
                     icon: Icons.link_rounded,
                     label:
                         'Origen: ${order.tipoOrigen ?? 'Solicitud'} # ${order.codigoEntidadOrigen}',
-                    color: Colors.indigo,
+                    color: isDark ? Colors.indigo.shade200 : Colors.indigo,
                   ),
                 if (order.fechaCreacion.isNotEmpty)
                   _buildInfoChip(
+                    context,
                     icon: Icons.calendar_today_outlined,
                     label: order.fechaCreacion.split('T').first,
-                    color: Colors.grey.shade700,
+                    color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
                   ),
               ],
             ),
@@ -189,15 +201,18 @@ class WorkOrderHeroCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoChip({
+  Widget _buildInfoChip(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required Color color,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: isDark ? 0.18 : 0.08),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(

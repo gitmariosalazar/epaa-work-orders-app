@@ -25,14 +25,33 @@ class WorkerModel {
 
   factory WorkerModel.fromJson(Map<String, dynamic> json) {
     return WorkerModel(
-      workerId: json['workerId'] as String?,
-      identification: json['identification'] as String?,
-      lastNames: json['lastNames'] as String?,
-      firstNames: json['firstNames'] as String?,
-      phoneNumber: json['phoneNumber'] as String?, // ← permite null
-      cellPhone: json['cellPhone'] as String?,
-      email: json['email'] as String?,
-      address: json['address'] as String?,
+      workerId: (json['workerId'] ?? json['id'] ?? json['worker_id'])?.toString(),
+      identification: (json['identification'] ??
+              json['idCard'] ??
+              json['cedula'] ??
+              json['identification_number'])
+          ?.toString(),
+      lastNames: (json['lastNames'] ??
+              json['lastName'] ??
+              json['last_name'] ??
+              json['last_names'])
+          ?.toString(),
+      firstNames: (json['firstNames'] ??
+              json['firstName'] ??
+              json['first_name'] ??
+              json['first_names'] ??
+              json['name'])
+          ?.toString(),
+      phoneNumber: (json['phoneNumber'] ??
+              json['phone'] ??
+              json['phone_number'])
+          ?.toString(),
+      cellPhone: (json['cellPhone'] ??
+              json['cell_phone'] ??
+              json['celular'])
+          ?.toString(),
+      email: (json['email'] ?? json['mail'])?.toString(),
+      address: (json['address'] ?? json['direccion'])?.toString(),
     );
   }
 
@@ -40,7 +59,7 @@ class WorkerModel {
   WorkerEntity toEntity() {
     return WorkerEntity(
       workerId: workerId ?? '',
-      identification: identification ?? 'Hola',
+      identification: identification ?? '',
       lastNames: lastNames ?? '',
       firstNames: firstNames ?? '',
       phoneNumber: phoneNumber ?? '',

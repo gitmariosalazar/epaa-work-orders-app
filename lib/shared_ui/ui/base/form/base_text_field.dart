@@ -53,7 +53,12 @@ class BaseTextField extends StatelessWidget {
       autovalidateMode: autovalidateMode,
       obscureText: obscureText,
       obscuringCharacter: "*",
-      style: const TextStyle(color: AppColors.base, fontSize: 16),
+      style: TextStyle(
+        color: Theme.of(
+          context,
+        ).colorScheme.primary, // Color cuando está seleccionado
+        fontSize: 16,
+      ),
       focusNode: focusNode,
       decoration: InputDecoration(
         contentPadding: UIHelpers.paddingA16,

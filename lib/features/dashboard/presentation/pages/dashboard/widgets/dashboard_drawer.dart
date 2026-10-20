@@ -2,166 +2,214 @@
 
 import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/constants/app_icons.dart';
-import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
+import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
-import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// Modelo inmutable que representa un destino de navegación en el drawer.
+/// Cumple con Single Responsibility Principle (SRP).
+class DrawerNavigationItem {
+  final IconData icon;
+  final String title;
+  final int index;
+
+  const DrawerNavigationItem({
+    required this.icon,
+    required this.title,
+    required this.index,
+  });
+}
+
+/// Drawer lateral para pantallas de escritorio del Dashboard.
+/// Adaptado para Light y Dark theme respetando Clean Architecture y principios SOLID.
 class DashboardDrawer extends StatelessWidget {
-  const DashboardDrawer({super.key});
+  final double? width;
+  final List<DrawerNavigationItem>? items;
+  final ValueChanged<int>? onItemSelected;
+
+  const DashboardDrawer({
+    super.key,
+    this.width,
+    this.items,
+    this.onItemSelected,
+  });
+
+  /// Lista por defecto de elementos de navegación (abierta a extensión - OCP).
+  static const List<DrawerNavigationItem> defaultItems = [
+    DrawerNavigationItem(
+      icon: AppIcons.home,
+      title: 'Inicio',
+      index: 0,
+    ),
+    DrawerNavigationItem(
+      icon: Icons.assignment,
+      title: 'Órdenes de Trabajo',
+      index: 1,
+    ),
+    DrawerNavigationItem(
+      icon: AppIcons.workers,
+      title: 'Trabajadores',
+      index: 2,
+    ),
+    DrawerNavigationItem(
+      icon: AppIcons.products_materials,
+      title: 'Productos',
+      index: 3,
+    ),
+    DrawerNavigationItem(
+      icon: AppIcons.profile,
+      title: 'Perfil',
+      index: 4,
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Colores semánticos adaptados según el tema actual
+    final backgroundColor = isDark
+        ? colorScheme.surfaceContainerHighest
+        : colorScheme.surface;
+
+    final borderColor = isDark
+        ? colorScheme.outlineVariant
+        : AppColors.border.withValues(alpha: 0.6);
+
+    final activeColor = colorScheme.primary;
+
+    final inactiveColor = isDark
+        ? colorScheme.onSurfaceVariant
+        : AppColors.fade.withValues(alpha: 0.85);
+
+    final activeBackgroundColor = colorScheme.primary.withValues(
+      alpha: isDark ? 0.16 : 0.10,
+    );
+
+    final hoverColor = colorScheme.primary.withValues(
+      alpha: isDark ? 0.08 : 0.04,
+    );
+
+    final navItems = items ?? defaultItems;
+    final drawerWidth = width ?? 25.widthPart(min: 200, max: 300);
+
     return SizedBox(
-      width: 25.widthPart(max: 300),
+      width: drawerWidth,
       child: Material(
-        color: AppColors.border,
-        child: Padding(
-          padding: UIHelpers.paddingA24,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BlocBuilder<DashboardCubit, DashboardState>(
-                buildWhen: (previous, current) =>
-                    previous.activeIndex != current.activeIndex,
-                builder: (context, state) {
-                  final int activeIndex = state.activeIndex;
-
-                  return ListTileTheme(
-                    // Desactivamos el indicador de selección automático (la línea amarilla)
-                    selectedTileColor: Colors.transparent,
-                    shape: const RoundedRectangleBorder(),
-                    // Colores base para los ítems no seleccionados
-                    iconColor: AppColors.fade.withAlpha(153),
-                    textColor: AppColors.fade.withAlpha(153),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        BaseText.headline("Dashboard"),
-                        UIHelpers.spaceV16,
-
-                        // 1. INICIO - índice 0
-                        ListTile(
-                          onTap: () =>
-                              context.read<DashboardCubit>().setIndex(0),
-                          visualDensity:
-                              VisualDensity.compact, // ← Corrección aquí
-                          horizontalTitleGap: 8,
-                          leading: Icon(
-                            AppIcons.home,
-                            size: 20,
-                            color: activeIndex == 0
-                                ? AppColors.primary
-                                : AppColors.fade.withAlpha(153),
-                          ),
-                          title: BaseText(
-                            "Inicio",
-                            color: activeIndex == 0
-                                ? AppColors.primary
-                                : AppColors.fade.withAlpha(153),
-                          ),
-                        ),
-
-                        // 2. ÓRDENES DE TRABAJO - índice 1
-                        ListTile(
-                          onTap: () =>
-                              context.read<DashboardCubit>().setIndex(1),
-                          visualDensity:
-                              VisualDensity.compact, // ← Corrección aquí
-                          horizontalTitleGap: 8,
-                          leading: Icon(
-                            Icons.assignment,
-                            size: 20,
-                            color: activeIndex == 1
-                                ? AppColors.primary
-                                : AppColors.fade.withAlpha(153),
-                          ),
-                          title: BaseText(
-                            "Órdenes de Trabajo",
-                            color: activeIndex == 1
-                                ? AppColors.primary
-                                : AppColors.fade.withAlpha(153),
-                            textType: context.isMobile
-                                ? TextType.bodySmall
-                                : TextType.bodyMedium,
-                          ),
-                        ),
-
-                        // 3. TRABAJADORES - índice 2
-                        ListTile(
-                          onTap: () =>
-                              context.read<DashboardCubit>().setIndex(2),
-                          visualDensity:
-                              VisualDensity.compact, // ← Corrección aquí
-                          horizontalTitleGap: 8,
-                          leading: Icon(
-                            AppIcons.workers,
-                            size: 20,
-                            color: activeIndex == 2
-                                ? AppColors.primary
-                                : AppColors.fade.withAlpha(153),
-                          ),
-                          title: BaseText(
-                            "Trabajadores",
-                            color: activeIndex == 2
-                                ? AppColors.primary
-                                : AppColors.fade.withAlpha(153),
-                          ),
-                        ),
-
-                        // 4. PRODUCTOS Y MATERIALES - índice 3
-                        ListTile(
-                          onTap: () =>
-                              context.read<DashboardCubit>().setIndex(3),
-                          visualDensity:
-                              VisualDensity.compact, // ← Corrección aquí
-                          horizontalTitleGap: 8,
-                          leading: Icon(
-                            AppIcons.products_materials,
-                            size: 20,
-                            color: activeIndex == 3
-                                ? AppColors.primary
-                                : AppColors.fade.withAlpha(153),
-                          ),
-                          title: BaseText(
-                            "Productos",
-                            color: activeIndex == 3
-                                ? AppColors.primary
-                                : AppColors.fade.withAlpha(153),
-                          ),
-                        ),
-
-                        // 5. PERFIL - índice 4
-                        ListTile(
-                          onTap: () =>
-                              context.read<DashboardCubit>().setIndex(4),
-                          visualDensity:
-                              VisualDensity.compact, // ← Corrección aquí
-                          horizontalTitleGap: 8,
-                          leading: Icon(
-                            AppIcons.profile,
-                            size: 20,
-                            color: activeIndex == 4
-                                ? AppColors.primary
-                                : AppColors.fade.withAlpha(153),
-                          ),
-                          title: BaseText(
-                            "Perfil",
-                            color: activeIndex == 4
-                                ? AppColors.primary
-                                : AppColors.fade.withAlpha(153),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+        color: backgroundColor,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              right: BorderSide(
+                color: borderColor,
+                width: 1,
               ),
-            ],
+            ),
           ),
+          child: Padding(
+            padding: UIHelpers.paddingA24,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BaseText.headline(
+                    "Dashboard",
+                    color: colorScheme.onSurface,
+                  ),
+                  UIHelpers.spaceV16,
+                  BlocBuilder<DashboardCubit, DashboardState>(
+                    buildWhen: (previous, current) =>
+                        previous.activeIndex != current.activeIndex,
+                    builder: (context, state) {
+                      final int activeIndex = state.activeIndex;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: navItems.map((item) {
+                          final isActive = item.index == activeIndex;
+                          return _DrawerItemTile(
+                            item: item,
+                            isActive: isActive,
+                            activeColor: activeColor,
+                            inactiveColor: inactiveColor,
+                            activeBackgroundColor: activeBackgroundColor,
+                            hoverColor: hoverColor,
+                            onTap: () {
+                              if (onItemSelected != null) {
+                                onItemSelected!(item.index);
+                              } else {
+                                context
+                                    .read<DashboardCubit>()
+                                    .setIndex(item.index);
+                              }
+                            },
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget encapsulado para renderizar un ítem individual de navegación.
+/// Cumple con Single Responsibility (SRP) e Interface Segregation (ISP).
+class _DrawerItemTile extends StatelessWidget {
+  final DrawerNavigationItem item;
+  final bool isActive;
+  final Color activeColor;
+  final Color inactiveColor;
+  final Color activeBackgroundColor;
+  final Color hoverColor;
+  final VoidCallback onTap;
+
+  const _DrawerItemTile({
+    required this.item,
+    required this.isActive,
+    required this.activeColor,
+    required this.inactiveColor,
+    required this.activeBackgroundColor,
+    required this.hoverColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: ListTile(
+        onTap: onTap,
+        selected: isActive,
+        tileColor: Colors.transparent,
+        selectedTileColor: activeBackgroundColor,
+        hoverColor: hoverColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        visualDensity: VisualDensity.compact,
+        horizontalTitleGap: 12,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+        leading: Icon(
+          item.icon,
+          size: 20,
+          color: isActive ? activeColor : inactiveColor,
+        ),
+        title: BaseText(
+          item.title,
+          color: isActive ? activeColor : inactiveColor,
+          fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+          textType: TextType.bodyMedium,
         ),
       ),
     );

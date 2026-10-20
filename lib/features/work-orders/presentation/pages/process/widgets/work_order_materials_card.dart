@@ -59,6 +59,9 @@ class WorkOrderMaterialsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final materials = order.materiales;
     final costs = order.costosAdicionales;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     final totalMaterials = materials.fold<double>(
       0.0,
@@ -165,7 +168,7 @@ class WorkOrderMaterialsCard extends StatelessWidget {
                 'Sin materiales registrados aún.',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade500,
+                  color: isDark ? cs.onSurfaceVariant : Colors.grey.shade500,
                   fontStyle: FontStyle.italic,
                 ),
               )
@@ -195,7 +198,9 @@ class WorkOrderMaterialsCard extends StatelessWidget {
                               'Cód: ${m.codigoMaterial ?? 'S/C'} • Cant: ${m.cantidad.toStringAsFixed(1)} x \$${m.costoUnitario.toStringAsFixed(2)}',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Colors.grey.shade600,
+                                color: isDark
+                                    ? cs.onSurfaceVariant
+                                    : Colors.grey.shade600,
                               ),
                             ),
                           ],
@@ -225,7 +230,7 @@ class WorkOrderMaterialsCard extends StatelessWidget {
                 'Sin costos adicionales registrados.',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade500,
+                  color: isDark ? cs.onSurfaceVariant : Colors.grey.shade500,
                   fontStyle: FontStyle.italic,
                 ),
               )
@@ -255,7 +260,9 @@ class WorkOrderMaterialsCard extends StatelessWidget {
                               'Cant: ${c.cantidad.toStringAsFixed(1)} x \$${c.costoUnitario.toStringAsFixed(2)}',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Colors.grey.shade600,
+                                color: isDark
+                                    ? cs.onSurfaceVariant
+                                    : Colors.grey.shade600,
                               ),
                             ),
                           ],
@@ -278,9 +285,15 @@ class WorkOrderMaterialsCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: isDark
+                    ? cs.surfaceContainerHighest.withValues(alpha: 0.3)
+                    : Colors.grey.shade50,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(
+                  color: isDark
+                      ? theme.dividerColor.withValues(alpha: 0.2)
+                      : Colors.grey.shade200,
+                ),
               ),
               child: Column(
                 children: [
@@ -291,7 +304,9 @@ class WorkOrderMaterialsCard extends StatelessWidget {
                         'Subtotal Materiales:',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade700,
+                          color: isDark
+                              ? cs.onSurfaceVariant
+                              : Colors.grey.shade700,
                         ),
                       ),
                       Text(
@@ -311,7 +326,9 @@ class WorkOrderMaterialsCard extends StatelessWidget {
                         'Subtotal Costos Extra:',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade700,
+                          color: isDark
+                              ? cs.onSurfaceVariant
+                              : Colors.grey.shade700,
                         ),
                       ),
                       Text(

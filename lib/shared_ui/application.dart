@@ -1,5 +1,6 @@
 import 'package:clean_architecture/config/app_config.dart';
 import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
+import 'package:clean_architecture/features/theme/presentation/cubits/theme_cubit.dart';
 import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart';
 import 'package:clean_architecture/shared_ui/themes/theme.dart';
 import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
@@ -20,11 +21,13 @@ class CleanArchitectureSample extends StatefulWidget {
 class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
     with WidgetsBindingObserver {
   late final ScreenObserverCubit _screenObserverCubit;
+  late final ThemeCubit _themeCubit;
 
   @override
   void initState() {
     super.initState();
     _screenObserverCubit = GetIt.I<ScreenObserverCubit>();
+    _themeCubit = GetIt.I<ThemeCubit>();
     WidgetsBinding.instance.addObserver(this);
     // Listen for internet connectivity changes.
     WidgetsBinding.instance.addPostFrameCallback(
@@ -35,6 +38,7 @@ class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
   @override
   void dispose() {
     _screenObserverCubit.close();
+    _themeCubit.close();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -54,16 +58,25 @@ class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
   Widget build(BuildContext context) {
     // Perform initial configuration.
     ScreenUtil.I.configureScreen();
-    return BlocProvider.value(
-      value: _screenObserverCubit,
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        title: AppConfigUtil.I.appTitle,
-        theme: lightTheme,
-        routerDelegate: NavigationUtil.I.routerDelegate,
-        routeInformationParser: NavigationUtil.I.routeInformationParser,
-        builder: (context, child) {
-          return SafeArea(child: child!);
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _screenObserverCubit),
+        BlocProvider.value(value: _themeCubit),
+      ],
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: AppConfigUtil.I.appTitle,
+            theme: lightTheme,
+            darkTheme: darkTheme,
+            themeMode: themeMode,
+            routerDelegate: NavigationUtil.I.routerDelegate,
+            routeInformationParser: NavigationUtil.I.routeInformationParser,
+            builder: (context, child) {
+              return SafeArea(child: child!);
+            },
+          );
         },
       ),
     );

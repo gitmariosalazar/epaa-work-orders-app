@@ -10,6 +10,9 @@ class WorkOrderTimelineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final milestones = tracking?.historial ?? [];
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Card(
       elevation: 2,
@@ -39,7 +42,7 @@ class WorkOrderTimelineCard extends StatelessWidget {
                   'No hay eventos de trazabilidad registrados.',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade600,
+                    color: isDark ? cs.onSurfaceVariant : Colors.grey.shade600,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
@@ -64,12 +67,19 @@ class WorkOrderTimelineCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: index == 0
                                   ? AppColors.primary
-                                  : Colors.grey.shade400,
+                                  : (isDark
+                                      ? cs.outlineVariant
+                                      : Colors.grey.shade400),
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
+                              border: Border.all(
+                                color: isDark ? cs.surface : Colors.white,
+                                width: 2,
+                              ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(
+                                    alpha: isDark ? 0.3 : 0.1,
+                                  ),
                                   blurRadius: 3,
                                 ),
                               ],
@@ -79,7 +89,9 @@ class WorkOrderTimelineCard extends StatelessWidget {
                             Container(
                               width: 2,
                               height: 48,
-                              color: Colors.grey.shade300,
+                              color: isDark
+                                  ? theme.dividerColor.withValues(alpha: 0.3)
+                                  : Colors.grey.shade300,
                             ),
                         ],
                       ),
@@ -101,14 +113,16 @@ class WorkOrderTimelineCard extends StatelessWidget {
                                       fontSize: 12.5,
                                       color: index == 0
                                           ? AppColors.primary
-                                          : Colors.black87,
+                                          : cs.onSurface,
                                     ),
                                   ),
                                   Text(
                                     m.fecha.split('T').first,
                                     style: TextStyle(
                                       fontSize: 11,
-                                      color: Colors.grey.shade600,
+                                      color: isDark
+                                          ? cs.onSurfaceVariant
+                                          : Colors.grey.shade600,
                                     ),
                                   ),
                                 ],
@@ -120,7 +134,9 @@ class WorkOrderTimelineCard extends StatelessWidget {
                                   'Por: ${m.usuario}',
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: Colors.grey.shade600,
+                                    color: isDark
+                                        ? cs.onSurfaceVariant
+                                        : Colors.grey.shade600,
                                   ),
                                 ),
                               ],
@@ -131,7 +147,9 @@ class WorkOrderTimelineCard extends StatelessWidget {
                                   m.comentario!,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.grey.shade800,
+                                    color: isDark
+                                        ? cs.onSurface
+                                        : Colors.grey.shade800,
                                   ),
                                 ),
                               ],

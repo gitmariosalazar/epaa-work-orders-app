@@ -29,7 +29,7 @@ class DashboardCubit extends BaseCubit<DashboardState> {
 
     switch (index) {
       case 0:
-        replaceAllRoute(const HomeRoute());
+        replaceAllRoute(const TechnicianInitialRoute());
         return;
 
       case 1:
