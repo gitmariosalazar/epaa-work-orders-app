@@ -25,6 +25,16 @@ class ApiEndpoints {
   static const deleteWorkOrder = "$workOrders/delete-work-order";
   static const getWorkOrderById = "$workOrders/get-by-id"; // si lo necesitas
 
+  // Work Orders - Statistics (Dashboards)
+  static const getWorkOrderPriorityStatistics =
+      "$workOrders/get-work-order-priority-statistics";
+  static const getWorkOrderStatusStatistics =
+      "$workOrders/get-work-order-status-statistics";
+  static const getWorkOrderTypeStatistics =
+      "$workOrders/get-work-order-type-statistics";
+  static const getWorkOrdersStatisticsKey =
+      "$workOrders/get-work-orders-statistics-key";
+
   // Process Work Orders
   static const String processWorkOrders = "process-work-orders";
   static const String createWorkOrderFromIncident =

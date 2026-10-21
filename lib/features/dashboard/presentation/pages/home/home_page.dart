@@ -9,7 +9,12 @@ import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:clean_architecture/shared_ui/ui/base/app_bar/base_app_bar.dart';
 import 'package:clean_architecture/shared_ui/ui/base/base_scaffold.dart';
 import 'package:clean_architecture/shared_ui/ui/base_title.dart';
+import 'package:clean_architecture/features/dashboard/domain/entities/work_order_statistics_entities.dart';
+import 'package:clean_architecture/features/dashboard/domain/usecases/work_order_statistics_use_cases.dart';
+import 'package:clean_architecture/features/dashboard/presentation/cubits/statistics/statistics_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 @RoutePage()
 class HomePage extends StatelessWidget {
@@ -17,15 +22,37 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider<StatisticsCubit<WorkOrdersKeyStatisticEntity>>(
+      create: (_) => StatisticsCubit<WorkOrdersKeyStatisticEntity>(
+        GetIt.I<GetWorkOrdersKeyStatisticsUseCase>(),
+      )..load(),
+      child: Builder(builder: _buildContent),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
 
-    // Métricas del dashboard
-    const totalOrders = 156;
-    const pendingOrders = 23;
-    const inProgressOrders = 45;
-    const urgentOrders = 8;
+    // Métricas del dashboard (GET work-orders/get-work-orders-statistics-key)
+    final statsState = context
+        .watch<StatisticsCubit<WorkOrdersKeyStatisticEntity>>()
+        .state;
+    final summary = statsState is StatisticsLoaded<WorkOrdersKeyStatisticEntity>
+        ? WorkOrdersKeyStatisticsSummary.fromRows(statsState.items)
+        : null;
+    String kpi(int? value) => switch (statsState) {
+      StatisticsError<WorkOrdersKeyStatisticEntity>() => '—',
+      _ when summary == null => '…',
+      _ => value.toString(),
+    };
+    final totalOrders = kpi(summary?.totalOrders);
+    final pendingOrders = kpi(summary?.pendingOrAssigned);
+    final inProgressOrders = kpi(summary?.inProgress);
+    final urgentOrders = kpi(
+      summary == null ? null : summary.emergency + summary.urgent,
+    );
 
     // Colores semánticos adaptados según el tema
     final blueColor = isDark ? const Color(0xFF64B5F6) : Colors.blue;
@@ -36,6 +63,10 @@ class HomePage extends StatelessWidget {
     return BaseScaffold(
       onPopInvokedWithResult: () => showCloseAppDialog(context),
       onRefresh: () async {
+        await context
+            .read<StatisticsCubit<WorkOrdersKeyStatisticEntity>>()
+            .load();
+        if (!context.mounted) return;
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Datos actualizados')));
@@ -80,7 +111,7 @@ class HomePage extends StatelessWidget {
                 Expanded(
                   child: _SummaryCard(
                     title: 'Total',
-                    value: totalOrders.toString(),
+                    value: totalOrders,
                     icon: Icons.assignment,
                     color: blueColor,
                   ),
@@ -89,7 +120,7 @@ class HomePage extends StatelessWidget {
                 Expanded(
                   child: _SummaryCard(
                     title: 'Pendientes',
-                    value: pendingOrders.toString(),
+                    value: pendingOrders,
                     icon: Icons.schedule,
                     color: orangeColor,
                   ),
@@ -102,7 +133,7 @@ class HomePage extends StatelessWidget {
                 Expanded(
                   child: _SummaryCard(
                     title: 'En Progreso',
-                    value: inProgressOrders.toString(),
+                    value: inProgressOrders,
                     icon: Icons.handyman,
                     color: purpleColor,
                   ),
@@ -111,7 +142,7 @@ class HomePage extends StatelessWidget {
                 Expanded(
                   child: _SummaryCard(
                     title: 'Urgentes',
-                    value: urgentOrders.toString(),
+                    value: urgentOrders,
                     icon: Icons.warning,
                     color: redColor,
                   ),
@@ -553,8 +584,9 @@ class _DashboardButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final effectiveColor =
-        isDark ? (Color.lerp(color, Colors.white, 0.15) ?? color) : color;
+    final effectiveColor = isDark
+        ? (Color.lerp(color, Colors.white, 0.15) ?? color)
+        : color;
 
     return InkWell(
       onTap: onTap,

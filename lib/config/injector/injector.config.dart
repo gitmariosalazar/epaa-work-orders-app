@@ -145,6 +145,14 @@ import 'package:clean_architecture/features/connections/search/presentation/manu
     as _i372;
 import 'package:clean_architecture/features/connections/search/presentation/scan/blocs/connection_with_properties_bloc.dart'
     as _i981;
+import 'package:clean_architecture/features/dashboard/data/datasource/remote/work_order_statistics_remote_datasource.dart'
+    as _i798;
+import 'package:clean_architecture/features/dashboard/data/repositories/work_order_statistics_repository_impl.dart'
+    as _i17;
+import 'package:clean_architecture/features/dashboard/domain/repositories/work_order_statistics_repository.dart'
+    as _i1003;
+import 'package:clean_architecture/features/dashboard/domain/usecases/work_order_statistics_use_cases.dart'
+    as _i466;
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart'
     as _i278;
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit_use_cases.dart'
@@ -596,6 +604,11 @@ extension GetItInjectableX on _i174.GetIt {
         apiService: gh<_i885.ApiService>(),
       ),
     );
+    gh.lazySingleton<_i798.WorkOrderStatisticsRemoteDataSource>(
+      () => _i798.WorkOrderStatisticsRemoteDataSourceImpl(
+        apiService: gh<_i885.ApiService>(),
+      ),
+    );
     gh.lazySingleton<_i163.WorkerRepository>(
       () => _i932.WorkerRepositoryImpl(
         internetService: gh<_i662.InternetService>(),
@@ -734,6 +747,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i661.SaveUserDataUseCase>(
       () => _i661.SaveUserDataUseCase(
         authRepository: gh<_i1003.AuthRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i1003.WorkOrderStatisticsRepository>(
+      () => _i17.WorkOrderStatisticsRepositoryImpl(
+        internet: gh<_i662.InternetService>(),
+        remoteDataSource: gh<_i798.WorkOrderStatisticsRemoteDataSource>(),
       ),
     );
     gh.lazySingleton<_i451.GetAllWorkersPaginatedUseCase>(
@@ -968,6 +987,26 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i22.SearchConnectionCubit>(
       () => _i22.SearchConnectionCubit(gh<_i453.GetConnection>()),
+    );
+    gh.lazySingleton<_i466.GetWorkOrderPriorityStatisticsUseCase>(
+      () => _i466.GetWorkOrderPriorityStatisticsUseCase(
+        gh<_i1003.WorkOrderStatisticsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i466.GetWorkOrderStatusStatisticsUseCase>(
+      () => _i466.GetWorkOrderStatusStatisticsUseCase(
+        gh<_i1003.WorkOrderStatisticsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i466.GetWorkOrderTypeStatisticsUseCase>(
+      () => _i466.GetWorkOrderTypeStatisticsUseCase(
+        gh<_i1003.WorkOrderStatisticsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i466.GetWorkOrdersKeyStatisticsUseCase>(
+      () => _i466.GetWorkOrdersKeyStatisticsUseCase(
+        gh<_i1003.WorkOrderStatisticsRepository>(),
+      ),
     );
     gh.lazySingleton<_i12.AddWorkOrderAttachmentUseCase>(
       () => _i12.AddWorkOrderAttachmentUseCase(
