@@ -43,46 +43,109 @@ class WorkOrderStatus {
   static const instalacionCompletada = 'INSTALACION_COMPLETADA';
 
   static const List<WorkOrderStatus> all = [
-    WorkOrderStatus(notificada, 'Notificada',
-        'OT registrada, pendiente de recepción por operaciones'),
-    WorkOrderStatus(pendiente, 'Pendiente',
-        'OT recibida, en espera de asignación de personal'),
-    WorkOrderStatus(asignada, 'Asignada',
-        'Personal asignado, en espera de inicio de preparación'),
-    WorkOrderStatus(preparacion, 'En Preparación',
-        'El equipo está preparando materiales y EPP en campo'),
-    WorkOrderStatus(revisionRechazada, 'Revisión Rechazada',
-        'La inspección de seguridad no fue superada, retorna a preparación'),
-    WorkOrderStatus(enProceso, 'En Proceso',
-        'Trabajo en ejecución activa en campo'),
-    WorkOrderStatus(ejecutada, 'Ejecutada',
-        'Trabajo finalizado, pendiente de evaluación de calidad'),
-    WorkOrderStatus(rechazadaTecnica, 'Rechazada Técnica',
-        'La evaluación de calidad falló, retorna a ejecución'),
-    WorkOrderStatus(completada, 'Completada',
-        'OT finalizada con éxito y aprobada en todos los controles'),
-    WorkOrderStatus(cancelada, 'Cancelada',
-        'OT cancelada por el administrador'),
+    WorkOrderStatus(
+      notificada,
+      'Notificada',
+      'OT registrada, pendiente de recepción por operaciones',
+    ),
+    WorkOrderStatus(
+      pendiente,
+      'Pendiente',
+      'OT recibida, en espera de asignación de personal',
+    ),
+    WorkOrderStatus(
+      asignada,
+      'Asignada',
+      'Personal asignado, en espera de inicio de preparación',
+    ),
+    WorkOrderStatus(
+      preparacion,
+      'En Preparación',
+      'El equipo está preparando materiales y EPP en campo',
+    ),
+    WorkOrderStatus(
+      revisionRechazada,
+      'Revisión Rechazada',
+      'La inspección de seguridad no fue superada, retorna a preparación',
+    ),
+    WorkOrderStatus(
+      enProceso,
+      'En Proceso',
+      'Trabajo en ejecución activa en campo',
+    ),
+    WorkOrderStatus(
+      ejecutada,
+      'Ejecutada',
+      'Trabajo finalizado, pendiente de evaluación de calidad',
+    ),
+    /*
+    WorkOrderStatus(
+      rechazadaTecnica,
+      'Rechazada Técnica',
+      'La evaluación de calidad falló, retorna a ejecución',
+    ),
+    */
+    WorkOrderStatus(
+      completada,
+      'Completada',
+      'OT finalizada con éxito y aprobada en todos los controles',
+    ),
+    WorkOrderStatus(
+      cancelada,
+      'Cancelada',
+      'OT cancelada por el administrador',
+    ),
+    /*
     WorkOrderStatus(notificadaInspeccion, 'Notificada — Inspección',
         'OT de inspección de factibilidad creada, en espera de inicio'),
-    WorkOrderStatus(pendienteInspeccion, 'Pendiente Inspección',
-        'Inspector asignado, en espera de inicio de la visita técnica'),
-    WorkOrderStatus(enProcesoInspeccion, 'Inspección en Proceso',
-        'Inspector activo en campo realizando el levantamiento'),
-    WorkOrderStatus(inspeccionEjecutada, 'Inspección Ejecutada',
-        'Inspector finalizó en campo, informe técnico pendiente de carga'),
-    WorkOrderStatus(inspeccionCompletada, 'Inspección Completada',
-        'Informe técnico aprobado, OT de inspección cerrada'),
-    WorkOrderStatus(notificadaInstalacion, 'Notificada — Instalación',
-        'OT de instalación de acometida creada, en espera de inicio'),
-    WorkOrderStatus(pendienteInstalacion, 'Pendiente Instalación',
-        'Técnico asignado, en espera de inicio de la instalación'),
-    WorkOrderStatus(enProcesoInstalacion, 'Instalación en Proceso',
-        'Técnico activo en campo ejecutando la instalación'),
-    WorkOrderStatus(instalacionEjecutada, 'Instalación Ejecutada',
-        'Técnico finalizó en campo, cierre y registro catastral pendiente'),
-    WorkOrderStatus(instalacionCompletada, 'Instalación Completada',
-        'Suministro activado y catastro registrado, OT cerrada'),
+    */
+    WorkOrderStatus(
+      pendienteInspeccion,
+      'Pendiente Inspección',
+      'Inspector asignado, en espera de inicio de la visita técnica',
+    ),
+    WorkOrderStatus(
+      enProcesoInspeccion,
+      'Inspección en Proceso',
+      'Inspector activo en campo realizando el levantamiento',
+    ),
+    WorkOrderStatus(
+      inspeccionEjecutada,
+      'Inspección Ejecutada',
+      'Inspector finalizó en campo, informe técnico pendiente de carga',
+    ),
+    WorkOrderStatus(
+      inspeccionCompletada,
+      'Inspección Completada',
+      'Informe técnico aprobado, OT de inspección cerrada',
+    ),
+    /*
+    WorkOrderStatus(
+      notificadaInstalacion,
+      'Notificada — Instalación',
+      'OT de instalación de acometida creada, en espera de inicio',
+    ),
+    */
+    WorkOrderStatus(
+      pendienteInstalacion,
+      'Pendiente Instalación',
+      'Técnico asignado, en espera de inicio de la instalación',
+    ),
+    WorkOrderStatus(
+      enProcesoInstalacion,
+      'Instalación en Proceso',
+      'Técnico activo en campo ejecutando la instalación',
+    ),
+    WorkOrderStatus(
+      instalacionEjecutada,
+      'Instalación Ejecutada',
+      'Técnico finalizó en campo, cierre y registro catastral pendiente',
+    ),
+    WorkOrderStatus(
+      instalacionCompletada,
+      'Instalación Completada',
+      'Suministro activado y catastro registrado, OT cerrada',
+    ),
   ];
 
   static final Map<String, WorkOrderStatus> _byCode = {
@@ -97,7 +160,9 @@ class WorkOrderStatus {
 
   static String labelOf(String? code) =>
       of(code)?.label ??
-      (normalize(code).isEmpty ? 'Desconocido' : normalize(code).replaceAll('_', ' '));
+      (normalize(code).isEmpty
+          ? 'Desconocido'
+          : normalize(code).replaceAll('_', ' '));
 
   static String descriptionOf(String? code) => of(code)?.description ?? '';
 

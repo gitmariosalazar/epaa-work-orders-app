@@ -64,7 +64,8 @@ class _MinimalSectionDividerState extends State<MinimalSectionDivider>
 
   @override
   Widget build(BuildContext context) {
-    final effectiveColor = widget.color ?? AppColors.primary.withOpacity(0.1);
+    final effectiveColor =
+        widget.color ?? AppColors.primary.withValues(alpha: 0.1);
     final borderRadius = ResponsiveUtils.cardElevation(context);
     // Ajusta este multiplicador si el texto sigue cortado, prueba con 2.6, 3.0, etc.
     final dividerHeight = ResponsiveUtils.sectionDividerHeight(context) * 2.8;
@@ -87,7 +88,7 @@ class _MinimalSectionDividerState extends State<MinimalSectionDivider>
               borderRadius: BorderRadius.circular(borderRadius),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -109,7 +110,7 @@ class _MinimalSectionDividerState extends State<MinimalSectionDivider>
                         color: AppColors.textPrimary,
                         shadows: [
                           Shadow(
-                            color: Colors.black.withOpacity(0.15),
+                            color: Colors.black.withValues(alpha: 0.15),
                             offset: const Offset(0, 1),
                             blurRadius: 3,
                           ),

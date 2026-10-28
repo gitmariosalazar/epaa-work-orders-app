@@ -65,7 +65,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  theme.colorScheme.primary.withOpacity(0.08),
+                  theme.colorScheme.primary.withValues(alpha: 0.08),
                   theme.colorScheme.background,
                 ],
                 begin: Alignment.topCenter,
@@ -89,7 +89,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                       borderRadius: BorderRadius.circular(cardRadius),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
+                          color: Colors.black.withValues(alpha: 0.08),
                           blurRadius: 18,
                           offset: const Offset(0, 7),
                         ),
@@ -122,8 +122,8 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                             decoration: InputDecoration(
                               labelText: 'Acometida ID (ej: 1-256 o 12-256)',
                               labelStyle: context.bodyMedium.copyWith(
-                                color: theme.colorScheme.primary.withOpacity(
-                                  0.7,
+                                color: theme.colorScheme.primary.withValues(
+                                  alpha: 0.7,
                                 ),
                                 fontWeight: FontWeight.w500,
                               ),
@@ -133,8 +133,8 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                                 size: context.iconMedium,
                               ),
                               filled: true,
-                              fillColor: theme.colorScheme.surface.withOpacity(
-                                0.98,
+                              fillColor: theme.colorScheme.surface.withValues(
+                                alpha: 0.98,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(
@@ -147,8 +147,8 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                                   cardRadius * 0.7,
                                 ),
                                 borderSide: BorderSide(
-                                  color: theme.colorScheme.outline.withOpacity(
-                                    0.32,
+                                  color: theme.colorScheme.outline.withValues(
+                                    alpha: 0.32,
                                   ),
                                   width: 1,
                                 ),

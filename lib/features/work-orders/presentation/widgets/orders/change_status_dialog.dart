@@ -85,9 +85,11 @@ class _ChangeStatusDialogState extends State<ChangeStatusDialog> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.08),
+                  color: AppColors.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,7 +183,7 @@ class _ChangeStatusDialogState extends State<ChangeStatusDialog> {
                       ),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? statusColor.withOpacity(0.15)
+                            ? statusColor.withValues(alpha: 0.15)
                             : Colors.grey.shade50,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
@@ -223,7 +225,7 @@ class _ChangeStatusDialogState extends State<ChangeStatusDialog> {
                     ),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),

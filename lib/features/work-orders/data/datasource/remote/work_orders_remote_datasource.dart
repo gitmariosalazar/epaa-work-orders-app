@@ -54,6 +54,7 @@ abstract interface class WorkOrdersRemoteDataSource {
     String? createdByUserId,
     String? evidenceStageCode,
   });
+  FutureData<List<DepartmentModel>> getDepartments();
 }
 
 @LazySingleton(as: WorkOrdersRemoteDataSource)
@@ -470,6 +471,16 @@ class WorkOrdersRemoteDataSourceImpl implements WorkOrdersRemoteDataSource {
         data: formData,
       ),
       fromJson: (_) {},
+      isStandardResponse: true,
+      responseDataKey: 'data',
+    );
+  }
+
+  @override
+  FutureData<List<DepartmentModel>> getDepartments() {
+    return DataHandler.safeApiCall<List<DepartmentModel>, DepartmentModel>(
+      request: () => _apiService.get(ApiEndpoints.getAllDepartments),
+      fromJson: (json) => DepartmentModel.fromJson(json),
       isStandardResponse: true,
       responseDataKey: 'data',
     );

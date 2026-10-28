@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/services/session/session_service.dart';
 import 'package:clean_architecture/features/work-orders/presentation/cubits/create_work_order/create_work_order_cubit.dart';
+import 'package:clean_architecture/features/work-orders/presentation/cubits/departments/departments_cubit.dart';
 import 'package:clean_architecture/shared_ui/ui/base/app_bar/base_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,8 +22,15 @@ class CreateWorkOrderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<CreateWorkOrderCubit>(
-      create: (_) => GetIt.I<CreateWorkOrderCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CreateWorkOrderCubit>(
+          create: (_) => GetIt.I<CreateWorkOrderCubit>(),
+        ),
+        BlocProvider<DepartmentsCubit>(
+          create: (_) => GetIt.I<DepartmentsCubit>()..loadDepartments(),
+        ),
+      ],
       child: const _CreateWorkOrderView(),
     );
   }
@@ -138,6 +146,78 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
       _form = const WorkOrderFormState();
       _errors = {};
     });
+  }
+
+  Future<void> _handleCancelOrder() async {
+    final hasData = _form.clientId.isNotEmpty ||
+        _form.location.isNotEmpty ||
+        _form.description.isNotEmpty ||
+        _currentStep > 1;
+
+    if (!hasData) {
+      context.router.maybePop();
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        final dialogTheme = Theme.of(ctx);
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.close_rounded,
+                  color: Colors.red,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  '¿Cancelar creación?',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            '¿Está seguro de que desea salir? Se descartarán los datos ingresados en el formulario.',
+            style: dialogTheme.textTheme.bodyMedium,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Continuar editando'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.shade600,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text('Salir sin guardar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true && mounted) {
+      context.router.maybePop();
+    }
   }
 
   void _showValidationErrorsModal(Map<String, String> errors) {
@@ -276,6 +356,7 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
             appBar: const BaseAppBar(
               title: 'Nueva Orden de Trabajo',
               centerTitle: true,
+              showLeading: false,
             ),
             body: WorkOrderSuccessView(
               codigoOrden: state.createdOrder.orderCode,
@@ -297,9 +378,31 @@ class _CreateWorkOrderViewState extends State<_CreateWorkOrderView> {
               if (_currentStep > 1) {
                 _handlePrevStep();
               } else {
-                context.router.maybePop();
+                _handleCancelOrder();
               }
             },
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: IconButton(
+                  onPressed: _handleCancelOrder,
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    size: 22,
+                  ),
+                  style: IconButton.styleFrom(
+                    backgroundColor: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black.withValues(alpha: 0.06),
+                    shape: const CircleBorder(),
+                    padding: EdgeInsets.zero,
+                    fixedSize: const Size(40, 40),
+                    splashFactory: InkRipple.splashFactory,
+                  ),
+                  tooltip: 'Cancelar',
+                ),
+              ),
+            ],
           ),
           body: SafeArea(
             child: Column(

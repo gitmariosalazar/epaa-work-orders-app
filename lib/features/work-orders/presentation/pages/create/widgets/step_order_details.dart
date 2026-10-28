@@ -7,6 +7,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import '../constants/work_order_create_constants.dart';
 import '../models/work_order_form_state.dart';
+import 'work_type_selection_modal.dart';
 
 class StepOrderDetails extends StatefulWidget {
   final WorkOrderFormState form;
@@ -248,38 +249,8 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
                 ),
                 const SizedBox(height: 14),
 
-                // Tipo de Trabajo
-                _buildDropdown<int>(
-                  context,
-                  label: 'Tipo de Trabajo *',
-                  value: widget.form.workTypeId,
-                  errorText: widget.errors?['workTypeId'],
-                  items: WorkOrderCreateConstants.workTypes.map((t) {
-                    return DropdownMenuItem<int>(
-                      value: t.id,
-                      child: Row(
-                        children: [
-                          Icon(t.icon, size: 18, color: AppColors.primary),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              t.label,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.bodyMedium,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (val) {
-                    if (val != null) {
-                      widget.onFormChange(
-                        widget.form.copyWith(workTypeId: val),
-                      );
-                    }
-                  },
-                ),
+                // Tipo de Trabajo (Selector Modal Categorizado por Departamentos)
+                _buildWorkTypeSelector(context, theme, isDark),
                 const SizedBox(height: 14),
 
                 // Prioridad
@@ -560,6 +531,7 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
       attachedImages: widget.form.attachments ?? [],
       mode: 'create',
       allowFiles: true,
+      allowGallery: true,
       onImageAdded: (file) {
         widget.onFormChange(
           widget.form.copyWith(
@@ -574,6 +546,320 @@ class _StepOrderDetailsState extends State<StepOrderDetails> {
           ),
         );
       },
+    );
+  }
+
+  Future<void> _handleOpenWorkTypeModal(BuildContext context) async {
+    final result = await WorkTypeSelectionModal.show(
+      context: context,
+      selectedTypeCode: widget.form.workTypeCode,
+      selectedWorkTypeId: widget.form.workTypeId,
+      selectedTypeName: widget.form.workTypeName,
+      selectedDepartmentId: widget.form.departmentId,
+    );
+
+    if (result != null && mounted) {
+      final resolvedWorkTypeId =
+          int.tryParse(result.workType.typeCode) ??
+          result.department.departmentId;
+
+      final suggestedPriorityId =
+          WorkOrderCreateConstants.mapSuggestedPriorityToId(
+            result.workType.suggestedPriority,
+          );
+
+      widget.onFormChange(
+        widget.form.copyWith(
+          workTypeId: resolvedWorkTypeId,
+          workTypeCode: result.workType.typeCode,
+          workTypeName: result.workType.typeName,
+          departmentId: result.department.departmentId,
+          departmentName: result.department.departmentName,
+          selectedWorkType: result.workType,
+          selectedDepartment: result.department,
+          priorityId: suggestedPriorityId ?? widget.form.priorityId,
+        ),
+      );
+    }
+  }
+
+  Widget _buildWorkTypeSelector(
+    BuildContext context,
+    ThemeData theme,
+    bool isDark,
+  ) {
+    final hasError = widget.errors?['workTypeId'] != null;
+    final errorMessage = widget.errors?['workTypeId'];
+
+    // Determinar nombre, icono y departamento actual
+    String? workTypeName = widget.form.workTypeName;
+    String? departmentName = widget.form.departmentName;
+    String? suggestedPriority = widget.form.selectedWorkType?.suggestedPriority;
+    String? description = widget.form.selectedWorkType?.typeDescription;
+
+    if ((workTypeName == null || workTypeName.isEmpty) &&
+        widget.form.workTypeId > 0) {
+      final match = WorkOrderCreateConstants.workTypes.where(
+        (t) => t.id == widget.form.workTypeId,
+      );
+      if (match.isNotEmpty) {
+        workTypeName = match.first.label;
+      }
+    }
+
+    final hasSelection = workTypeName != null && workTypeName.isNotEmpty;
+
+    final visual = departmentName != null && departmentName.isNotEmpty
+        ? WorkOrderCreateConstants.getDepartmentVisual(
+            departmentName,
+            widget.form.departmentId,
+          )
+        : null;
+
+    final workIcon = hasSelection
+        ? WorkOrderCreateConstants.getWorkTypeIcon(
+            workTypeName,
+            widget.form.workTypeCode,
+            departmentName,
+          )
+        : Icons.build_circle_outlined;
+
+    final borderColor = hasError
+        ? theme.colorScheme.error
+        : (hasSelection && visual != null
+              ? visual.color.withValues(alpha: isDark ? 0.4 : 0.3)
+              : (isDark
+                    ? theme.dividerColor.withValues(alpha: 0.2)
+                    : Colors.grey.shade300));
+
+    final bgColor = isDark
+        ? (hasSelection && visual != null
+              ? visual.color.withValues(alpha: 0.08)
+              : theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.3,
+                ))
+        : (hasSelection && visual != null
+              ? visual.resolveBackgroundColor(false).withValues(alpha: 0.5)
+              : Colors.grey.shade50);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Label con badge del departamento si está seleccionado
+        Padding(
+          padding: const EdgeInsets.only(left: 2, bottom: 6),
+          child: Row(
+            children: [
+              Text(
+                'Tipo de Trabajo *',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: hasError ? theme.colorScheme.error : null,
+                ),
+              ),
+              if (departmentName != null && departmentName.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: visual?.color.withValues(
+                      alpha: isDark ? 0.25 : 0.12,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color:
+                          visual?.color.withValues(alpha: 0.3) ??
+                          Colors.transparent,
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (visual != null) ...[
+                        Icon(visual.icon, size: 12, color: visual.color),
+                        const SizedBox(width: 4),
+                      ],
+                      Text(
+                        departmentName.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: visual?.color,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+
+        // Selector Card Trigger Interactivo
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => _handleOpenWorkTypeModal(context),
+            borderRadius: BorderRadius.circular(12),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: borderColor,
+                  width: hasError ? 1.5 : 1.2,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: hasSelection
+                          ? (visual?.color.withValues(
+                                  alpha: isDark ? 0.25 : 0.15,
+                                ) ??
+                                AppColors.primary.withValues(alpha: 0.15))
+                          : (isDark ? Colors.white10 : Colors.grey.shade200),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      workIcon,
+                      color: hasSelection
+                          ? (visual?.color ?? AppColors.primary)
+                          : Colors.grey,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: hasSelection
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                workTypeName,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              if (description != null &&
+                                  description.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  description,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    fontSize: 11,
+                                    color: isDark
+                                        ? Colors.grey.shade400
+                                        : Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                              if (suggestedPriority != null &&
+                                  suggestedPriority.isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 6,
+                                      height: 6,
+                                      decoration: BoxDecoration(
+                                        color:
+                                            WorkOrderCreateConstants.getSuggestedPriorityColor(
+                                              suggestedPriority,
+                                            ),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Sugerida: $suggestedPriority',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                        color:
+                                            WorkOrderCreateConstants.getSuggestedPriorityColor(
+                                              suggestedPriority,
+                                            ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ],
+                          )
+                        : Text(
+                            'Toca para seleccionar el tipo de trabajo...',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: isDark
+                                  ? Colors.grey.shade400
+                                  : Colors.grey.shade500,
+                            ),
+                          ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.05)
+                          : Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          hasSelection ? 'Cambiar' : 'Elegir',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? Colors.grey.shade300
+                                : Colors.grey.shade700,
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          size: 16,
+                          color: isDark
+                              ? Colors.grey.shade300
+                              : Colors.grey.shade700,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+
+        // Error message
+        if (hasError)
+          Padding(
+            padding: const EdgeInsets.only(left: 12, top: 4),
+            child: Text(
+              errorMessage!,
+              style: TextStyle(color: theme.colorScheme.error, fontSize: 12),
+            ),
+          ),
+      ],
     );
   }
 

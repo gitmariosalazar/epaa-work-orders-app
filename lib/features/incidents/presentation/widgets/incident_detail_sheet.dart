@@ -1,4 +1,5 @@
-import 'package:clean_architecture/features/incidents/presentation/pages/solve_incident_screen.dart' show SolveIncidentResult;
+import 'package:clean_architecture/features/incidents/presentation/pages/solve_incident_screen.dart'
+    show SolveIncidentResult;
 import 'package:clean_architecture/features/incidents/presentation/widgets/add_work_order_sheet.dart';
 import 'package:clean_architecture/components/button/widget_button.dart';
 import 'package:clean_architecture/components/chip/color_chip.dart';
@@ -329,16 +330,18 @@ class _IncidentDetailSheetState extends State<IncidentDetailSheet> {
                             vertical: 5,
                           ),
                           decoration: BoxDecoration(
-                            color: (widget.incident.hasWorkOrder
-                                    ? cs.primary
-                                    : Colors.grey)
-                                .withValues(alpha: 0.12),
+                            color:
+                                (widget.incident.hasWorkOrder
+                                        ? cs.primary
+                                        : Colors.grey)
+                                    .withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: (widget.incident.hasWorkOrder
-                                      ? cs.primary
-                                      : Colors.grey)
-                                  .withValues(alpha: 0.3),
+                              color:
+                                  (widget.incident.hasWorkOrder
+                                          ? cs.primary
+                                          : Colors.grey)
+                                      .withValues(alpha: 0.3),
                             ),
                           ),
                           child: Text(
@@ -833,10 +836,10 @@ class _IncidentDetailSheetState extends State<IncidentDetailSheet> {
                                         if (history
                                                 .managedBy
                                                 ?.correo
-                                                ?.isNotEmpty ??
+                                                .isNotEmpty ??
                                             false) ...[
                                           ColorChip(
-                                            label: history.managedBy!.correo!,
+                                            label: history.managedBy!.correo,
                                             color: Colors.indigo,
                                             variant: ColorChipVariant.ghost,
                                             size: ColorChipSize.sm,
@@ -849,10 +852,10 @@ class _IncidentDetailSheetState extends State<IncidentDetailSheet> {
                                         if (history
                                                 .managedBy
                                                 ?.celular
-                                                ?.isNotEmpty ??
+                                                .isNotEmpty ??
                                             false) ...[
                                           ColorChip(
-                                            label: history.managedBy!.celular!,
+                                            label: history.managedBy!.celular,
                                             color: Colors.indigo,
                                             variant: ColorChipVariant.ghost,
                                             size: ColorChipSize.sm,

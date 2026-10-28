@@ -200,7 +200,9 @@ class _CompletionDescriptionDialogState
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
                               borderSide: BorderSide(
-                                color: theme.dividerColor.withValues(alpha: 0.4),
+                                color: theme.dividerColor.withValues(
+                                  alpha: 0.4,
+                                ),
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
@@ -297,6 +299,7 @@ class _CompletionDescriptionDialogState
                             attachedImages: _evidenceImages,
                             mode: 'completion',
                             allowFiles: true,
+                            allowGallery: true,
                             onImageAdded: (image) =>
                                 setState(() => _evidenceImages.add(image)),
                             onImageRemoved: (index) =>

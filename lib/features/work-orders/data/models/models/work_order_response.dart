@@ -25,6 +25,11 @@ class WorkOrderModel {
   final DateTime? completionDate;
   final String status;
 
+  final String? workTypeName;
+  final int? departmentId;
+  final String? departmentName;
+  final String? priorityLevel;
+
   const WorkOrderModel({
     required this.workOrderId,
     required this.orderCode,
@@ -48,6 +53,10 @@ class WorkOrderModel {
     this.assignationDate,
     this.completionDate,
     required this.status,
+    this.workTypeName,
+    this.departmentId,
+    this.departmentName,
+    this.priorityLevel,
   });
 
   factory WorkOrderModel.fromJson(Map<String, dynamic> json) {
@@ -99,6 +108,10 @@ class WorkOrderModel {
                 WorkOrderStatus.pendiente)
             .toString(),
       ),
+      workTypeName: json['workTypeName']?.toString(),
+      departmentId: _toInt(json['departmentId']),
+      departmentName: json['departmentName']?.toString(),
+      priorityLevel: json['priorityLevel']?.toString(),
     );
   }
 
@@ -143,6 +156,10 @@ class WorkOrderModel {
       assignationDate: domain.assignationDate,
       completionDate: domain.completionDate,
       status: domain.status,
+      workTypeName: domain.workTypeName,
+      departmentId: domain.departmentId,
+      departmentName: domain.departmentName,
+      priorityLevel: domain.priorityLevel,
     );
   }
 
@@ -164,6 +181,10 @@ class WorkOrderModel {
     'status': status,
     if (workOrderId.isNotEmpty) 'workOrderId': workOrderId,
     if (orderCode.isNotEmpty) 'orderCode': orderCode,
+    'workTypeName': workTypeName,
+    'departmentId': departmentId,
+    'departmentName': departmentName,
+    'priorityLevel': priorityLevel,
   };
 
   WorkOrderEntity toEntity() {
@@ -190,6 +211,97 @@ class WorkOrderModel {
       assignationDate: assignationDate,
       completionDate: completionDate,
       status: status,
+      workTypeName: workTypeName,
+      departmentId: departmentId,
+      departmentName: departmentName,
+      priorityLevel: priorityLevel,
+    );
+  }
+}
+
+class DepartmentModel {
+  final int departmentId;
+  final String departmentName;
+  final String departmentDescription;
+  final List<WorkTypeModel> workTypes;
+
+  DepartmentModel({
+    required this.departmentId,
+    required this.departmentName,
+    required this.departmentDescription,
+    required this.workTypes,
+  });
+
+  factory DepartmentModel.fromJson(Map<String, dynamic> json) {
+    return DepartmentModel(
+      departmentId: WorkOrderModel._toInt(json['departmentId'] ?? json['id']),
+      departmentName: (json['departmentName'] ?? json['name'] ?? '').toString(),
+      departmentDescription:
+          (json['departmentDescription'] ?? json['description'] ?? '')
+              .toString(),
+      workTypes:
+          (json['workTypes'] as List?)
+              ?.map((e) => WorkTypeModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'departmentId': departmentId,
+    'departmentName': departmentName,
+    'departmentDescription': departmentDescription,
+    'workTypes': workTypes.map((e) => e.toJson()).toList(),
+  };
+
+  DepartmentEntity toEntity() {
+    return DepartmentEntity(
+      departmentId: departmentId,
+      departmentName: departmentName,
+      departmentDescription: departmentDescription,
+      workTypes: workTypes.map((e) => e.toEntity()).toList(),
+    );
+  }
+}
+
+class WorkTypeModel {
+  final String typeCode;
+  final String typeName;
+  final String typeDescription;
+  final String suggestedPriority;
+
+  WorkTypeModel({
+    required this.typeCode,
+    required this.typeName,
+    required this.typeDescription,
+    required this.suggestedPriority,
+  });
+
+  factory WorkTypeModel.fromJson(Map<String, dynamic> json) {
+    return WorkTypeModel(
+      typeCode: (json['typeCode'] ?? json['code'] ?? json['id'] ?? '')
+          .toString(),
+      typeName: (json['typeName'] ?? json['name'] ?? '').toString(),
+      typeDescription: (json['typeDescription'] ?? json['description'] ?? '')
+          .toString(),
+      suggestedPriority:
+          (json['suggestedPriority'] ?? json['priority'] ?? 'MEDIA').toString(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'typeCode': typeCode,
+    'typeName': typeName,
+    'typeDescription': typeDescription,
+    'suggestedPriority': suggestedPriority,
+  };
+
+  WorkTypeEntity toEntity() {
+    return WorkTypeEntity(
+      typeCode: typeCode,
+      typeName: typeName,
+      typeDescription: typeDescription,
+      suggestedPriority: suggestedPriority,
     );
   }
 }

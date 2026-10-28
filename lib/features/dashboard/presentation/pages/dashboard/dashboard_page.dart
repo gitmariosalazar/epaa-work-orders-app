@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:clean_architecture/features/dashboard/presentation/pages/dashboard/widgets/base_bottom_navigation.dart';
 import 'package:clean_architecture/features/dashboard/presentation/pages/dashboard/widgets/dashboard_drawer.dart';

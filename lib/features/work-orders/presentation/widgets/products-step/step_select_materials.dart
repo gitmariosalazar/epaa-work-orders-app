@@ -186,7 +186,7 @@ class _StepSelectMaterialsState extends State<StepSelectMaterials> {
                   borderRadius: BorderRadius.circular(5),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 12,
                       offset: const Offset(0, 6),
                     ),
@@ -202,7 +202,7 @@ class _StepSelectMaterialsState extends State<StepSelectMaterials> {
                       ),
                       child: DataTable(
                         headingRowColor: MaterialStatePropertyAll(
-                          AppColors.primary.withOpacity(0.12),
+                          AppColors.primary.withValues(alpha: 0.12),
                         ),
                         columnSpacing: 16,
                         dataRowHeight: 40,

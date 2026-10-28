@@ -155,7 +155,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           hintText: widget.isRequired ? null : widget.label,
           hintStyle: TextStyle(
             fontSize: 11,
-            color: AppColors.textSecondary.withOpacity(0.6),
+            color: AppColors.textSecondary.withValues(alpha: 0.6),
             fontWeight: FontWeight.w400,
           ),
           prefixIcon: widget.isTextArea
@@ -173,15 +173,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
             fontSize: 10,
             color: _currentLineCount > maxLines
                 ? AppColors.error
-                : AppColors.textSecondary.withOpacity(0.7),
+                : AppColors.textSecondary.withValues(alpha: 0.7),
             fontWeight: FontWeight.w500,
           ),
           filled: true,
           fillColor: widget.readOnly
-              ? AppColors.surface.withOpacity(0.2)
-              : AppColors.surface.withOpacity(0.4),
-          border: _buildBorder(AppColors.primary.withOpacity(0.5)),
-          enabledBorder: _buildBorder(AppColors.primary.withOpacity(0.3)),
+              ? AppColors.surface.withValues(alpha: 0.2)
+              : AppColors.surface.withValues(alpha: 0.4),
+          border: _buildBorder(AppColors.primary.withValues(alpha: 0.5)),
+          enabledBorder: _buildBorder(AppColors.primary.withValues(alpha: 0.3)),
           focusedBorder: _buildBorder(AppColors.primary, width: 1.5),
           errorBorder: _buildBorder(AppColors.error, width: 1.5),
           isDense: true,

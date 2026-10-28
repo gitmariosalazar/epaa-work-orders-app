@@ -1,4 +1,6 @@
 import 'package:clean_architecture/components/badge/custom_badge.dart';
+import 'package:clean_architecture/features/connections/form/presentation/widgets/update/basic_update_connection_modal.dart';
+import 'package:clean_architecture/features/connections/search/domain/usecases/get_connection_with_properties.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
@@ -14,6 +16,7 @@ class ConnectionResultCard extends StatelessWidget {
   final ConnectionEntity connection;
   final VoidCallback onTap;
   final VoidCallback? onUpdateMeterTap;
+  final VoidCallback? onUpdateFacadeTap;
   final VoidCallback? onLocationTap;
 
   const ConnectionResultCard({
@@ -21,6 +24,7 @@ class ConnectionResultCard extends StatelessWidget {
     required this.connection,
     required this.onTap,
     this.onUpdateMeterTap,
+    this.onUpdateFacadeTap,
     this.onLocationTap,
   });
 
@@ -218,24 +222,22 @@ class ConnectionResultCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (onUpdateMeterTap != null) ...[
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: FilledButton.tonalIcon(
-                            onPressed: onUpdateMeterTap,
-                            icon: const Icon(Icons.speed_rounded, size: 16),
-                            label: const Text('Medidor'),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: cs.tertiaryContainer,
-                              foregroundColor: cs.onTertiaryContainer,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: FilledButton.tonalIcon(
+                          onPressed: () => _handleFacadeTap(context),
+                          icon: const Icon(Icons.house_rounded, size: 16),
+                          label: const Text('Fachada'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: cs.tertiaryContainer,
+                            foregroundColor: cs.onTertiaryContainer,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                         ),
-                      ],
+                      ),
                       if (onLocationTap != null) ...[
                         const SizedBox(width: 8),
                         Expanded(
@@ -288,7 +290,8 @@ class ConnectionResultCard extends StatelessWidget {
                       TextButton.icon(
                         onPressed: () async {
                           try {
-                            final exportService = GetIt.I<DocumentExportService>();
+                            final exportService =
+                                GetIt.I<DocumentExportService>();
                             await exportService.exportConnectionActa(
                               connection,
                             );
@@ -312,7 +315,9 @@ class ConnectionResultCard extends StatelessWidget {
                       ),
                       TextButton.icon(
                         onPressed: () => context.router.push(
-                          CreateIncidentForm(connectionId: connection.connectionId),
+                          CreateIncidentForm(
+                            connectionId: connection.connectionId,
+                          ),
                         ),
                         icon: Icon(
                           Icons.report,
@@ -420,5 +425,35 @@ class ConnectionResultCard extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _handleFacadeTap(BuildContext context) async {
+    final customAction = onUpdateFacadeTap ?? onUpdateMeterTap;
+    if (customAction != null) {
+      customAction();
+      return;
+    }
+
+    try {
+      final fetchUseCase = GetIt.I.isRegistered<GetConnectionWithProperties>()
+          ? GetIt.I<GetConnectionWithProperties>()
+          : null;
+      final fullEntity = fetchUseCase != null
+          ? await fetchUseCase(connection.connectionCadastralKey)
+          : connection.toConnectionWithProperties();
+      if (context.mounted) {
+        await BasicUpdateConnectionModal.show(
+          context,
+          connection: fullEntity,
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        await BasicUpdateConnectionModal.show(
+          context,
+          connection: connection.toConnectionWithProperties(),
+        );
+      }
+    }
   }
 }

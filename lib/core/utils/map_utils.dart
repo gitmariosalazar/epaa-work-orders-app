@@ -90,39 +90,94 @@ class MapUtils {
   static String getStatusDescription(String status) =>
       WorkOrderStatus.descriptionOf(status);
 
-  /// Texto del tipo de trabajo
-  static String getWorkTypeText(int id) {
+  /// Retorna el nombre corto/estandarizado del departamento según su ID
+  static String getDepartmentText(int id) {
     switch (id) {
       case 1:
-        return 'ALCANTARILLADO';
-      case 2:
         return 'AGUA POTABLE';
+      case 2:
+        return 'ALCANTARILLADO';
       case 3:
-        return 'COMERCIALIZACION';
+        return 'COMERCIALIZACIÓN';
       case 4:
-        return 'MANTENIMIENTO';
+        return 'PLANIFICACIÓN GIS';
       case 5:
-        return 'LABORATORIO';
+        return 'ADMINISTRACIÓN';
+      case 6:
+        return 'DIRECCIÓN TÉCNICA';
       default:
         return 'DESCONOCIDO';
     }
   }
 
-  // Íconos personalizados para cada tipo de trabajo (si se desea usar)
-  static IconData getWorkTypeIcon(int id) {
+  /// Retorna la descripción oficial del área
+  static String getDepartmentDescription(int id) {
     switch (id) {
       case 1:
-        return Icons.water_damage; // ALCANTARILLADO
+        return 'Mantenimiento y operación de la red de agua potable';
       case 2:
-        return Icons.opacity; // AGUA POTABLE
+        return 'Mantenimiento de la red de alcantarillado y plantas de tratamiento';
       case 3:
-        return Icons.store; // COMERCIALIZACION
+        return 'Atención al cliente, medidores y cortes de servicio';
       case 4:
-        return Icons.build; // MANTENIMIENTO
+        return 'Topografía, catastro y sistemas de información geográfica';
       case 5:
-        return Icons.science; // LABORATORIO
+        return 'Gestión interna, activos y recursos humanos';
+      case 6:
+        return 'Supervisión de proyectos, fiscalización de obras y control de calidad técnica';
       default:
-        return Icons.help; // DESCONOCIDO
+        return 'Sin descripción disponible';
+    }
+  }
+
+  /// Retorna el ícono representativo según la función operativa del departamento
+  static IconData getDepartmentIcon(int id) {
+    switch (id) {
+      case 1:
+        // Agua potable: suministro y flujo de red
+        return Icons.water_drop;
+      case 2:
+        // Alcantarillado: saneamiento, drenaje y tuberías
+        return Icons.waves_outlined;
+      case 3:
+        // Comercialización: gestión de abonados, cortes y trámites
+        return Icons.point_of_sale_outlined;
+      case 4:
+        // Planificación GIS: catastro, mapas y topografía
+        return Icons.map_outlined;
+      case 5:
+        // Administración: gestión interna, corporativa y RRHH
+        return Icons.business_outlined;
+      case 6:
+        // Dirección Técnica: ingeniería, fiscalización y supervisión técnica
+        return Icons.engineering_outlined;
+      default:
+        return Icons.help_outline;
+    }
+  }
+
+  static Color getDepartmentColor(int id) {
+    switch (id) {
+      case 1:
+        // Agua potable: suministro y flujo de red
+        return Colors.blue;
+      case 2:
+        // Alcantarillado: saneamiento, drenaje y tuberías
+        return Colors.indigo;
+      case 3:
+        // Comercialización: gestión de abonados, cortes y trámites
+        return Colors.green;
+      case 4:
+        // Planificación GIS: catastro, mapas y topografía
+        return Colors.orange;
+      case 5:
+        // Administración: gestión interna, corporativa y RRHH
+        return Colors.purple;
+      case 6:
+        // Dirección Técnica: ingeniería, fiscalización y supervisión técnica
+        return Colors.red;
+      default:
+        return Colors.grey;
     }
   }
 }

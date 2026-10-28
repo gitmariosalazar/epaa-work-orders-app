@@ -5,7 +5,6 @@ import 'package:get_it/get_it.dart';
 
 /// Filtro reutilizable: técnicos de servicio (igual que WorkOrderWorkersCard.tsx).
 bool isServiceTechnician(UserEntity u) {
-  final p = (u.positionName ?? '').toLowerCase();
   return true;
   /*
   return p.contains('analista de servicios') ||

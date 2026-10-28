@@ -68,6 +68,10 @@ const String DASHBOARD_WORK_TYPES_PATH = "dashboard-work-types";
 const String DASHBOARD_WORKERS_ROUTE = "DashboardWorkersRoute";
 const String DASHBOARD_WORKERS_PATH = "dashboard-workers";
 
+// General Dashboard
+const String GENERAL_DASHBOARD_ROUTE = "GeneralDashboardRoute";
+const String GENERAL_DASHBOARD_PATH = "general-dashboard";
+
 // Work Order Process
 const String WORK_ORDER_PROCESS_ROUTE = "WorkOrderProcessRoute";
 const String WORK_ORDER_PROCESS_PATH = "work-order-process";

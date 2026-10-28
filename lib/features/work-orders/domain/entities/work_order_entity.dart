@@ -26,6 +26,11 @@ class WorkOrderEntity {
 
   final List<File>? attachments;
 
+  final String? workTypeName;
+  final int? departmentId;
+  final String? departmentName;
+  final String? priorityLevel;
+
   WorkOrderEntity({
     this.workOrderId,
     this.orderCode,
@@ -50,5 +55,53 @@ class WorkOrderEntity {
     this.completionDate,
     this.status = 'PENDIENTE',
     this.attachments,
+    this.workTypeName,
+    this.departmentId,
+    this.departmentName,
+    this.priorityLevel,
+  });
+}
+
+/*
+export interface DepartmentResponse {
+  departmentId: number;
+  departmentName: string;
+  departmentDescription: string;
+  workTypes: WorkType[];
+}
+
+export interface WorkType {
+  typeCode: string;
+  typeName: string;
+  typeDescription: string;
+  suggestedPriority: string;
+}
+ */
+
+class DepartmentEntity {
+  final int departmentId;
+  final String departmentName;
+  final String departmentDescription;
+  final List<WorkTypeEntity> workTypes;
+
+  DepartmentEntity({
+    required this.departmentId,
+    required this.departmentName,
+    required this.departmentDescription,
+    required this.workTypes,
+  });
+}
+
+class WorkTypeEntity {
+  final String typeCode;
+  final String typeName;
+  final String typeDescription;
+  final String suggestedPriority;
+
+  WorkTypeEntity({
+    required this.typeCode,
+    required this.typeName,
+    required this.typeDescription,
+    required this.suggestedPriority,
   });
 }

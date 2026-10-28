@@ -16,6 +16,12 @@ class WorkOrderFormState {
   // Step 2: Order details
   final String origin;
   final int workTypeId;
+  final String? workTypeCode;
+  final String? workTypeName;
+  final int? departmentId;
+  final String? departmentName;
+  final WorkTypeEntity? selectedWorkType;
+  final DepartmentEntity? selectedDepartment;
   final int priorityId;
   final String cadastralKey;
   final String location;
@@ -31,7 +37,13 @@ class WorkOrderFormState {
     this.tipoPersona = 'NATURAL',
     this.selectedConnection,
     this.origin = 'SOLICITUD',
-    this.workTypeId = 1,
+    this.workTypeId = 0,
+    this.workTypeCode,
+    this.workTypeName,
+    this.departmentId,
+    this.departmentName,
+    this.selectedWorkType,
+    this.selectedDepartment,
     this.priorityId = 2,
     this.cadastralKey = '',
     this.location = '',
@@ -51,6 +63,14 @@ class WorkOrderFormState {
     bool clearSelectedConnection = false,
     String? origin,
     int? workTypeId,
+    String? workTypeCode,
+    String? workTypeName,
+    int? departmentId,
+    String? departmentName,
+    WorkTypeEntity? selectedWorkType,
+    bool clearSelectedWorkType = false,
+    DepartmentEntity? selectedDepartment,
+    bool clearSelectedDepartment = false,
     int? priorityId,
     String? cadastralKey,
     String? location,
@@ -72,6 +92,16 @@ class WorkOrderFormState {
           : (selectedConnection ?? this.selectedConnection),
       origin: origin ?? this.origin,
       workTypeId: workTypeId ?? this.workTypeId,
+      workTypeCode: workTypeCode ?? this.workTypeCode,
+      workTypeName: workTypeName ?? this.workTypeName,
+      departmentId: departmentId ?? this.departmentId,
+      departmentName: departmentName ?? this.departmentName,
+      selectedWorkType: clearSelectedWorkType
+          ? null
+          : (selectedWorkType ?? this.selectedWorkType),
+      selectedDepartment: clearSelectedDepartment
+          ? null
+          : (selectedDepartment ?? this.selectedDepartment),
       priorityId: priorityId ?? this.priorityId,
       cadastralKey: cadastralKey ?? this.cadastralKey,
       location: location ?? this.location,
@@ -94,7 +124,7 @@ class WorkOrderFormState {
       latitude: latitude,
       longitude: longitude,
       createdByUserId: createdByUserId,
-      status: 'NOTIFICADA', // NOTIFICADA
+      status: 'NOTIFICADA',
       attachments: attachments,
     );
   }
@@ -128,7 +158,9 @@ abstract class WorkOrderValidationHelper {
       if (form.location.trim().isEmpty) {
         errors['location'] = 'La dirección / lugar del trabajo es obligatoria.';
       }
-      if (form.workTypeId <= 0) {
+      final hasValidWorkType = form.workTypeId > 0 ||
+          (form.workTypeCode != null && form.workTypeCode!.isNotEmpty);
+      if (!hasValidWorkType) {
         errors['workTypeId'] = 'Seleccione el tipo de trabajo.';
       }
       if (form.priorityId <= 0) {

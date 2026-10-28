@@ -12,6 +12,8 @@ class ApiEndpoints {
   static const workers = "worker-gateway";
   static const workOrderAttachments = "work-order-attachments";
   static const connections = "connections";
+  static const workOrdersDashboard = "work-orders-dashboard";
+  static const departmentsWorkTypes = "work-types";
 
   // Auth
   static const login = "$auth/signin";
@@ -34,6 +36,45 @@ class ApiEndpoints {
       "$workOrders/get-work-order-type-statistics";
   static const getWorkOrdersStatisticsKey =
       "$workOrders/get-work-orders-statistics-key";
+
+  // Work Orders Dashboard Gateway (Advanced Analytics & KPIs)
+  static const dashboardFunnelSummary = "$workOrdersDashboard/funnel-summary";
+  static const dashboardStateMatrix = "$workOrdersDashboard/state-matrix";
+  static const dashboardOriginChannel = "$workOrdersDashboard/origin-channel";
+  static const dashboardCategoryDepartment =
+      "$workOrdersDashboard/category-department";
+  static const dashboardSyncDiscrepancies =
+      "$workOrdersDashboard/sync-discrepancies";
+  static const dashboardDispatchControl =
+      "$workOrdersDashboard/dispatch-control";
+  static const dashboardHeaderKpis = "$workOrdersDashboard/header-kpis";
+  static const dashboardStatusDistribution =
+      "$workOrdersDashboard/status-distribution";
+  static const dashboardPriorityDistribution =
+      "$workOrdersDashboard/priority-distribution";
+  static const dashboardWorkTypePerformance =
+      "$workOrdersDashboard/work-type-performance";
+  static const dashboardKeyStatisticsMatrix =
+      "$workOrdersDashboard/key-statistics-matrix";
+  static const dashboardExecutiveOverview =
+      "$workOrdersDashboard/executive-overview";
+  static const dashboardTechnicianPerformance =
+      "$workOrdersDashboard/technician-performance";
+  static const dashboardTechnicianDailyFeed =
+      "$workOrdersDashboard/technician-daily-feed";
+  static const dashboardCrewAssignments =
+      "$workOrdersDashboard/crew-assignments";
+  static const dashboardSlaMonitor = "$workOrdersDashboard/sla-monitor";
+  static const dashboardQualityIndicators =
+      "$workOrdersDashboard/quality-indicators";
+  static const dashboardEscalationAudit =
+      "$workOrdersDashboard/escalation-audit";
+  static const dashboardMaterialCosts = "$workOrdersDashboard/material-costs";
+  static const dashboardEconomicBalance =
+      "$workOrdersDashboard/economic-balance";
+  static const dashboardDailyTrend = "$workOrdersDashboard/daily-trend";
+  static const dashboardTerritorialConcentration =
+      "$workOrdersDashboard/territorial-concentration";
 
   // Process Work Orders
   static const String processWorkOrders = "process-work-orders";
@@ -121,4 +162,7 @@ class ApiEndpoints {
 
   static const findConnectionWithPropertyByCadastralKey =
       "$connections/find-connection-with-property-by-cadastral-key";
+
+  // Departments and Work Types
+  static const getAllDepartments = "$departmentsWorkTypes/get-all-departments";
 }

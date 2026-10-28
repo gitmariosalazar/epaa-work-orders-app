@@ -142,7 +142,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.12),
+                color: Colors.black.withValues(alpha: 0.12),
                 blurRadius: 24,
                 offset: const Offset(0, 12),
               ),
@@ -157,8 +157,8 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      primary.withOpacity(0.12),
-                      primary.withOpacity(0.04),
+                      primary.withValues(alpha: 0.12),
+                      primary.withValues(alpha: 0.04),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -172,7 +172,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: primary.withOpacity(0.15),
+                        color: primary.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Icon(
@@ -200,7 +200,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                             'Selecciona personal y asigna un rol',
                             style: TextStyle(
                               fontSize: 13,
-                              color: onSurface.withOpacity(0.6),
+                              color: onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                         ],
@@ -210,7 +210,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                       onPressed: () => Navigator.pop(context),
                       icon: Icon(
                         Icons.close_rounded,
-                        color: onSurface.withOpacity(0.5),
+                        color: onSurface.withValues(alpha: 0.5),
                       ),
                       tooltip: 'Cerrar',
                     ),
@@ -233,19 +233,19 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                           hintText: 'Buscar por nombre, usuario o cédula...',
                           hintStyle: TextStyle(
                             fontSize: 13.5,
-                            color: onSurface.withOpacity(0.4),
+                            color: onSurface.withValues(alpha: 0.4),
                           ),
                           prefixIcon: Icon(
                             Icons.search_rounded,
                             size: 20,
-                            color: onSurface.withOpacity(0.45),
+                            color: onSurface.withValues(alpha: 0.45),
                           ),
                           suffixIcon: _query.isNotEmpty
                               ? IconButton(
                                   icon: Icon(
                                     Icons.close_rounded,
                                     size: 18,
-                                    color: onSurface.withOpacity(0.45),
+                                    color: onSurface.withValues(alpha: 0.45),
                                   ),
                                   onPressed: () {
                                     _searchController.clear();
@@ -255,7 +255,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                               : null,
                           filled: true,
                           fillColor: theme.colorScheme.surfaceContainerHighest
-                              .withOpacity(0.45),
+                              .withValues(alpha: 0.45),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 14,
                             vertical: 12,
@@ -267,7 +267,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                             borderSide: BorderSide(
-                              color: theme.dividerColor.withOpacity(0.35),
+                              color: theme.dividerColor.withValues(alpha: 0.35),
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
@@ -298,8 +298,8 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
               Container(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 18),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest.withOpacity(
-                    0.25,
+                  color: theme.colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.25,
                   ),
                   borderRadius: const BorderRadius.vertical(
                     bottom: Radius.circular(24),
@@ -316,14 +316,14 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           side: BorderSide(
-                            color: theme.dividerColor.withOpacity(0.6),
+                            color: theme.dividerColor.withValues(alpha: 0.6),
                           ),
                         ),
                         child: Text(
                           'Cancelar',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: onSurface.withOpacity(0.75),
+                            color: onSurface.withValues(alpha: 0.75),
                           ),
                         ),
                       ),
@@ -339,7 +339,9 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                         ),
                         style: FilledButton.styleFrom(
                           backgroundColor: primary,
-                          disabledBackgroundColor: primary.withOpacity(0.35),
+                          disabledBackgroundColor: primary.withValues(
+                            alpha: 0.35,
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -369,15 +371,15 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: primary.withOpacity(0.08),
+        color: primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: primary.withOpacity(0.25)),
+        border: Border.all(color: primary.withValues(alpha: 0.25)),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 22,
-            backgroundColor: primary.withOpacity(0.18),
+            backgroundColor: primary.withValues(alpha: 0.18),
             child: Text(
               u.fullName.isNotEmpty ? u.fullName[0].toUpperCase() : '?',
               style: TextStyle(
@@ -409,7 +411,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                   ].join('  ·  '),
                   style: TextStyle(
                     fontSize: 12,
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -424,7 +426,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
             icon: Icon(
               Icons.close_rounded,
               size: 20,
-              color: theme.colorScheme.onSurface.withOpacity(0.45),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
             ),
             tooltip: 'Quitar selección',
             visualDensity: VisualDensity.compact,
@@ -445,7 +447,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: theme.colorScheme.onSurface.withOpacity(0.8),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
           ),
         ),
         const SizedBox(height: 8),
@@ -497,7 +499,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
               'Ya hay un supervisor asignado en esta OT',
               style: TextStyle(
                 fontSize: 11.5,
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ),
@@ -524,7 +526,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
               'Cargando personal...',
               style: TextStyle(
                 fontSize: 13,
-                color: theme.colorScheme.onSurface.withOpacity(0.55),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
               ),
             ),
           ],
@@ -542,7 +544,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
               Icon(
                 Icons.error_outline_rounded,
                 size: 42,
-                color: theme.colorScheme.error.withOpacity(0.7),
+                color: theme.colorScheme.error.withValues(alpha: 0.7),
               ),
               const SizedBox(height: 12),
               Text(
@@ -550,7 +552,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13.5,
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
               const SizedBox(height: 16),
@@ -579,7 +581,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
             Icon(
               Icons.search_off_rounded,
               size: 42,
-              color: theme.colorScheme.onSurface.withOpacity(0.3),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 12),
             Text(
@@ -588,7 +590,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                   : 'No se encontraron resultados',
               style: TextStyle(
                 fontSize: 14,
-                color: theme.colorScheme.onSurface.withOpacity(0.55),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
               ),
             ),
           ],
@@ -606,8 +608,10 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
 
         return Material(
           color: isSelected
-              ? primary.withOpacity(0.08)
-              : theme.colorScheme.surfaceContainerHighest.withOpacity(0.35),
+              ? primary.withValues(alpha: 0.08)
+              : theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.35,
+                ),
           borderRadius: BorderRadius.circular(14),
           child: InkWell(
             onTap: () => setState(() {
@@ -622,7 +626,7 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: isSelected
-                      ? primary.withOpacity(0.35)
+                      ? primary.withValues(alpha: 0.35)
                       : Colors.transparent,
                   width: 1.4,
                 ),
@@ -632,8 +636,8 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                   CircleAvatar(
                     radius: 18,
                     backgroundColor: isSelected
-                        ? primary.withOpacity(0.2)
-                        : theme.colorScheme.primary.withOpacity(0.1),
+                        ? primary.withValues(alpha: 0.2)
+                        : theme.colorScheme.primary.withValues(alpha: 0.1),
                     child: Text(
                       u.fullName.isNotEmpty ? u.fullName[0].toUpperCase() : '?',
                       style: TextStyle(
@@ -667,8 +671,8 @@ class _WorkerSearchDialogState extends State<WorkerSearchDialog> {
                               .join('  ·  '),
                           style: TextStyle(
                             fontSize: 12,
-                            color: theme.colorScheme.onSurface.withOpacity(
-                              0.55,
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.55,
                             ),
                           ),
                           maxLines: 1,
@@ -713,10 +717,10 @@ class _RoleChip extends StatelessWidget {
 
     return Material(
       color: selected
-          ? effectiveColor.withOpacity(0.15)
+          ? effectiveColor.withValues(alpha: 0.15)
           : Theme.of(
               context,
-            ).colorScheme.surfaceContainerHighest.withOpacity(0.4),
+            ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: enabled ? onTap : null,
@@ -727,7 +731,7 @@ class _RoleChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: selected
-                  ? effectiveColor.withOpacity(0.5)
+                  ? effectiveColor.withValues(alpha: 0.5)
                   : Colors.transparent,
               width: 1.5,
             ),
@@ -740,7 +744,7 @@ class _RoleChip extends StatelessWidget {
                 size: 18,
                 color: selected
                     ? effectiveColor
-                    : effectiveColor.withOpacity(enabled ? 0.7 : 0.4),
+                    : effectiveColor.withValues(alpha: enabled ? 0.7 : 0.4),
               ),
               const SizedBox(width: 8),
               Text(
@@ -750,7 +754,7 @@ class _RoleChip extends StatelessWidget {
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   color: selected
                       ? effectiveColor
-                      : effectiveColor.withOpacity(enabled ? 0.85 : 0.45),
+                      : effectiveColor.withValues(alpha: enabled ? 0.85 : 0.45),
                 ),
               ),
             ],

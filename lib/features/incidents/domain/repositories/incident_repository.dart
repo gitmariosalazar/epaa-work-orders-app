@@ -1,4 +1,3 @@
-import 'package:clean_architecture/core/data_states/data_state.dart';
 import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:clean_architecture/features/incidents/data/models/models/incident_detail_row_response.dart';
 import 'package:clean_architecture/features/incidents/data/models/models/incident_kpi.model.dart';
@@ -35,6 +34,6 @@ abstract class IncidentRepository {
   });
 
   FutureData<List<IncidentCategoryModel>> findIncidentCategories();
-  
+
   FutureData<IncidentDashboardKpiResponse> getIncidentDashboardKpis();
 }

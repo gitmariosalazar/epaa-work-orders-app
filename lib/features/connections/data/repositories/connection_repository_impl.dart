@@ -2,7 +2,6 @@ import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:clean_architecture/features/connections/data/datasources/remote/connection_remote_datasource.dart';
 import 'package:clean_architecture/features/connections/domain/entities/connection.dart';
 import 'package:clean_architecture/features/connections/domain/repositories/connection_repository.dart';
-import 'package:clean_architecture/features/connections/data/models/connection.dart';
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: ConnectionRepository)

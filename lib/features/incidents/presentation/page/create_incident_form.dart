@@ -1089,6 +1089,7 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
     return ImagesSection(
       attachedImages: _photoFiles,
       mode: 'create',
+      allowGallery: true,
       onImageAdded: (file) {
         if (!_isSubmitting) {
           setState(() {
@@ -1124,7 +1125,7 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
               'Cargando categorías...',
               style: TextStyle(
                 fontSize: 14,
-                color: colors.onSurfaceVariant.withOpacity(0.7),
+                color: colors.onSurfaceVariant.withValues(alpha: 0.7),
               ),
             ),
           ),
@@ -1159,7 +1160,7 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
               style: TextStyle(
                 fontSize: 14,
                 color: _selectedCategoryId == null
-                    ? colors.onSurfaceVariant.withOpacity(0.7)
+                    ? colors.onSurfaceVariant.withValues(alpha: 0.7)
                     : colors.onSurface,
               ),
             ),
@@ -1192,7 +1193,7 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: _categoriesErrorMessage != null
-                    ? colors.error.withOpacity(0.5)
+                    ? colors.error.withValues(alpha: 0.5)
                     : colors.outlineVariant,
               ),
             ),
@@ -1260,7 +1261,7 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
                         width: 40,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: colors.onSurfaceVariant.withOpacity(0.4),
+                          color: colors.onSurfaceVariant.withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -1311,8 +1312,9 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
                                     Icon(
                                       Icons.category_outlined,
                                       size: 48,
-                                      color: colors.onSurfaceVariant
-                                          .withOpacity(0.5),
+                                      color: colors.onSurfaceVariant.withValues(
+                                        alpha: 0.5,
+                                      ),
                                     ),
                                     const SizedBox(height: 16),
                                     Text(
@@ -1348,7 +1350,7 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
                                               style: TextStyle(
                                                 fontSize: 12,
                                                 color: colors.onSurfaceVariant
-                                                    .withOpacity(0.8),
+                                                    .withValues(alpha: 0.8),
                                               ),
                                             )
                                           : null,
@@ -1393,7 +1395,7 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: colors.onSurfaceVariant
-                                              .withOpacity(0.8),
+                                              .withValues(alpha: 0.8),
                                         ),
                                       ),
                                       trailing: Container(
@@ -1405,7 +1407,7 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
                                           color: _getPriorityColor(
                                             type.suggestedPriority,
                                             colors,
-                                          ).withOpacity(0.15),
+                                          ).withValues(alpha: 0.15),
                                           borderRadius: BorderRadius.circular(
                                             6,
                                           ),
@@ -1518,7 +1520,10 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
                         }
                       },
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   side: const BorderSide(color: Colors.red),
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.red,
@@ -1558,7 +1563,10 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   backgroundColor: colors.primary,
                   foregroundColor: colors.onPrimary,
                   shape: RoundedRectangleBorder(
@@ -1580,7 +1588,7 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colors.outlineVariant.withOpacity(0.0)),
+        border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.0)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

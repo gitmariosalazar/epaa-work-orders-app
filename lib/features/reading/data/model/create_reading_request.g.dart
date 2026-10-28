@@ -5,7 +5,7 @@ part of 'create_reading_request.dart';
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
-
+/*
 CreateReadingRequest _$CreateReadingRequestFromJson(
   Map<String, dynamic> json,
 ) => CreateReadingRequest(
@@ -23,6 +23,7 @@ CreateReadingRequest _$CreateReadingRequestFromJson(
   averageConsumption: (json['averageConsumption'] as num).toDouble(),
   previousMonthReading: json['previousMonthReading'] as String,
 );
+*/
 
 Map<String, dynamic> _$CreateReadingRequestToJson(
   CreateReadingRequest instance,

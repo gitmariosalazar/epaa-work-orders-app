@@ -1,4 +1,3 @@
-import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit.dart';
 import 'package:clean_architecture/features/auth/presentation/pages/login/widgets/login_optional.dart';

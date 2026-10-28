@@ -5,6 +5,7 @@ import 'package:clean_architecture/features/connections/form/update/data/datasou
 import 'package:clean_architecture/features/connections/form/update/data/mappers/connection_mapper.dart';
 import 'package:clean_architecture/features/connections/form/update/domain/repositories/connection_repository.dart';
 import 'package:clean_architecture/features/connections/form/update/data/models/dto/request/change_meter_request.dart';
+import 'package:clean_architecture/features/connections/form/update/data/models/dto/request/update_connection_basic_request.dart';
 
 @LazySingleton(as: UpdateConnectionRepository)
 class UpdateConnectionRepositoryImpl implements UpdateConnectionRepository {
@@ -55,6 +56,17 @@ class UpdateConnectionRepositoryImpl implements UpdateConnectionRepository {
       await remoteDataSource.changeMeter(request: request);
     } else {
       throw Exception('No hay conexión a internet para subir las fotos y cambiar el medidor.');
+    }
+  }
+
+  @override
+  Future<void> updateConnectionBasic(UpdateConnectionBasicRequest request) async {
+    if (await networkInfo.isConnected) {
+      await remoteDataSource.updateConnectionBasic(request: request);
+    } else {
+      throw Exception(
+        'No hay conexión a internet para subir las fotos y actualizar la acometida.',
+      );
     }
   }
 }

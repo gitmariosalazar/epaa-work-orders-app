@@ -3,7 +3,6 @@
 import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/utils/responsive/responsive_utils.dart';
 import 'package:clean_architecture/features/connections/domain/entities/connection.dart';
-import 'package:clean_architecture/features/connections/domain/usecases/connection_use_case.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/connection-step/connection_search_dialog.dart';
 import 'package:clean_architecture/shared_ui/components/common/custom_text_field.dart';
 import 'package:clean_architecture/components/common/form_card.dart';
@@ -77,9 +76,9 @@ class _StepBasicDataState extends State<StepBasicData> {
     widget.updateData('cadastralKey', connection.connectionCadastralKey);
     widget.updateData('location', connection.connectionAddress);
 
-    _clientIdController.text = connection.clientId ?? '';
-    _cadastralKeyController.text = connection.connectionCadastralKey ?? '';
-    _locationController.text = connection.connectionAddress ?? '';
+    _clientIdController.text = connection.clientId;
+    _cadastralKeyController.text = connection.connectionCadastralKey;
+    _locationController.text = connection.connectionAddress;
   }
 
   void _clearSelection() {
@@ -297,17 +296,17 @@ class _StepBasicDataState extends State<StepBasicData> {
                           ),
                           prefixIcon: const Icon(Icons.work),
                           filled: true,
-                          fillColor: AppColors.surface.withOpacity(0.4),
+                          fillColor: AppColors.surface.withValues(alpha: 0.4),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: AppColors.primary.withOpacity(0.5),
+                              color: AppColors.primary.withValues(alpha: 0.5),
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: AppColors.primary.withOpacity(0.3),
+                              color: AppColors.primary.withValues(alpha: 0.3),
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
@@ -370,17 +369,17 @@ class _StepBasicDataState extends State<StepBasicData> {
                           labelStyle: context.titleSmall.copyWith(fontSize: 11),
                           prefixIcon: const Icon(Icons.flag),
                           filled: true,
-                          fillColor: AppColors.surface.withOpacity(0.4),
+                          fillColor: AppColors.surface.withValues(alpha: 0.4),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: AppColors.primary.withOpacity(0.5),
+                              color: AppColors.primary.withValues(alpha: 0.5),
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: AppColors.primary.withOpacity(0.3),
+                              color: AppColors.primary.withValues(alpha: 0.3),
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(

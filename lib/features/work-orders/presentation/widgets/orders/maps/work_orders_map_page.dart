@@ -1,19 +1,18 @@
-import 'package:clean_architecture/core/constants/work_order_status.dart';
-import 'package:clean_architecture/core/utils/geo/coordinate_parser.dart';
-// lib/features/work-orders/presentation/pages/work_orders_map_page.dart
-
 import 'dart:async';
 import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:clean_architecture/core/constants/app_colors.dart';
+import 'package:clean_architecture/components/button/widget_button.dart';
+import 'package:clean_architecture/components/widgets/app_search_bar.dart';
 import 'package:clean_architecture/core/constants/app_icons.dart';
+import 'package:clean_architecture/core/constants/work_order_status.dart';
+import 'package:clean_architecture/core/utils/geo/coordinate_parser.dart';
 import 'package:clean_architecture/core/utils/map_utils.dart';
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_entity.dart';
 import 'package:clean_architecture/features/work-orders/domain/usecases/get_all_work_order_use_case.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/orders/maps/map_legend.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
-import 'package:clean_architecture/components/button/widget_button.dart';
+import 'package:clean_architecture/shared_ui/ui/base/app_bar/base_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -27,21 +26,23 @@ class WorkOrdersMapPage extends StatefulWidget {
 }
 
 class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
-  //final Completer<GoogleMapController> _mapController = Completer();
   Set<Marker> _markers = {};
 
   List<WorkOrderEntity> _allOrders = [];
   List<WorkOrderEntity> _displayedOrders = [];
 
   String? _selectedStatusFilter;
-  int? _selectedWorkTypeFilter;
+  int? _selectedDepartmentFilter;
+
+  final TextEditingController _searchController = TextEditingController();
+  String? _searchValue;
 
   bool _isLoadingOrders = true;
   bool _isLoadingMore = false;
   bool _hasMore = true;
   String? _errorMessage;
 
-  static const int _pageSize = 10; // Ahora usamos 10 en 10
+  static const int _pageSize = 10;
   int _currentOffset = 0;
 
   static const double _boundsPadding = 100.0;
@@ -54,6 +55,25 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
   @override
   void initState() {
     super.initState();
+    _loadOrders(refresh: true);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  void _onSearch() {
+    final text = _searchController.text.trim();
+    _searchValue = text.isEmpty ? null : text;
+    _loadOrders(refresh: true);
+  }
+
+  void _onClearSearch() {
+    _searchController.clear();
+    _searchValue = null;
     _loadOrders(refresh: true);
   }
 
@@ -74,9 +94,12 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
 
     try {
       final result = await _getAllWorkOrdersUseCase.call(
+        searchValue: _searchValue,
         limit: _pageSize,
         offset: _currentOffset,
       );
+
+      if (!mounted) return;
 
       result.when(
         success: (orders) {
@@ -107,6 +130,7 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
         }),
       );
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _errorMessage = 'Error inesperado: $e';
         _isLoadingOrders = false;
@@ -121,10 +145,10 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
       final statusMatch =
           _selectedStatusFilter == null ||
           WorkOrderStatus.normalize(order.status) == _selectedStatusFilter;
-      final typeMatch =
-          _selectedWorkTypeFilter == null ||
-          order.workTypeId == _selectedWorkTypeFilter;
-      return statusMatch && typeMatch;
+      final departmentMatch =
+          _selectedDepartmentFilter == null ||
+          order.departmentId == _selectedDepartmentFilter;
+      return statusMatch && departmentMatch;
     }).toList();
 
     _displayedOrders = filtered;
@@ -172,12 +196,10 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
       );
     }
 
-    // Solo actualizamos si el widget sigue montado
     if (!mounted) return;
 
     setState(() => _markers = newMarkers);
 
-    // Verificamos que el widget esté montado y el controller no sea null
     if (_markers.isNotEmpty && mounted && _controller != null) {
       try {
         final LatLngBounds bounds = _getBoundsFromMarkers(_markers);
@@ -185,7 +207,6 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
           CameraUpdate.newLatLngBounds(bounds, _boundsPadding),
         );
       } catch (e) {
-        // Si falla el animateCamera (por controller disposed), lo ignoramos silenciosamente
         debugPrint('Error al ajustar cámara: $e');
       }
     }
@@ -198,16 +219,14 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-
           title: Text(
             'Orden N°: ${order.orderCode}',
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 15,
-              color: Colors.deepPurple,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
-
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,18 +239,18 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
                       const SizedBox(width: 5),
                       Text(
                         'C.C:',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(width: 5),
                       Text(
                         order.cadastralKey,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -267,17 +286,20 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
               Row(
                 children: [
                   Icon(
-                    MapUtils.getWorkTypeIcon(order.workTypeId),
+                    MapUtils.getDepartmentIcon(order.departmentId ?? 0),
                     size: 16,
-                    color: Colors.blue,
+                    color: MapUtils.getDepartmentColor(order.departmentId ?? 0),
                   ),
                   const SizedBox(width: 5),
-                  Text(
-                    MapUtils.getWorkTypeText(order.workTypeId),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      MapUtils.getDepartmentText(order.departmentId ?? 0),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -289,22 +311,27 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
                   const SizedBox(width: 5),
                   Expanded(
                     child: Text(
-                      order.location ?? 'Sin dirección',
-                      style: const TextStyle(fontSize: 12, color: Colors.black),
+                      order.location,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
-              // Client info
               Row(
                 children: [
                   Icon(AppIcons.user, size: 16, color: Colors.orange),
                   const SizedBox(width: 5),
                   Expanded(
                     child: Text(
-                      order.clientId ?? 'Cliente desconocido',
-                      style: const TextStyle(fontSize: 12, color: Colors.black),
+                      order.clientId,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                 ],
@@ -326,8 +353,6 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
                     context.router.push(WorkOrderMapRoute(order: order)),
                   },
                 ),
-
-                // Botón Ver detalles
                 ActionButton(
                   icon: AppIcons.details,
                   label: 'Ver detalles',
@@ -339,8 +364,6 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
                     context.router.push(WorkOrderDetailRoute(order: order)),
                   },
                 ),
-
-                // Close button
                 ActionButton(
                   icon: AppIcons.close,
                   label: 'Cerrar',
@@ -377,354 +400,313 @@ class _WorkOrdersMapPageState extends State<WorkOrdersMapPage> {
   Widget build(BuildContext context) {
     final double bottomInset = MediaQuery.of(context).padding.bottom + 80;
 
-    if (_isLoadingOrders) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    if (_errorMessage != null) {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: true,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 12.0),
-            child: Center(
-              child: Material(
-                color: Colors.white.withOpacity(0.15),
-                shape: const CircleBorder(),
-                clipBehavior: Clip.antiAlias,
-                child: IconButton(
-                  iconSize: 20,
-                  splashRadius: 22,
-                  constraints: const BoxConstraints(
-                    minWidth: 38,
-                    minHeight: 38,
-                  ),
-                  icon: const Icon(
-                    Icons.arrow_back_rounded,
-                    color: Colors.white, // Color blanco garantizado
-                  ),
-                  tooltip: 'Atrás',
-                  onPressed: () => Navigator.of(context).maybePop(),
-                ),
-              ),
-            ),
-          ),
-          // Borde inferior sutilmente redondeado
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
-          ),
-          // Fondo con degradado moderno
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.primary,
-                  AppColors.primary.withBlue(
-                    (AppColors.primary.blue + 35).clamp(0, 255),
-                  ), // Un tono ligeramente más vibrante
-                ],
-              ),
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(8),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withOpacity(0.25),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-          ),
-          title: const Text(
-            'Mapa de Órdenes',
-            style: TextStyle(
-              color: Colors.blue,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 12.0),
-              child: Center(
-                child: Material(
-                  color: Colors.white.withOpacity(0.15),
-                  shape: const CircleBorder(),
-                  clipBehavior: Clip.antiAlias,
-                  child: IconButton(
-                    iconSize: 20,
-                    splashRadius: 22,
-                    constraints: const BoxConstraints(
-                      minWidth: 38,
-                      minHeight: 38,
-                    ),
-                    icon: _isLoadingOrders
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            ),
-                          )
-                        : const Icon(
-                            Icons.refresh_rounded,
-                            color: Colors.white,
-                          ),
-                    tooltip: 'Recargar orden',
-                    onPressed: _isLoadingOrders
-                        ? null
-                        : () => _loadOrders(refresh: true),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        body: Center(
-          child: Text(
-            _errorMessage!,
-            style: const TextStyle(color: Colors.red),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       extendBody: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.blue,
-        elevation: 0,
-        title: Text(
-          'Mapa de Órdenes (${_displayedOrders.length}${_hasMore ? '+' : ''})',
-          style: const TextStyle(
-            color: Colors.blue,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+      appBar: BaseAppBar(
+        title:
+            'Mapa de Órdenes (${_displayedOrders.length}${_hasMore ? '+' : ''})',
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: Center(
-              child: Material(
-                color: Colors.white.withOpacity(0.15),
-                shape: const CircleBorder(),
-                clipBehavior: Clip.antiAlias,
-                child: IconButton(
-                  iconSize: 20,
-                  splashRadius: 22,
-                  constraints: const BoxConstraints(
-                    minWidth: 38,
-                    minHeight: 38,
-                  ),
-                  icon: _isLoadingMore
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Icon(Icons.refresh),
-                  onPressed: _isLoadingMore
-                      ? null
-                      : () => _loadOrders(refresh: true),
-                  tooltip: 'Actualizar órdenes',
-                ),
-              ),
-            ),
+          IconButton(
+            icon: _isLoadingOrders || _isLoadingMore
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Icon(Icons.refresh),
+            onPressed: (_isLoadingOrders || _isLoadingMore)
+                ? null
+                : () => _loadOrders(refresh: true),
+            tooltip: 'Actualizar órdenes',
           ),
         ],
       ),
-      body: Stack(
+      body: Column(
         children: [
-          GoogleMap(
-            initialCameraPosition: const CameraPosition(
-              target: LatLng(0.33117, -78.21816),
-              zoom: 13,
-            ),
-            onMapCreated: (controller) {
-              if (mounted) {
-                setState(() {
-                  _controller = controller;
-                });
-              }
-            },
-            markers: _markers,
-            myLocationEnabled: true,
-            myLocationButtonEnabled: true,
-            compassEnabled: true,
-            mapToolbarEnabled: true,
-            zoomControlsEnabled: true,
-            padding: EdgeInsets.only(
-              bottom: bottomInset + 120,
-            ), // + espacio para botón
-          ),
-
-          // Positioned de Informacion de Contenido mostrado
-          MapLegend(bottomInset: 20),
-
-          // Filtros de estado y tipo de trabajo
-          Positioned(
-            top: 0,
-            left: 0,
-            width: 200,
-            child: Card(
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(2),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(2),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    DropdownButton<String?>(
-                      isExpanded: true,
-                      value: _selectedStatusFilter,
-                      hint: const Text('Filtrar por Estado'),
-                      items: [
-                        const DropdownMenuItem(
-                          value: null,
-                          child: Text(
-                            'Todos los estados',
-                            style: TextStyle(fontSize: 12),
-                          ),
-                        ),
-                        ...WorkOrderStatus.all.map(
-                          (s) => DropdownMenuItem<String?>(
-                            value: s.code,
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.circle,
-                                  color: MapUtils.getStatusColor(s.code),
-                                  size: 12,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    s.label,
-                                    style: const TextStyle(fontSize: 12),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        setState(() => _selectedStatusFilter = value);
-                        _applyFiltersAndLimit();
-                      },
-                    ),
-                    DropdownButton<int?>(
-                      isExpanded: true,
-                      value: _selectedWorkTypeFilter,
-                      hint: const Text('Filtrar por Tipo de Trabajo'),
-                      items: [
-                        const DropdownMenuItem(
-                          value: null,
-                          child: Text(
-                            'Todos los tipos',
-                            style: TextStyle(fontSize: 12),
-                          ),
-                        ),
-                        ...[1, 2, 3, 4, 5].map(
-                          (v) => DropdownMenuItem(
-                            value: v,
-                            child: Row(
-                              children: [
-                                Icon(MapUtils.getWorkTypeIcon(v), size: 12),
-                                const SizedBox(width: 8),
-                                Text(
-                                  MapUtils.getWorkTypeText(v),
-                                  style: const TextStyle(fontSize: 11),
-                                ),
-                              ],
-                            ), // ← Usando utils
-                          ),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        setState(() => _selectedWorkTypeFilter = value);
-                        _applyFiltersAndLimit();
-                      },
-                    ),
-                  ],
-                ),
-              ),
+          Tooltip(
+            message: 'Buscar por código de orden, cédula o clave catastral',
+            waitDuration: const Duration(milliseconds: 500),
+            showDuration: const Duration(seconds: 2),
+            child: AppSearchBar(
+              controller: _searchController,
+              hintText: 'Código de orden, cédula o clave catastral',
+              onSearch: _onSearch,
+              onClear: _onClearSearch,
             ),
           ),
-
-          if (_hasMore)
-            Positioned(
-              bottom: bottomInset + 35,
-              left: 20,
-              right: 20,
-              child: Center(
-                child: ElevatedButton.icon(
-                  onPressed: _isLoadingMore
-                      ? null
-                      : () => _loadOrders(refresh: false),
-                  icon: _isLoadingMore
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Icon(Icons.refresh_sharp),
-                  label: Text(
-                    _isLoadingMore
-                        ? 'Cargando...'
-                        : 'Cargar más $_pageSize OTs',
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(
-                      Color.fromARGB(
-                        255,
-                        141,
-                        68,
-                        243,
-                      ).withValues(alpha: _isLoadingMore ? 0.5 : 1.0),
-                    ),
-                    foregroundColor: WidgetStateProperty.all(Colors.white),
-                    padding: WidgetStateProperty.all(
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    ),
-                    shape: WidgetStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          if (_isLoadingOrders && _allOrders.isNotEmpty)
+            const LinearProgressIndicator(minHeight: 3),
+          Expanded(
+            child: _buildBody(context, bottomInset),
+          ),
         ],
       ),
     );
   }
 
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
+  Widget _buildBody(BuildContext context, double bottomInset) {
+    if (_isLoadingOrders && _allOrders.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_errorMessage != null && _allOrders.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.cloud_off, size: 64, color: Colors.grey),
+              const SizedBox(height: 16),
+              Text(
+                _errorMessage!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.red, fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () => _loadOrders(refresh: true),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Reintentar'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Stack(
+      children: [
+        GoogleMap(
+          initialCameraPosition: const CameraPosition(
+            target: LatLng(0.33117, -78.21816),
+            zoom: 13,
+          ),
+          onMapCreated: (controller) {
+            if (mounted) {
+              setState(() {
+                _controller = controller;
+              });
+            }
+          },
+          markers: _markers,
+          myLocationEnabled: true,
+          myLocationButtonEnabled: true,
+          compassEnabled: true,
+          mapToolbarEnabled: true,
+          zoomControlsEnabled: true,
+          padding: EdgeInsets.only(
+            bottom: bottomInset + 120,
+          ),
+        ),
+
+        // Información de Contenido mostrado
+        MapLegend(bottomInset: 20),
+
+        // Filtros de estado y departamento
+        Positioned(
+          top: 8,
+          left: 8,
+          width: 210,
+          child: Card(
+            elevation: 6,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButton<String?>(
+                    isExpanded: true,
+                    value: _selectedStatusFilter,
+                    hint: const Text(
+                      'Filtrar por Estado',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    underline: const SizedBox.shrink(),
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text(
+                          'Todos los estados',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                      ...WorkOrderStatus.all.map(
+                        (s) => DropdownMenuItem<String?>(
+                          value: s.code,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.circle,
+                                color: MapUtils.getStatusColor(s.code),
+                                size: 12,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  s.label,
+                                  style: const TextStyle(fontSize: 12),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() => _selectedStatusFilter = value);
+                      _applyFiltersAndLimit();
+                    },
+                  ),
+                  const Divider(height: 1),
+                  DropdownButton<int?>(
+                    isExpanded: true,
+                    value: _selectedDepartmentFilter,
+                    hint: const Text(
+                      'Filtrar por Departamento',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    underline: const SizedBox.shrink(),
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text(
+                          'Todos los Departamentos',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                      ...[1, 2, 3, 4, 5, 6].map(
+                        (v) => DropdownMenuItem(
+                          value: v,
+                          child: Row(
+                            children: [
+                              Icon(
+                                MapUtils.getDepartmentIcon(v),
+                                size: 14,
+                                color: MapUtils.getDepartmentColor(v),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  MapUtils.getDepartmentText(v),
+                                  style: const TextStyle(fontSize: 11),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() => _selectedDepartmentFilter = value);
+                      _applyFiltersAndLimit();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+
+        // Aviso si no hay resultados cargados que coincidan
+        if (_displayedOrders.isEmpty && !_isLoadingOrders)
+          Positioned(
+            top: 130,
+            left: 20,
+            right: 20,
+            child: Center(
+              child: Material(
+                elevation: 4,
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.white.withValues(alpha: 0.95),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        size: 18,
+                        color: Colors.orange,
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          _allOrders.isEmpty
+                              ? 'No se encontraron órdenes'
+                              : 'Ninguna orden cargada coincide con los filtros',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+        // Botón Cargar más OTs
+        if (_hasMore)
+          Positioned(
+            bottom: bottomInset + 35,
+            left: 20,
+            right: 20,
+            child: Center(
+              child: ElevatedButton.icon(
+                onPressed: _isLoadingMore
+                    ? null
+                    : () => _loadOrders(refresh: false),
+                icon: _isLoadingMore
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.refresh_sharp),
+                label: Text(
+                  _isLoadingMore
+                      ? 'Cargando...'
+                      : 'Cargar más $_pageSize OTs',
+                ),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(
+                    const Color.fromARGB(
+                      255,
+                      141,
+                      68,
+                      243,
+                    ).withValues(alpha: _isLoadingMore ? 0.5 : 1.0),
+                  ),
+                  foregroundColor: WidgetStateProperty.all(Colors.white),
+                  padding: WidgetStateProperty.all(
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  ),
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }

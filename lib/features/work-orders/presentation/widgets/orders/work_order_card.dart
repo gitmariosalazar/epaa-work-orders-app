@@ -82,25 +82,14 @@ class WorkOrderCard extends StatelessWidget {
   Color _getStatusColor(String status) => MapUtils.getStatusColor(status);
 
   // Tipo de trabajo + Icono personalizado
-  String _getWorkTypeText(int workTypeId) =>
-      MapUtils.getWorkTypeText(workTypeId);
+  String _getDepartmentText(int departmentId) =>
+      MapUtils.getDepartmentText(departmentId);
 
-  IconData _getWorkTypeIcon(int workTypeId) {
-    switch (workTypeId) {
-      case 1:
-        return Icons.plumbing; // Alcantarillado
-      case 2:
-        return Icons.water_drop; // Agua potable
-      case 3:
-        return Icons.store; // Comercialización
-      case 4:
-        return Icons.build; // Mantenimiento
-      case 5:
-        return Icons.science; // Laboratorio
-      default:
-        return Icons.work;
-    }
-  }
+  IconData _getDepartmentIcon(int departmentId) =>
+      MapUtils.getDepartmentIcon(departmentId);
+
+  Color _getDepartmentColor(int departmentId) =>
+      MapUtils.getDepartmentColor(departmentId);
 
   @override
   Widget build(BuildContext context) {
@@ -117,12 +106,11 @@ class WorkOrderCard extends StatelessWidget {
         ? colorScheme.outlineVariant
         : colorScheme.outlineVariant.withValues(alpha: 0.35);
 
-    final workTypeColor = isDark ? const Color(0xFF81C784) : Colors.green;
-    final connectionIconColor =
-        isDark ? const Color(0xFF64B5F6) : Colors.lightBlue;
+    final connectionIconColor = isDark
+        ? const Color(0xFF64B5F6)
+        : Colors.lightBlue;
 
-    final locationButtonColor =
-        isDark ? const Color(0xFF81C784) : Colors.green;
+    final locationButtonColor = isDark ? const Color(0xFF81C784) : Colors.green;
     final printButtonColor = isDark ? const Color(0xFF64B5F6) : Colors.blue;
 
     final dateString = order.creationDate != null
@@ -136,10 +124,7 @@ class WorkOrderCard extends StatelessWidget {
       shadowColor: colorScheme.shadow.withValues(alpha: isDark ? 0.3 : 0.08),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
-          color: cardBorderColor,
-          width: 1,
-        ),
+        side: BorderSide(color: cardBorderColor, width: 1),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
@@ -170,13 +155,15 @@ class WorkOrderCard extends StatelessWidget {
                         Row(
                           children: [
                             Icon(
-                              _getWorkTypeIcon(order.workTypeId),
+                              _getDepartmentIcon(order.departmentId ?? 0),
                               size: 16,
-                              color: workTypeColor,
+                              color: _getDepartmentColor(
+                                order.departmentId ?? 0,
+                              ),
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              _getWorkTypeText(order.workTypeId),
+                              _getDepartmentText(order.departmentId ?? 0),
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
@@ -301,11 +288,7 @@ class WorkOrderCard extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: onEdit,
-                    icon: Icon(
-                      Icons.print,
-                      size: 14,
-                      color: printButtonColor,
-                    ),
+                    icon: Icon(Icons.print, size: 14, color: printButtonColor),
                     padding: const EdgeInsets.all(6),
                     constraints: const BoxConstraints(
                       minWidth: 28,
@@ -463,9 +446,7 @@ class _StatusChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withValues(
-          alpha: isDark ? 0.22 : 0.12,
-        ),
+        color: color.withValues(alpha: isDark ? 0.22 : 0.12),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: color.withValues(alpha: isDark ? 0.85 : 1.0),
@@ -476,8 +457,9 @@ class _StatusChip extends StatelessWidget {
         text,
         style: TextStyle(
           fontSize: 9,
-          color:
-              isDark ? Color.lerp(color, Colors.white, 0.15) ?? color : color,
+          color: isDark
+              ? Color.lerp(color, Colors.white, 0.15) ?? color
+              : color,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -504,9 +486,7 @@ class _PriorityChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: color.withValues(
-          alpha: isDark
-              ? (isUrgent ? 0.30 : 0.18)
-              : (isUrgent ? 0.20 : 0.10),
+          alpha: isDark ? (isUrgent ? 0.30 : 0.18) : (isUrgent ? 0.20 : 0.10),
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(

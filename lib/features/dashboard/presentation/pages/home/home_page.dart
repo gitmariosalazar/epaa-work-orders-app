@@ -99,58 +99,6 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BaseTitle(
-              title: "Dashboard de Órdenes de Trabajo",
-              color: isDark ? colorScheme.onSurface : null,
-            ),
-            const SizedBox(height: 20),
-
-            // Tarjetas de resumen
-            Row(
-              children: [
-                Expanded(
-                  child: _SummaryCard(
-                    title: 'Total',
-                    value: totalOrders,
-                    icon: Icons.assignment,
-                    color: blueColor,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _SummaryCard(
-                    title: 'Pendientes',
-                    value: pendingOrders,
-                    icon: Icons.schedule,
-                    color: orangeColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _SummaryCard(
-                    title: 'En Progreso',
-                    value: inProgressOrders,
-                    icon: Icons.handyman,
-                    color: purpleColor,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _SummaryCard(
-                    title: 'Urgentes',
-                    value: urgentOrders,
-                    icon: Icons.warning,
-                    color: redColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-
             // ── Órdenes de Trabajo ──────────────────────────────────
             _ActionSection(
               title: 'Órdenes de Trabajo',
@@ -271,6 +219,57 @@ class HomePage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
+            BaseTitle(
+              title: "Dashboard de Órdenes de Trabajo",
+              color: isDark ? colorScheme.onSurface : null,
+            ),
+            const SizedBox(height: 20),
+
+            // Tarjetas de resumen
+            Row(
+              children: [
+                Expanded(
+                  child: _SummaryCard(
+                    title: 'Total',
+                    value: totalOrders,
+                    icon: Icons.assignment,
+                    color: blueColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _SummaryCard(
+                    title: 'Pendientes',
+                    value: pendingOrders,
+                    icon: Icons.schedule,
+                    color: orangeColor,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _SummaryCard(
+                    title: 'En Progreso',
+                    value: inProgressOrders,
+                    icon: Icons.handyman,
+                    color: purpleColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _SummaryCard(
+                    title: 'Urgentes',
+                    value: urgentOrders,
+                    icon: Icons.warning,
+                    color: redColor,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
           ],
         ),
       ),

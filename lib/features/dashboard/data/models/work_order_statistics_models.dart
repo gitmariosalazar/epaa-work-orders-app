@@ -38,11 +38,18 @@ class WorkOrderPriorityStatisticModel extends WorkOrderPriorityStatisticEntity {
 
   factory WorkOrderPriorityStatisticModel.fromJson(Map<String, dynamic> json) =>
       WorkOrderPriorityStatisticModel(
-        priorityLevel: _toStr(json['priorityLevel']),
-        priorityId: _toInt(json['priorityId']),
-        description: _toStr(json['description']),
-        quantity: _toInt(json['quantity']),
-        percentageOfTotal: _toDouble(json['percentageOfTotal']),
+        priorityLevel: _toStr(
+          json['priorityLevel'] ?? json['priority_level'] ?? json['prioridad'],
+        ),
+        priorityId: _toInt(json['priorityId'] ?? json['priority_id']),
+        description: _toStr(json['description'] ?? json['descripcion']),
+        quantity: _toInt(json['quantity'] ?? json['cantidad']),
+        percentageOfTotal: _toDouble(
+          json['percentageOfTotal'] ??
+              json['percentage_of_total'] ??
+              json['percentage'] ??
+              json['porcentaje'],
+        ),
       );
 
   WorkOrderPriorityStatisticEntity toEntity() => this;
@@ -59,11 +66,16 @@ class WorkOrderStatusStatisticModel extends WorkOrderStatusStatisticEntity {
 
   factory WorkOrderStatusStatisticModel.fromJson(Map<String, dynamic> json) =>
       WorkOrderStatusStatisticModel(
-        statusName: _toStr(json['statusName']),
-        statusId: _toStr(json['statusId']),
-        statusDescription: _toStr(json['statusDescription']),
-        quantity: _toInt(json['quantity']),
-        percentageOfTotal: _toDouble(json['percentageOfTotal']),
+        statusName: _toStr(json['statusName'] ?? json['status_name']),
+        statusId:
+            _toStr(json['statusId'] ?? json['status_id'] ?? json['estado']),
+        statusDescription: _toStr(json['statusDescription'] ??
+            json['status_description'] ??
+            json['descripcion']),
+        quantity: _toInt(json['quantity'] ?? json['total'] ?? json['count']),
+        percentageOfTotal: _toDouble(json['percentageOfTotal'] ??
+            json['percentage_of_total'] ??
+            json['porcentaje']),
       );
 
   WorkOrderStatusStatisticEntity toEntity() => this;

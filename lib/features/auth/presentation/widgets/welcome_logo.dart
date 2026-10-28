@@ -69,7 +69,9 @@ class WelcomeLogo extends StatelessWidget {
         Text(
           'Inicie sesión para continuar',
           style: context.bodyLarge.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
           textAlign: TextAlign.center,
         ),

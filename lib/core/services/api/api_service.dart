@@ -9,12 +9,8 @@ import 'package:clean_architecture/config/app_config.dart';
 import 'package:clean_architecture/core/constants/api_endpoints.dart';
 import 'package:clean_architecture/core/services/auth/token_refresher.dart';
 import 'package:get_it/get_it.dart';
-import 'package:clean_architecture/core/data/models/requests/refresh_token_request.dart';
-import 'package:clean_architecture/core/data/models/responses/api_response.dart';
-import 'package:clean_architecture/core/data/models/responses/refresh_token_response.dart';
 import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
 import 'package:clean_architecture/core/services/session/session_service.dart';
-import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:dio/dio.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -115,18 +111,22 @@ final class ApiServiceImpl implements ApiService {
     }
 
     if (addInterceptors) {
-      /// Alice Configuration
-      final alice = Alice(
-        configuration: AliceConfiguration(
-          navigatorKey: navigationService.navigatorKey,
-          showNotification: true,
-          showInspectorOnShake: true,
-          showShareButton: true,
-        ),
-      );
-      AliceDioAdapter aliceDioAdapter = AliceDioAdapter();
-      alice.addAdapter(aliceDioAdapter);
-      _dio.interceptors.addAll([authInterceptor, aliceDioAdapter]);
+      _dio.interceptors.add(authInterceptor);
+
+      /// Alice Configuration: Solo se habilita si el entorno lo autoriza
+      if (appConfig.enableHttpInspector) {
+        final alice = Alice(
+          configuration: AliceConfiguration(
+            navigatorKey: navigationService.navigatorKey,
+            showNotification: appConfig.showHttpInspectorNotifications,
+            showInspectorOnShake: true,
+            showShareButton: true,
+          ),
+        );
+        final aliceDioAdapter = AliceDioAdapter();
+        alice.addAdapter(aliceDioAdapter);
+        _dio.interceptors.add(aliceDioAdapter);
+      }
     }
   }
 

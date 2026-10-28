@@ -1,5 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:clean_architecture/features/dashboard/domain/entities/executive_overview_entity.dart';
+import 'package:clean_architecture/features/dashboard/domain/usecases/executive_overview_use_cases.dart';
+import 'package:clean_architecture/features/dashboard/domain/usecases/work_order_statistics_use_cases.dart';
 import 'package:clean_architecture/features/dashboard/presentation/pages/technician/cubit/technician_initial_cubit.dart';
 import 'package:clean_architecture/features/dashboard/presentation/pages/technician/cubit/technician_initial_state.dart';
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_entity.dart';
@@ -9,6 +12,11 @@ import 'package:mocktail/mocktail.dart';
 
 class MockGetAllWorkOrdersUseCase extends Mock
     implements GetAllWorkOrdersUseCase {}
+
+class MockGetHeaderKpisUseCase extends Mock implements GetHeaderKpisUseCase {}
+
+class MockGetWorkOrderStatusStatisticsUseCase extends Mock
+    implements GetWorkOrderStatusStatisticsUseCase {}
 
 void main() {
   late MockGetAllWorkOrdersUseCase mockGetAllWorkOrdersUseCase;
@@ -101,7 +109,7 @@ void main() {
   );
 
   blocTest<TechnicianInitialCubit, TechnicianInitialState>(
-    'loadInitialData emits fallback orders when useCase returns empty list',
+    'loadInitialData emits empty state when useCase returns empty list',
     build: () {
       when(
         () => mockGetAllWorkOrdersUseCase.call(
@@ -115,11 +123,11 @@ void main() {
     expect: () => [
       predicate<TechnicianInitialState>((state) {
         return !state.isLoading &&
-            state.pendingCount == 3 &&
-            state.inProgressCount == 1 &&
-            state.completedCount == 5 &&
-            state.priorityOrder?.orderCode == 'OT-2026-90' &&
-            state.todayOrders.length == 3;
+            state.pendingCount == 0 &&
+            state.inProgressCount == 0 &&
+            state.completedCount == 0 &&
+            state.priorityOrder == null &&
+            state.todayOrders.isEmpty;
       }),
     ],
   );
@@ -141,6 +149,106 @@ void main() {
       predicate<TechnicianInitialState>(
         (state) => !state.isSyncing && state.allOrders.length == 3,
       ),
+    ],
+  );
+
+  blocTest<TechnicianInitialCubit, TechnicianInitialState>(
+    'loadInitialData uses GetHeaderKpisUseCase as primary source for KPI counts',
+    build: () {
+      final mockHeaderKpisUseCase = MockGetHeaderKpisUseCase();
+      when(
+        () => mockGetAllWorkOrdersUseCase.call(
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+        ),
+      ).thenAnswer((_) async => SuccessState(data: sampleOrders));
+
+      when(() => mockHeaderKpisUseCase.call()).thenAnswer(
+        (_) async => const SuccessState(
+          data: HeaderKpisEntity(
+            totalOrders: 20,
+            pendingOrAssigned: 8,
+            inProgress: 5,
+            onHold: 0,
+            criticalOrders: 0,
+            emergency: 0,
+            urgent: 0,
+            high: 0,
+            medium: 0,
+            low: 0,
+            createdToday: 0,
+            createdLast7Days: 0,
+            createdThisMonth: 0,
+            completed: 7,
+            closed: 0,
+            totalMaterialCost: 0,
+          ),
+        ),
+      );
+
+      return TechnicianInitialCubit(
+        getAllWorkOrdersUseCase: mockGetAllWorkOrdersUseCase,
+        getHeaderKpisUseCase: mockHeaderKpisUseCase,
+      );
+    },
+    act: (c) => c.loadInitialData(),
+    expect: () => [
+      predicate<TechnicianInitialState>((state) {
+        return !state.isLoading &&
+            state.pendingCount == 8 &&
+            state.inProgressCount == 5 &&
+            state.completedCount == 7;
+      }),
+    ],
+  );
+
+  blocTest<TechnicianInitialCubit, TechnicianInitialState>(
+    'loadInitialData recovers inProgressCount when backend reports inProgress as 0',
+    build: () {
+      final mockHeaderKpisUseCase = MockGetHeaderKpisUseCase();
+      when(
+        () => mockGetAllWorkOrdersUseCase.call(
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+        ),
+      ).thenAnswer((_) async => SuccessState(data: sampleOrders));
+
+      when(() => mockHeaderKpisUseCase.call()).thenAnswer(
+        (_) async => const SuccessState(
+          data: HeaderKpisEntity(
+            totalOrders: 135,
+            pendingOrAssigned: 85,
+            inProgress: 0,
+            onHold: 0,
+            criticalOrders: 1,
+            emergency: 0,
+            urgent: 1,
+            high: 0,
+            medium: 0,
+            low: 0,
+            createdToday: 0,
+            createdLast7Days: 90,
+            createdThisMonth: 135,
+            completed: 28,
+            closed: 28,
+            totalMaterialCost: 0,
+          ),
+        ),
+      );
+
+      return TechnicianInitialCubit(
+        getAllWorkOrdersUseCase: mockGetAllWorkOrdersUseCase,
+        getHeaderKpisUseCase: mockHeaderKpisUseCase,
+      );
+    },
+    act: (c) => c.loadInitialData(),
+    expect: () => [
+      predicate<TechnicianInitialState>((state) {
+        return !state.isLoading &&
+            state.pendingCount == 85 &&
+            state.inProgressCount == 22 &&
+            state.completedCount == 28;
+      }),
     ],
   );
 }

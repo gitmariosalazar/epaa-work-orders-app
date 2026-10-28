@@ -1,7 +1,6 @@
 // shared_ui/ui/base/app_bar/base_app_bar.dart
 
 import 'package:clean_architecture/core/constants/app_colors.dart';
-import 'package:clean_architecture/core/constants/app_icons.dart';
 import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
 import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
@@ -186,7 +185,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
               color: effectiveForegroundColor,
             ),
             style: IconButton.styleFrom(
-              backgroundColor: effectiveForegroundColor.withOpacity(0.08),
+              backgroundColor: effectiveForegroundColor.withValues(alpha: 0.08),
               shape: const CircleBorder(),
               padding: EdgeInsets.zero,
               fixedSize: const Size(40, 40),

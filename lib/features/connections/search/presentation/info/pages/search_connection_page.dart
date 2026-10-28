@@ -17,6 +17,7 @@ import '../widgets/search_loading_view.dart';
 import '../widgets/search_error_view.dart';
 import '../widgets/search_empty_view.dart';
 import '../widgets/connection_result_card.dart';
+import 'package:clean_architecture/features/connections/form/presentation/widgets/update/basic_update_connection_modal.dart';
 
 @RoutePage()
 class SearchConnectionPage extends StatefulWidget implements AutoRouteWrapper {
@@ -204,7 +205,7 @@ class _SearchConnectionPageState extends State<SearchConnectionPage> {
           connection: item,
           onTap: () => _handleCardAction(context, item, 'update-form'),
           onUpdateMeterTap: () =>
-              _handleCardAction(context, item, 'update-meter-number-form'),
+              _handleCardAction(context, item, 'update-facade-modal'),
           onLocationTap: () =>
               _handleCardAction(context, item, 'update-location-form'),
         );
@@ -228,10 +229,15 @@ class _SearchConnectionPageState extends State<SearchConnectionPage> {
         setState(() {
           _isLoadingDetails = false;
         });
-        if (route == 'update-meter-number-form') {
-          context.router.push(
-            UpdateMeterNumberFormScreen(connection: fullEntity),
+        if (route == 'update-facade-modal' ||
+            route == 'update-meter-number-form') {
+          final updated = await BasicUpdateConnectionModal.show(
+            context,
+            connection: fullEntity,
           );
+          if (updated == true && mounted) {
+            _onSearch();
+          }
         } else if (route == 'update-location-form') {
           context.router.push(
             UpdateLocationFormScreen(connection: fullEntity),

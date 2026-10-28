@@ -50,4 +50,5 @@ abstract interface class WorkOrderRepository {
   FutureData<void> addWorkersBatchToWorkOrder(dynamic request);
   FutureData<void> removeWorkerFromWorkOrder(dynamic request);
   FutureData<void> advanceWorkOrderState(dynamic request);
+  FutureData<List<DepartmentEntity>> getDepartments();
 }

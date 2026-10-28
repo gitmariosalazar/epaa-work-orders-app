@@ -42,7 +42,7 @@ class TodayOrdersSection extends StatelessWidget {
     if (order.description.trim().isNotEmpty) {
       return order.description.trim();
     }
-    return MapUtils.getWorkTypeText(order.workTypeId);
+    return MapUtils.getDepartmentText(order.departmentId ?? 0);
   }
 
   @override
@@ -60,7 +60,7 @@ class TodayOrdersSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'ÓRDENES DE HOY$countText',
+              'ÓRDENES DE TRABAJO RECIENTES$countText',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,

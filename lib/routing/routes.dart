@@ -100,6 +100,10 @@ class AppRouter extends RootStackRouter {
           path: DASHBOARD_WORKERS_PATH,
           page: WorkOrdersDashboardRoute.page,
         ),
+        AutoRoute(
+          path: GENERAL_DASHBOARD_PATH,
+          page: GeneralDashboardRoute.page,
+        ),
       ],
     ),
   ];

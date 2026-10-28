@@ -1,4 +1,5 @@
 import 'package:clean_architecture/features/connections/form/update/data/models/dto/request/change_meter_request.dart';
+import 'package:clean_architecture/features/connections/form/update/data/models/dto/request/update_connection_basic_request.dart';
 
 abstract class UpdateConnectionRepository {
   Future<void> updateConnection({
@@ -7,6 +8,8 @@ abstract class UpdateConnectionRepository {
   });
 
   Future<void> changeMeter(ChangeMeterRequest request);
+
+  Future<void> updateConnectionBasic(UpdateConnectionBasicRequest request);
 }
 
 class UpdateConnectionParams {

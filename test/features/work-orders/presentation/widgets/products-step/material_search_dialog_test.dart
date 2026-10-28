@@ -2,7 +2,6 @@ import 'package:clean_architecture/core/data_states/data_state.dart';
 import 'package:clean_architecture/features/products/domain/entities/product_material_entity.dart';
 import 'package:clean_architecture/features/products/domain/usecases/product_material_use_case.dart';
 import 'package:clean_architecture/features/work-orders/presentation/widgets/products-step/material_search_dialog.dart';
-import 'package:clean_architecture/features/work-orders/presentation/widgets/products-step/step_select_materials.dart';
 import 'package:clean_architecture/shared_ui/themes/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -49,9 +48,7 @@ void main() {
   ];
 
   setUpAll(() {
-    registerFallbackValue(
-      ProductMaterialPaginatedParams(limit: 50, offset: 0),
-    );
+    registerFallbackValue(ProductMaterialPaginatedParams(limit: 50, offset: 0));
   });
 
   setUp(() {
@@ -75,13 +72,13 @@ void main() {
   Widget buildWidget({required ThemeData theme}) {
     return MaterialApp(
       theme: theme,
-      home: const Scaffold(
-        body: MaterialSearchDialog(),
-      ),
+      home: const Scaffold(body: MaterialSearchDialog()),
     );
   }
 
-  testWidgets('renders all main elements of MaterialSearchDialog', (tester) async {
+  testWidgets('renders all main elements of MaterialSearchDialog', (
+    tester,
+  ) async {
     await tester.pumpWidget(buildWidget(theme: lightTheme));
     await tester.pumpAndSettle();
 
@@ -100,7 +97,10 @@ void main() {
     // 3. Cantidad y stepper
     expect(find.text('Cantidad a utilizar'), findsOneWidget);
     expect(find.byIcon(Icons.remove_rounded), findsOneWidget);
-    expect(find.byIcon(Icons.add_rounded), findsNWidgets(2)); // Stepper '+' y botón 'Agregar a la Orden'
+    expect(
+      find.byIcon(Icons.add_rounded),
+      findsNWidgets(2),
+    ); // Stepper '+' y botón 'Agregar a la Orden'
 
     // 4. Lista de materiales cargados
     expect(find.text('MAT-001'), findsOneWidget);
@@ -114,7 +114,9 @@ void main() {
     expect(find.text('Agregar a la Orden'), findsOneWidget);
   });
 
-  testWidgets('selecting a material updates selection and stepper works', (tester) async {
+  testWidgets('selecting a material updates selection and stepper works', (
+    tester,
+  ) async {
     await tester.pumpWidget(buildWidget(theme: lightTheme));
     await tester.pumpAndSettle();
 
@@ -123,13 +125,18 @@ void main() {
     await tester.pumpAndSettle();
 
     // Unidad de medida visible
-    expect(find.text('METROS'), findsNWidgets(2)); // en el selector y en el banner de item
+    expect(
+      find.text('METROS'),
+      findsNWidgets(2),
+    ); // en el selector y en el banner de item
 
     // Incrementar cantidad usando el stepper '+'
-    final addIconInStepper = find.descendant(
-      of: find.byType(Row),
-      matching: find.byIcon(Icons.add_rounded),
-    ).first;
+    final addIconInStepper = find
+        .descendant(
+          of: find.byType(Row),
+          matching: find.byIcon(Icons.add_rounded),
+        )
+        .first;
 
     await tester.tap(addIconInStepper);
     await tester.pumpAndSettle();

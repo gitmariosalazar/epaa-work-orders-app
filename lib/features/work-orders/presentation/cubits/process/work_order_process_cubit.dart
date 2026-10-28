@@ -28,7 +28,6 @@ class WorkOrderProcessCubit extends Cubit<WorkOrderProcessState> {
   final CreatePreparationInspectionUseCase _createPreparationInspectionUseCase;
   final ResolvePreparationInspectionUseCase
   _resolvePreparationInspectionUseCase;
-  final StartExecutionUseCase _startExecutionUseCase;
   final FinishExecutionUseCase _finishExecutionUseCase;
   final AddWorkersBatchToWorkOrderUseCase _addWorkersBatchToWorkOrderUseCase;
   final RemoveWorkerFromWorkOrderUseCase _removeWorkerFromWorkOrderUseCase;
@@ -81,7 +80,6 @@ class WorkOrderProcessCubit extends Cubit<WorkOrderProcessState> {
        _createPreparationInspectionUseCase = createPreparationInspectionUseCase,
        _resolvePreparationInspectionUseCase =
            resolvePreparationInspectionUseCase,
-       _startExecutionUseCase = startExecutionUseCase,
        _finishExecutionUseCase = finishExecutionUseCase,
        _addWorkersBatchToWorkOrderUseCase = addWorkersBatchToWorkOrderUseCase,
        _removeWorkerFromWorkOrderUseCase = removeWorkerFromWorkOrderUseCase,

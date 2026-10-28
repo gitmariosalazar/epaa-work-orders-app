@@ -1,5 +1,4 @@
 import 'package:injectable/injectable.dart';
-import 'dart:convert';
 import 'package:clean_architecture/core/services/api/api_service.dart';
 import 'package:clean_architecture/features/reading/data/model/create_reading_request.dart';
 import 'package:clean_architecture/features/reading/data/model/reading_basic_info_response.dart';
@@ -42,7 +41,8 @@ class RemoteReadingDataSourceImpl implements RemoteReadingDataSource {
     if (statusCode >= 400) {
       String errorMessage = 'Error del servidor ($statusCode)';
       try {
-        if (errorBody is Map<String, dynamic> && errorBody.containsKey('message')) {
+        if (errorBody is Map<String, dynamic> &&
+            errorBody.containsKey('message')) {
           if (errorBody['message'] is List) {
             errorMessage = (errorBody['message'] as List).join(', ');
           } else {
@@ -111,7 +111,10 @@ class RemoteReadingDataSourceImpl implements RemoteReadingDataSource {
       List<ReadingBasicInfoResponse> results = [];
       if (rawData is List) {
         results = rawData
-            .map((e) => ReadingBasicInfoResponse.fromJson(e as Map<String, dynamic>))
+            .map(
+              (e) =>
+                  ReadingBasicInfoResponse.fromJson(e as Map<String, dynamic>),
+            )
             .toList();
       } else if (rawData is Map<String, dynamic>) {
         results = [ReadingBasicInfoResponse.fromJson(rawData)];

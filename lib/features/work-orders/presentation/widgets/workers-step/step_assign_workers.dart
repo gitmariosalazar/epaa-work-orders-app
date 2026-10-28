@@ -117,7 +117,7 @@ class _StepAssignWorkersState extends State<StepAssignWorkers> {
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 12,
                       offset: const Offset(0, 6),
                     ),
@@ -133,7 +133,7 @@ class _StepAssignWorkersState extends State<StepAssignWorkers> {
                       ),
                       child: DataTable(
                         headingRowColor: MaterialStatePropertyAll(
-                          AppColors.primary.withOpacity(0.12),
+                          AppColors.primary.withValues(alpha: 0.12),
                         ),
                         columnSpacing: 16,
                         dataRowHeight: 40,
@@ -215,8 +215,8 @@ class _StepAssignWorkersState extends State<StepAssignWorkers> {
                                   children: [
                                     CircleAvatar(
                                       radius: 16,
-                                      backgroundColor: badgeColor.withOpacity(
-                                        0.8,
+                                      backgroundColor: badgeColor.withValues(
+                                        alpha: 0.8,
                                       ),
                                       child: Text(
                                         w['fullName'][0],
@@ -260,7 +260,7 @@ class _StepAssignWorkersState extends State<StepAssignWorkers> {
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: badgeColor.withOpacity(0.15),
+                                    color: badgeColor.withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
@@ -378,8 +378,8 @@ class _StepAssignWorkersState extends State<StepAssignWorkers> {
       list.add({
         "workerId": result.worker.workerId,
         "identification": result.worker.identification,
-        "fullName": result.worker.firstNames! + ' ' + result.worker.lastNames!,
-        "phone": result.worker.phoneNumber ?? '',
+        "fullName": "${result.worker.firstNames} ${result.worker.lastNames}",
+        "phone": result.worker.phoneNumber,
         "isTechnician": result.isTechnician,
         "isSupervisor": result.isSupervisor,
       });

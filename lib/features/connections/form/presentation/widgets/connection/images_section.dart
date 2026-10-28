@@ -1,4 +1,5 @@
 // lib/features/properties/form/add-img/presentation/widgets/images_section.dart
+/*
 import 'dart:io';
 import 'package:clean_architecture/components/widgets/attachment_source_picker.dart';
 import 'package:clean_architecture/components/common/form_card.dart';
@@ -248,3 +249,4 @@ class _ImagesSectionState extends State<ImagesSection> {
     );
   }
 }
+*/

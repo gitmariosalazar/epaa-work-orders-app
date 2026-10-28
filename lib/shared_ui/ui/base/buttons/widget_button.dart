@@ -100,7 +100,7 @@ class ActionButton extends StatelessWidget {
             backgroundColor: isDisabled ? theme.disabledColor : effectiveColor,
             foregroundColor: Colors.white,
             elevation: isDisabled ? 0 : context.cardElevation,
-            shadowColor: effectiveColor.withOpacity(0.3),
+            shadowColor: effectiveColor.withValues(alpha: 0.3),
           ),
           ActionButtonStyle.outlined => OutlinedButton.styleFrom(
             foregroundColor: isDisabled ? theme.disabledColor : effectiveColor,

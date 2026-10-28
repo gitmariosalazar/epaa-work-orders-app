@@ -44,7 +44,7 @@ class PriorityTaskCard extends StatelessWidget {
     if (currentOrder.description.trim().isNotEmpty) {
       return currentOrder.description.trim();
     }
-    return MapUtils.getWorkTypeText(currentOrder.workTypeId);
+    return MapUtils.getDepartmentText(currentOrder.departmentId ?? 0);
   }
 
   @override
@@ -79,11 +79,7 @@ class PriorityTaskCard extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(
-    BuildContext context,
-    bool isDark,
-    ColorScheme cs,
-  ) {
+  Widget _buildEmptyState(BuildContext context, bool isDark, ColorScheme cs) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -114,10 +110,7 @@ class PriorityTaskCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'Selecciona una orden de trabajo de tu lista para iniciar labores.',
-            style: TextStyle(
-              fontSize: 12,
-              color: cs.onSurfaceVariant,
-            ),
+            style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
           if (onEmptyAction != null) ...[
@@ -146,25 +139,27 @@ class PriorityTaskCard extends StatelessWidget {
   ) {
     final statusColor = _getStatusColor(currentOrder.status, isDark: isDark);
     final statusLabel = _getStatusText(currentOrder.status);
-    final orderCode =
-        currentOrder.orderCode?.trim().isNotEmpty == true
-            ? currentOrder.orderCode!.trim()
-            : (currentOrder.workOrderId ?? 'OT-2026-90');
-    final formattedCode =
-        orderCode.startsWith('#') ? orderCode : '#$orderCode';
+    final orderCode = currentOrder.orderCode?.trim().isNotEmpty == true
+        ? currentOrder.orderCode!.trim()
+        : (currentOrder.workOrderId?.trim().isNotEmpty == true
+              ? currentOrder.workOrderId!.trim()
+              : 'S/N');
+    final formattedCode = orderCode.startsWith('#') ? orderCode : '#$orderCode';
     final title = _getTitle(currentOrder);
 
-    final sector = currentOrder.location.isNotEmpty
-        ? currentOrder.location
-        : 'Sector 5';
-    final key = currentOrder.cadastralKey.isNotEmpty
-        ? currentOrder.cadastralKey
-        : '5-102';
-    final locationText = '$sector - Clave: $key';
+    final hasLocation = currentOrder.location.trim().isNotEmpty;
+    final hasKey = currentOrder.cadastralKey.trim().isNotEmpty;
+    final locationText = hasLocation && hasKey
+        ? '${currentOrder.location.trim()} - Clave: ${currentOrder.cadastralKey.trim()}'
+        : (hasLocation
+              ? currentOrder.location.trim()
+              : (hasKey
+                    ? 'Clave: ${currentOrder.cadastralKey.trim()}'
+                    : 'Ubicación no especificada'));
 
-    final subscriber = currentOrder.clientId.isNotEmpty
-        ? currentOrder.clientId
-        : 'Carlos Andrade';
+    final subscriber = currentOrder.clientId.trim().isNotEmpty
+        ? currentOrder.clientId.trim()
+        : 'Sin abonado asignado';
 
     return Container(
       width: double.infinity,
@@ -172,9 +167,7 @@ class PriorityTaskCard extends StatelessWidget {
         color: isDark ? cs.surfaceContainerHighest : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark
-              ? cs.outlineVariant
-              : const Color(0xFFE2E8F0),
+          color: isDark ? cs.outlineVariant : const Color(0xFFE2E8F0),
           width: 1.2,
         ),
         boxShadow: [
@@ -257,11 +250,7 @@ class PriorityTaskCard extends StatelessWidget {
           // Ubicación
           Row(
             children: [
-              Icon(
-                Icons.location_on_rounded,
-                size: 16,
-                color: cs.primary,
-              ),
+              Icon(Icons.location_on_rounded, size: 16, color: cs.primary),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
@@ -282,11 +271,7 @@ class PriorityTaskCard extends StatelessWidget {
           // Abonado
           Row(
             children: [
-              Icon(
-                Icons.person_rounded,
-                size: 16,
-                color: cs.primary,
-              ),
+              Icon(Icons.person_rounded, size: 16, color: cs.primary),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
@@ -312,13 +297,13 @@ class PriorityTaskCard extends StatelessWidget {
                   onPressed: onContinueOrder != null
                       ? () => onContinueOrder!(currentOrder)
                       : null,
-                  icon: const Icon(
-                    Icons.arrow_forward_rounded,
-                    size: 16,
-                  ),
+                  icon: const Icon(Icons.arrow_forward_rounded, size: 16),
                   label: const Text(
                     'Continuar Orden',
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: cs.primary,
@@ -337,18 +322,20 @@ class PriorityTaskCard extends StatelessWidget {
                   onPressed: onViewMap != null
                       ? () => onViewMap!(currentOrder)
                       : null,
-                  icon: const Icon(
-                    Icons.map_outlined,
-                    size: 16,
-                  ),
+                  icon: const Icon(Icons.map_outlined, size: 16),
                   label: const Text(
                     'Ver Mapa',
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: cs.onSurface,
                     side: BorderSide(
-                      color: isDark ? cs.outlineVariant : const Color(0xFFCBD5E1),
+                      color: isDark
+                          ? cs.outlineVariant
+                          : const Color(0xFFCBD5E1),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 11),
                     shape: RoundedRectangleBorder(

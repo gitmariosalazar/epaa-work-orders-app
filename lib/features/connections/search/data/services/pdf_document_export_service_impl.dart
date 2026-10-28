@@ -3,11 +3,16 @@ import 'package:clean_architecture/features/connections/domain/entities/connecti
 import 'package:clean_architecture/features/connections/domain/entities/document_type.dart';
 import 'package:clean_architecture/features/connections/search/domain/services/document_export_service.dart';
 import 'package:clean_architecture/features/connections/search/domain/services/pdf_templates/pdf_template_factory.dart';
+import 'package:injectable/injectable.dart';
 import 'package:printing/printing.dart';
 
+@LazySingleton(as: DocumentExportService)
 class PdfDocumentExportServiceImpl implements DocumentExportService {
   @override
-  Future<void> exportConnectionDocument(ConnectionEntity connection, DocumentType type) async {
+  Future<void> exportConnectionDocument(
+    ConnectionEntity connection,
+    DocumentType type,
+  ) async {
     // 1. Obtener la plantilla adecuada a través del Factory
     final template = PdfTemplateFactory.getTemplate(type);
 
@@ -17,7 +22,8 @@ class PdfDocumentExportServiceImpl implements DocumentExportService {
     // 3. Compartir nativamente a través de correo, WhatsApp, etc. (Menú de compartir del sistema)
     await Printing.sharePdf(
       bytes: await pdf.save(),
-      filename: '${type.name.toUpperCase()}_Acometida_${connection.connectionId}.pdf',
+      filename:
+          '${type.name.toUpperCase()}_Acometida_${connection.connectionId}.pdf',
     );
   }
 
@@ -28,7 +34,9 @@ class PdfDocumentExportServiceImpl implements DocumentExportService {
   }
 
   @override
-  Future<Uint8List> generateConnectionActaBytes(ConnectionEntity connection) async {
+  Future<Uint8List> generateConnectionActaBytes(
+    ConnectionEntity connection,
+  ) async {
     final template = PdfTemplateFactory.getTemplate(DocumentType.acta);
     final pdf = await template.generate(connection);
     return pdf.save();

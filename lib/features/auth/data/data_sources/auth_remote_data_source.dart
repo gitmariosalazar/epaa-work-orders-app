@@ -6,7 +6,7 @@ import 'package:clean_architecture/features/auth/data/models/requests/authentica
 import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
 import 'package:clean_architecture/features/auth/domain/entities/verify_user_result.dart';
 import 'package:clean_architecture/features/auth/domain/models/requests/change_password_request.dart';
-import 'package:dio/dio.dart';
+
 import 'package:injectable/injectable.dart';
 
 abstract interface class AuthRemoteDataSource {

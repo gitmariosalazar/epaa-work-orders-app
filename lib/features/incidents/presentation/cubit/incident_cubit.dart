@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:clean_architecture/core/domain/use_cases/use_case.dart';
 import 'package:clean_architecture/features/incidents/data/models/requests/create_incident_request.dart';
 import 'package:clean_architecture/features/incidents/data/models/requests/resolve_incident_request.dart';
 import 'package:clean_architecture/features/incidents/domain/usecases/create_incident.dart';

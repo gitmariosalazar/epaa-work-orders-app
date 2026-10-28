@@ -12,6 +12,7 @@ class ImagesSection extends StatelessWidget {
   final Function(File) onImageAdded;
   final Function(int) onImageRemoved;
   final bool allowFiles;
+  final bool allowGallery; // ← agregado (igual que la versión anterior)
 
   const ImagesSection({
     super.key,
@@ -20,6 +21,7 @@ class ImagesSection extends StatelessWidget {
     required this.onImageAdded,
     required this.onImageRemoved,
     this.allowFiles = false,
+    this.allowGallery = false, // por defecto solo cámara
   });
 
   Future<void> _pickFromSource(
@@ -61,6 +63,13 @@ class ImagesSection extends StatelessWidget {
   }
 
   Future<void> _showImageSourcePicker(BuildContext context) async {
+    // Comportamiento original: si allowGallery es false → solo cámara
+    if (!allowGallery) {
+      await _pickFromSource(context, AttachmentSource.camera);
+      return;
+    }
+
+    // Cuando allowGallery es true → muestra el picker completo
     final source = await AttachmentSourcePicker.show(
       context,
       allowFiles: allowFiles,

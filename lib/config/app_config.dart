@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
@@ -14,13 +15,21 @@ sealed class AppConfig {
   final String apiBaseUrl;
   final String flavor;
   final String apiKeyGoogleMaps;
+  final bool enableHttpInspector;
+  final bool showHttpInspectorNotifications;
 
   const AppConfig({
     required this.appTitle,
     required this.apiBaseUrl,
     required this.flavor,
     required this.apiKeyGoogleMaps,
+    this.enableHttpInspector = false,
+    this.showHttpInspectorNotifications = false,
   });
+
+  bool get isProduction => flavor == Flavor.production;
+  bool get isDevelopment => flavor == Flavor.development;
+  bool get isStaging => flavor == Flavor.staging;
 }
 
 String _normalizeBaseUrl(String? url, String fallback) {
@@ -41,6 +50,8 @@ class AppConfigProd extends AppConfig {
         ),
         flavor: Flavor.production,
         apiKeyGoogleMaps: dotenv.maybeGet("GOOGLE_MAPS_API_KEY") ?? "",
+        enableHttpInspector: false,
+        showHttpInspectorNotifications: false,
       );
 }
 
@@ -55,6 +66,8 @@ class AppConfigStg extends AppConfig {
         ),
         flavor: Flavor.staging,
         apiKeyGoogleMaps: dotenv.maybeGet("GOOGLE_MAPS_API_KEY") ?? "",
+        enableHttpInspector: kDebugMode,
+        showHttpInspectorNotifications: false,
       );
 }
 
@@ -69,6 +82,8 @@ class AppConfigDev extends AppConfig {
         ),
         flavor: Flavor.development,
         apiKeyGoogleMaps: dotenv.maybeGet("GOOGLE_MAPS_API_KEY") ?? "",
+        enableHttpInspector: kDebugMode,
+        showHttpInspectorNotifications: kDebugMode,
       );
 }
 

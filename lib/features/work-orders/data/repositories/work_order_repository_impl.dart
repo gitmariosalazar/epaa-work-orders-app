@@ -506,4 +506,22 @@ class WorkOrderRepositoryImpl implements WorkOrderRepository {
       loading: () => LoadingState<void>(),
     );
   }
+
+  @override
+  FutureData<List<DepartmentEntity>> getDepartments() async {
+    final result = await DataHandler.fetchWithFallback<List<DepartmentModel>>(
+      _internet.isConnected,
+      remoteCallback: () => _remoteDataSource.getDepartments(),
+    );
+    return result.when(
+      success: (models) => SuccessState<List<DepartmentEntity>>(
+        data: models.map((m) => m.toEntity()).toList(),
+      ),
+      failure: (message, errorType) => FailureState<List<DepartmentEntity>>(
+        message: message,
+        errorType: errorType,
+      ),
+      loading: () => LoadingState<List<DepartmentEntity>>(),
+    );
+  }
 }

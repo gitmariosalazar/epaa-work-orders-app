@@ -18,10 +18,35 @@ class StepOrderConfirmation extends StatelessWidget {
       orElse: () => WorkOrderCreateConstants.origins.first,
     );
 
-    final workTypeItem = WorkOrderCreateConstants.workTypes.firstWhere(
-      (t) => t.id == form.workTypeId,
-      orElse: () => WorkOrderCreateConstants.workTypes.first,
-    );
+    final String workTypeLabel = form.workTypeName?.isNotEmpty == true
+        ? form.workTypeName!
+        : WorkOrderCreateConstants.workTypes
+            .firstWhere(
+              (t) => t.id == form.workTypeId,
+              orElse: () => WorkOrderCreateConstants.workTypes.first,
+            )
+            .label;
+
+    final IconData workTypeIcon = form.workTypeName?.isNotEmpty == true
+        ? WorkOrderCreateConstants.getWorkTypeIcon(
+            form.workTypeName!,
+            form.workTypeCode,
+            form.departmentName,
+          )
+        : WorkOrderCreateConstants.workTypes
+            .firstWhere(
+              (t) => t.id == form.workTypeId,
+              orElse: () => WorkOrderCreateConstants.workTypes.first,
+            )
+            .icon;
+
+    final DepartmentVisualItem? departmentVisual =
+        form.departmentName?.isNotEmpty == true
+            ? WorkOrderCreateConstants.getDepartmentVisual(
+                form.departmentName!,
+                form.departmentId,
+              )
+            : null;
 
     final priorityItem = WorkOrderCreateConstants.priorities.firstWhere(
       (p) => p.id == form.priorityId,
@@ -134,11 +159,18 @@ class StepOrderConfirmation extends StatelessWidget {
                 label: 'Origen',
                 value: originItem.label,
               ),
+              if (form.departmentName?.isNotEmpty == true)
+                _buildRow(
+                  context,
+                  icon: departmentVisual?.icon ?? Icons.business_rounded,
+                  label: 'Departamento',
+                  value: form.departmentName!,
+                ),
               _buildRow(
                 context,
-                icon: workTypeItem.icon,
+                icon: workTypeIcon,
                 label: 'Tipo de Trabajo',
-                value: workTypeItem.label,
+                value: workTypeLabel,
               ),
               _buildRow(
                 context,

@@ -1,4 +1,3 @@
-import 'package:clean_architecture/core/data_states/data_state.dart';
 import 'package:clean_architecture/core/data/models/domain_convertible.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
 import 'package:clean_architecture/core/utils/type_defs.dart';

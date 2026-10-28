@@ -119,6 +119,8 @@ import 'package:clean_architecture/features/connections/form/update/domain/useca
     as _i198;
 import 'package:clean_architecture/features/connections/form/update/domain/usecases/update_connection.dart'
     as _i237;
+import 'package:clean_architecture/features/connections/form/update/domain/usecases/update_connection_basic_usecase.dart'
+    as _i786;
 import 'package:clean_architecture/features/connections/search/data/datasources/local_connection_datasource.dart'
     as _i274;
 import 'package:clean_architecture/features/connections/search/data/datasources/remote_connection_datasource.dart'
@@ -131,8 +133,12 @@ import 'package:clean_architecture/features/connections/search/data/repositories
     as _i713;
 import 'package:clean_architecture/features/connections/search/data/services/map_navigation_service_impl.dart'
     as _i959;
+import 'package:clean_architecture/features/connections/search/data/services/pdf_document_export_service_impl.dart'
+    as _i737;
 import 'package:clean_architecture/features/connections/search/domain/repositories/connection_with_properties_repository.dart'
     as _i1032;
+import 'package:clean_architecture/features/connections/search/domain/services/document_export_service.dart'
+    as _i300;
 import 'package:clean_architecture/features/connections/search/domain/services/map_navigation_service.dart'
     as _i449;
 import 'package:clean_architecture/features/connections/search/domain/usecases/find_property_with_client.dart'
@@ -145,12 +151,30 @@ import 'package:clean_architecture/features/connections/search/presentation/manu
     as _i372;
 import 'package:clean_architecture/features/connections/search/presentation/scan/blocs/connection_with_properties_bloc.dart'
     as _i981;
+import 'package:clean_architecture/features/dashboard/data/datasource/remote/dashboard_remote_datasource.dart'
+    as _i942;
 import 'package:clean_architecture/features/dashboard/data/datasource/remote/work_order_statistics_remote_datasource.dart'
     as _i798;
+import 'package:clean_architecture/features/dashboard/data/repositories/dashboard_analytics_repository_impl.dart'
+    as _i400;
 import 'package:clean_architecture/features/dashboard/data/repositories/work_order_statistics_repository_impl.dart'
     as _i17;
+import 'package:clean_architecture/features/dashboard/domain/repositories/dashboard_analytics_repository.dart'
+    as _i438;
 import 'package:clean_architecture/features/dashboard/domain/repositories/work_order_statistics_repository.dart'
     as _i1003;
+import 'package:clean_architecture/features/dashboard/domain/usecases/executive_overview_use_cases.dart'
+    as _i645;
+import 'package:clean_architecture/features/dashboard/domain/usecases/financial_analytics_use_cases.dart'
+    as _i726;
+import 'package:clean_architecture/features/dashboard/domain/usecases/incident_analytics_use_cases.dart'
+    as _i850;
+import 'package:clean_architecture/features/dashboard/domain/usecases/operations_analytics_use_cases.dart'
+    as _i286;
+import 'package:clean_architecture/features/dashboard/domain/usecases/quality_sla_use_cases.dart'
+    as _i1049;
+import 'package:clean_architecture/features/dashboard/domain/usecases/trends_geospatial_use_cases.dart'
+    as _i965;
 import 'package:clean_architecture/features/dashboard/domain/usecases/work_order_statistics_use_cases.dart'
     as _i466;
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart'
@@ -259,6 +283,8 @@ import 'package:clean_architecture/features/work-orders/domain/usecases/create_w
     as _i483;
 import 'package:clean_architecture/features/work-orders/domain/usecases/get_all_work_order_use_case.dart'
     as _i817;
+import 'package:clean_architecture/features/work-orders/domain/usecases/get_departments_use_case.dart'
+    as _i1005;
 import 'package:clean_architecture/features/work-orders/domain/usecases/process/create_work_order_from_incident_use_case.dart'
     as _i119;
 import 'package:clean_architecture/features/work-orders/domain/usecases/process/get_work_order_detail_use_case.dart'
@@ -271,6 +297,8 @@ import 'package:clean_architecture/features/work-orders/presentation/cubits/add-
     as _i943;
 import 'package:clean_architecture/features/work-orders/presentation/cubits/create_work_order/create_work_order_cubit.dart'
     as _i841;
+import 'package:clean_architecture/features/work-orders/presentation/cubits/departments/departments_cubit.dart'
+    as _i1044;
 import 'package:clean_architecture/features/work-orders/presentation/cubits/process/work_order_process_cubit.dart'
     as _i707;
 import 'package:clean_architecture/features/workers/data/datasource/worker_remote_datasource.dart'
@@ -318,6 +346,7 @@ extension GetItInjectableX on _i174.GetIt {
     final imagePickerServiceModule = _$ImagePickerServiceModule();
     final internetServiceModule = _$InternetServiceModule();
     final navigationServiceModule = _$NavigationServiceModule();
+    final dashboardRepositoriesModule = _$DashboardRepositoriesModule();
     gh.factory<_i1037.OfflineSyncManager>(() => _i1037.OfflineSyncManager());
     gh.factory<bool>(() => apiServiceModule.addInterceptors);
     await gh.factoryAsync<_i460.SharedPreferences>(
@@ -350,6 +379,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i332.SpeechService>(() => _i332.SpeechServiceImpl());
     gh.lazySingleton<_i1021.PdfExportService>(
       () => _i1021.PdfExportServiceImpl(),
+    );
+    gh.lazySingleton<_i300.DocumentExportService>(
+      () => _i737.PdfDocumentExportServiceImpl(),
     );
     gh.lazySingleton<_i449.MapNavigationService>(
       () => _i959.MapNavigationServiceImpl(),
@@ -522,6 +554,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i890.UserRemoteDataSource>(
       () => _i890.UserRemoteDataSourceImpl(apiService: gh<_i885.ApiService>()),
     );
+    gh.lazySingleton<_i942.DashboardRemoteDataSource>(
+      () => _i942.DashboardRemoteDataSourceImpl(
+        apiService: gh<_i885.ApiService>(),
+      ),
+    );
     gh.lazySingleton<_i100.RemoteReadingDataSource>(
       () =>
           _i100.RemoteReadingDataSourceImpl(apiService: gh<_i885.ApiService>()),
@@ -621,6 +658,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i237.UpdateConnectionUseCase>(
       () =>
           _i237.UpdateConnectionUseCase(gh<_i186.UpdateConnectionRepository>()),
+    );
+    gh.factory<_i786.UpdateConnectionBasicUseCase>(
+      () => _i786.UpdateConnectionBasicUseCase(
+        gh<_i186.UpdateConnectionRepository>(),
+      ),
     );
     gh.lazySingleton<_i459.ConnectionPaginatedRepository>(
       () => _i17.ConnectionPaginatedRepositoryImpl(
@@ -762,6 +804,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i472.UploadDocumentUseCase>(
       () => _i472.UploadDocumentUseCase(gh<_i392.DocumentRepository>()),
+    );
+    gh.lazySingleton<_i438.DashboardAnalyticsRepository>(
+      () => _i400.DashboardAnalyticsRepositoryImpl(
+        internet: gh<_i662.InternetService>(),
+        remoteDataSource: gh<_i942.DashboardRemoteDataSource>(),
+      ),
     );
     gh.lazySingleton<_i329.AddWorkOrderAssignmentUseCase>(
       () => _i329.AddWorkOrderAssignmentUseCase(
@@ -907,6 +955,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i817.GetAllWorkOrdersUseCase>(
       () => _i817.GetAllWorkOrdersUseCase(gh<_i464.WorkOrderRepository>()),
     );
+    gh.lazySingleton<_i1005.GetDepartmentsUseCase>(
+      () => _i1005.GetDepartmentsUseCase(gh<_i464.WorkOrderRepository>()),
+    );
     gh.lazySingleton<_i119.CreateWorkOrderFromIncidentUseCase>(
       () => _i119.CreateWorkOrderFromIncidentUseCase(
         gh<_i464.WorkOrderRepository>(),
@@ -1013,6 +1064,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i386.AddWorkOrderAttachmentRepository>(),
       ),
     );
+    gh.factory<_i1044.DepartmentsCubit>(
+      () => _i1044.DepartmentsCubit(
+        getDepartmentsUseCase: gh<_i1005.GetDepartmentsUseCase>(),
+      ),
+    );
     gh.lazySingleton<_i788.GetAllConnectionsUseCase>(
       () => _i788.GetAllConnectionsUseCase(gh<_i459.ConnectionRepository>()),
     );
@@ -1036,6 +1092,66 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i13.VerifyUserUseCase>(
       () => _i13.VerifyUserUseCase(repository: gh<_i1003.AuthRepository>()),
+    );
+    gh.lazySingleton<_i438.IncidentsVsWorkOrdersRepository>(
+      () => dashboardRepositoriesModule.incidentsVsWorkOrdersRepository(
+        gh<_i438.DashboardAnalyticsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i438.TechnicianDashboardRepository>(
+      () => dashboardRepositoriesModule.technicianDashboardRepository(
+        gh<_i438.DashboardAnalyticsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i438.QualityAndSlaDashboardRepository>(
+      () => dashboardRepositoriesModule.qualityAndSlaDashboardRepository(
+        gh<_i438.DashboardAnalyticsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i438.FinancialDashboardRepository>(
+      () => dashboardRepositoriesModule.financialDashboardRepository(
+        gh<_i438.DashboardAnalyticsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i438.TrendsAndGeospatialDashboardRepository>(
+      () => dashboardRepositoriesModule.trendsAndGeospatialDashboardRepository(
+        gh<_i438.DashboardAnalyticsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i438.ExecutiveDashboardRepository>(
+      () => dashboardRepositoriesModule.executiveDashboardRepository(
+        gh<_i438.DashboardAnalyticsRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i850.GetFunnelSummaryUseCase>(
+      () => _i850.GetFunnelSummaryUseCase(
+        gh<_i438.IncidentsVsWorkOrdersRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i850.GetStateMatrixUseCase>(
+      () => _i850.GetStateMatrixUseCase(
+        gh<_i438.IncidentsVsWorkOrdersRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i850.GetOriginChannelsUseCase>(
+      () => _i850.GetOriginChannelsUseCase(
+        gh<_i438.IncidentsVsWorkOrdersRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i850.GetCategoryDepartmentsUseCase>(
+      () => _i850.GetCategoryDepartmentsUseCase(
+        gh<_i438.IncidentsVsWorkOrdersRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i850.GetSyncDiscrepanciesUseCase>(
+      () => _i850.GetSyncDiscrepanciesUseCase(
+        gh<_i438.IncidentsVsWorkOrdersRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i850.GetDispatchControlUseCase>(
+      () => _i850.GetDispatchControlUseCase(
+        gh<_i438.IncidentsVsWorkOrdersRepository>(),
+      ),
     );
     gh.factory<_i707.WorkOrderProcessCubit>(
       () => _i707.WorkOrderProcessCubit(
@@ -1085,10 +1201,59 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i964.DownloadFileUseCase>(
       () => _i964.DownloadFileUseCase(gh<_i876.FileRepository>()),
     );
+    gh.lazySingleton<_i645.GetHeaderKpisUseCase>(
+      () =>
+          _i645.GetHeaderKpisUseCase(gh<_i438.ExecutiveDashboardRepository>()),
+    );
+    gh.lazySingleton<_i645.GetExecutiveOverviewUseCase>(
+      () => _i645.GetExecutiveOverviewUseCase(
+        gh<_i438.ExecutiveDashboardRepository>(),
+      ),
+    );
     gh.factory<_i912.LoginCubit>(
       () => _i912.LoginCubit(
         sessionService: gh<_i497.SessionService>(),
         useCases: gh<_i123.LoginCubitUseCases>(),
+      ),
+    );
+    gh.lazySingleton<_i286.GetTechnicianPerformanceUseCase>(
+      () => _i286.GetTechnicianPerformanceUseCase(
+        gh<_i438.TechnicianDashboardRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i286.GetTechnicianDailyFeedUseCase>(
+      () => _i286.GetTechnicianDailyFeedUseCase(
+        gh<_i438.TechnicianDashboardRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i286.GetCrewAssignmentsUseCase>(
+      () => _i286.GetCrewAssignmentsUseCase(
+        gh<_i438.TechnicianDashboardRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i1049.GetSlaMonitorUseCase>(
+      () => _i1049.GetSlaMonitorUseCase(
+        gh<_i438.QualityAndSlaDashboardRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i1049.GetQualityIndicatorsUseCase>(
+      () => _i1049.GetQualityIndicatorsUseCase(
+        gh<_i438.QualityAndSlaDashboardRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i1049.GetEscalationAuditUseCase>(
+      () => _i1049.GetEscalationAuditUseCase(
+        gh<_i438.QualityAndSlaDashboardRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i726.GetMaterialCostsUseCase>(
+      () => _i726.GetMaterialCostsUseCase(
+        gh<_i438.FinancialDashboardRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i726.GetEconomicBalanceUseCase>(
+      () => _i726.GetEconomicBalanceUseCase(
+        gh<_i438.FinancialDashboardRepository>(),
       ),
     );
     gh.factory<_i372.ManuallyConnectionWithPropertiesBloc>(
@@ -1099,6 +1264,16 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i981.ConnectionWithPropertiesBloc>(
       () => _i981.ConnectionWithPropertiesBloc(
         gh<_i453.GetConnectionWithProperties>(),
+      ),
+    );
+    gh.lazySingleton<_i965.GetDailyTrendUseCase>(
+      () => _i965.GetDailyTrendUseCase(
+        gh<_i438.TrendsAndGeospatialDashboardRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i965.GetTerritorialConcentrationUseCase>(
+      () => _i965.GetTerritorialConcentrationUseCase(
+        gh<_i438.TrendsAndGeospatialDashboardRepository>(),
       ),
     );
     gh.factory<_i841.CreateWorkOrderCubit>(
@@ -1121,3 +1296,5 @@ class _$ImagePickerServiceModule extends _i257.ImagePickerServiceModule {}
 class _$InternetServiceModule extends _i662.InternetServiceModule {}
 
 class _$NavigationServiceModule extends _i1005.NavigationServiceModule {}
+
+class _$DashboardRepositoriesModule extends _i400.DashboardRepositoriesModule {}

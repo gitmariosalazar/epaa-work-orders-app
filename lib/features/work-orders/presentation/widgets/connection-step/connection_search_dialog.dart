@@ -223,7 +223,7 @@ class _ConnectionSearchDialogState extends State<ConnectionSearchDialog> {
                                       ),
                                     ),
                                     Text(
-                                      conn.clientId ?? '',
+                                      conn.clientId,
                                       style: const TextStyle(
                                         fontSize: 9,
                                         fontStyle: FontStyle.italic,
@@ -239,7 +239,7 @@ class _ConnectionSearchDialogState extends State<ConnectionSearchDialog> {
                                       ),
                                     ),
                                     Text(
-                                      conn.connectionCadastralKey ?? '',
+                                      conn.connectionCadastralKey,
                                       style: const TextStyle(
                                         fontSize: 9,
                                         fontStyle: FontStyle.italic,
@@ -253,7 +253,7 @@ class _ConnectionSearchDialogState extends State<ConnectionSearchDialog> {
                                     horizontal: 8,
                                   ),
                                   child: Text(
-                                    conn.connectionAddress ?? '',
+                                    conn.connectionAddress,
                                     style: const TextStyle(fontSize: 9),
                                     softWrap: true,
                                   ),

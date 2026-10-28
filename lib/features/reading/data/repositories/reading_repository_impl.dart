@@ -8,7 +8,6 @@ import 'package:clean_architecture/features/reading/data/model/reading_basic_inf
 import 'package:clean_architecture/features/reading/data/model/reading_response.dart';
 import 'package:clean_architecture/features/reading/data/model/update_reading_request.dart';
 import 'package:clean_architecture/features/reading/domain/entities/reading.dart';
-import 'package:clean_architecture/features/reading/domain/entities/reading_basic_info.dart';
 import 'package:clean_architecture/features/reading/domain/entities/reading_result.dart';
 import 'package:clean_architecture/features/reading/domain/repositories/reading_repository.dart';
 
@@ -34,7 +33,9 @@ class ReadingRepositoryImpl implements ReadingRepository {
   FutureData<List<Reading>> findBasicReading(String catastralCode) async {
     try {
       final dtos = await dataSource.findBasicReading(catastralCode);
-      return SuccessState(data: dtos.map((dto) => _mapBasicInfoToEntity(dto)).toList());
+      return SuccessState(
+        data: dtos.map((dto) => _mapBasicInfoToEntity(dto)).toList(),
+      );
     } on ServerException catch (e) {
       return FailureState(message: e.message, errorType: ErrorType.serverError);
     } catch (e) {

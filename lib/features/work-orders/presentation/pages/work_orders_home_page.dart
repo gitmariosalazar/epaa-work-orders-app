@@ -41,7 +41,7 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
   final _scrollController = ScrollController();
   String? _filterStatus;
   int? _filterPriority;
-  int? _filterWorkType;
+  int? _filterDepartment;
   final _searchController = TextEditingController();
 
   @override
@@ -68,7 +68,7 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
   Future<void> _showFilterDialog() async {
     var filterStatus = _filterStatus;
     var filterPriority = _filterPriority;
-    var filterWorkType = _filterWorkType;
+    var filterDepartment = _filterDepartment;
 
     await showDialog<void>(
       context: context,
@@ -133,26 +133,26 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<int?>(
                     decoration: InputDecoration(
-                      labelText: 'Tipo de trabajo',
+                      labelText: 'Área o Departamento',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    initialValue: filterWorkType,
+                    initialValue: filterDepartment,
                     items: [
                       const DropdownMenuItem(
                         value: null,
-                        child: Text('Todos los tipos'),
+                        child: Text('Todas las áreas'),
                       ),
-                      ...[1, 2, 3, 4, 5].map(
+                      ...[1, 2, 3, 4, 5, 6].map(
                         (t) => DropdownMenuItem(
                           value: t,
-                          child: Text(_getWorkTypeText(t)),
+                          child: Text(_getDepartmentName(t)),
                         ),
                       ),
                     ],
                     onChanged: (value) =>
-                        setDialogState(() => filterWorkType = value),
+                        setDialogState(() => filterDepartment = value),
                   ),
                 ],
               ),
@@ -163,7 +163,7 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
                   setState(() {
                     _filterStatus = null;
                     _filterPriority = null;
-                    _filterWorkType = null;
+                    _filterDepartment = null;
                   });
                   Navigator.pop(context);
                 },
@@ -174,7 +174,7 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
                   setState(() {
                     _filterStatus = filterStatus;
                     _filterPriority = filterPriority;
-                    _filterWorkType = filterWorkType;
+                    _filterDepartment = filterDepartment;
                   });
                   Navigator.pop(context);
                 },
@@ -204,18 +204,30 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
     }
   }
 
-  String _getWorkTypeText(int type) {
+  /*
+id_departamento,nombre,descripcion,activo
+4,Departamento de Planificación GIS,"Topografía, catastro y sistemas de información geográfica",false
+6,Departamento de Dirección Técnica,"Supervisión de proyectos, fiscalización de obras y control de calidad técnica",true
+1,Departamento de Agua Potable,Mantenimiento y operación de la red de agua potable,true
+3,Departamento de Comercialización,"Atención al cliente, medidores y cortes de servicio",true
+5,Departamento de Administración,"Gestión interna, activos y recursos humanos",true
+2,Departamento de Alcantarillado,Mantenimiento de la red de alcantarillado y plantas de tratamiento,true
+
+ */
+  String _getDepartmentName(int type) {
     switch (type) {
       case 1:
-        return 'ALCANTARILLADO';
+        return 'Departamento de Agua Potable';
       case 2:
-        return 'AGUA POTABLE';
+        return 'Departamento de Alcantarillado';
       case 3:
-        return 'COMERCIALIZACION';
+        return 'Departamento de Comercialización';
       case 4:
-        return 'MANTENIMIENTO';
+        return 'Departamento de Dirección Técnica';
       case 5:
-        return 'LABORATORIO';
+        return 'Departamento de Administración';
+      case 6:
+        return 'Departamento de Planificación GIS';
       default:
         return 'DESCONOCIDO';
     }
@@ -286,6 +298,10 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
     ThemeData theme,
     double bottomInset,
   ) {
+    debugPrint(
+      'WORK ORDER INSET: $_filterStatus $_filterPriority $_filterDepartment',
+    );
+
     return BlocBuilder<WorkOrdersCubit, WorkOrdersState>(
       builder: (context, state) {
         if (state is WorkOrdersLoading || state is WorkOrdersInitial) {
@@ -328,10 +344,15 @@ class _WorkOrdersHomeViewState extends State<_WorkOrdersHomeView> {
           final matchesPriority =
               _filterPriority == null || order.priorityId == _filterPriority;
           final matchesWorkType =
-              _filterWorkType == null || order.workTypeId == _filterWorkType;
+              _filterDepartment == null ||
+              order.departmentId == _filterDepartment;
 
           return matchesStatus && matchesPriority && matchesWorkType;
         }).toList();
+
+        debugPrint(
+          'WORK ORDERS LIST: ${filteredOrders.map((order) => order.departmentName).toList()}',
+        );
 
         if (filteredOrders.isEmpty) {
           return RefreshIndicator(

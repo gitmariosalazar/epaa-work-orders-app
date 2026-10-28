@@ -7,11 +7,11 @@ import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:clean_architecture/config/app_config.dart';
-import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/constants/app_icons.dart';
 import 'package:clean_architecture/core/utils/map_utils.dart';
 import 'package:clean_architecture/features/work-orders/domain/entities/work_order_entity.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
+import 'package:clean_architecture/shared_ui/ui/base/app_bar/base_app_bar.dart';
 import 'package:clean_architecture/shared_ui/ui/base/buttons/widget_button.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
@@ -129,7 +129,7 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
         position: _workLocation!,
         infoWindow: InfoWindow(
           title: 'Orden #${widget.order.orderCode}',
-          snippet: widget.order.location ?? 'Ubicación de la orden',
+          snippet: widget.order.location,
           onTap: () => _showLegendDialog(widget.order),
         ),
         icon: BitmapDescriptor.defaultMarkerWithHue(
@@ -336,7 +336,7 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
 
   // Copiar dirección completa
   Future<void> _copyAddress() async {
-    final String address = widget.order.location ?? 'Dirección no disponible';
+    final String address = widget.order.location;
     await FlutterClipboard.copy(address);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -377,15 +377,7 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
 
     return Scaffold(
       extendBody: true,
-      appBar: AppBar(
-        title: Text(
-          'Mapa - OT: ${widget.order.orderCode}',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        centerTitle: true,
-      ),
+      appBar: BaseAppBar(title: 'Mapa - OT Nº: ${widget.order.orderCode}'),
       body: Stack(
         children: [
           GoogleMap(
@@ -458,7 +450,7 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          widget.order.location ?? 'Dirección no disponible',
+                          widget.order.location,
                           style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 14,
@@ -587,18 +579,18 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
                       const SizedBox(width: 5),
                       Text(
                         'C.C:',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(width: 5),
                       Text(
                         order.cadastralKey,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -634,16 +626,16 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
               Row(
                 children: [
                   Icon(
-                    MapUtils.getWorkTypeIcon(order.workTypeId),
+                    MapUtils.getDepartmentIcon(order.departmentId ?? 0),
                     size: 16,
-                    color: Colors.blue,
+                    color: MapUtils.getDepartmentColor(order.departmentId ?? 0),
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    MapUtils.getWorkTypeText(order.workTypeId),
-                    style: const TextStyle(
+                    MapUtils.getDepartmentText(order.departmentId ?? 0),
+                    style: TextStyle(
                       fontSize: 12,
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -652,12 +644,20 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(AppIcons.location, size: 16, color: Colors.red),
+                  Icon(
+                    AppIcons.location,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.onError,
+                  ),
                   const SizedBox(width: 5),
                   Expanded(
                     child: Text(
-                      order.location ?? 'Sin dirección',
-                      style: const TextStyle(fontSize: 12, color: Colors.black),
+                      order.location,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -670,8 +670,12 @@ class _WorkOrderMapPageState extends State<WorkOrderMapPage> {
                   const SizedBox(width: 5),
                   Expanded(
                     child: Text(
-                      order.clientId ?? 'Cliente desconocido',
-                      style: const TextStyle(fontSize: 12, color: Colors.black),
+                      order.clientId,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
